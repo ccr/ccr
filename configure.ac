@@ -1,4 +1,5 @@
-# This is the main configure file for the Using NetCDF sample code.
+# This is the main configure file for the netCDF Community Codec
+# Repository (ccr).
 
 # Ed Hartnett 12/24/2019
 
@@ -82,6 +83,9 @@ if test "x$enable_fortran" = xyes; then
    AC_SEARCH_LIBS([nf_create], [netcdff], [], [AC_MSG_ERROR([Can't find or link to the netcdf Fortran library, set CPPFLAGS/LDFLAGS.])])
    AC_LANG_POP(Fortran)
 fi
+
+# Build the HDF5 plugins.
+AC_CONFIG_SUBDIRS([hdf5_plugins])
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
