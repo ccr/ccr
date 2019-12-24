@@ -20,5 +20,6 @@ script:
   - ./configure --enable-fortran
   - export DISTCHECK_CONFIGURE_FLAGS=--enable-fortran
   - make -j distcheck
+  - ls
 
 

@@ -19,4 +19,4 @@ endif
 
 SUBDIRS = include src test_h5 ${DOCS}
 
-EXTRA_DIST = test-driver-verbose LICENSE README.md
+EXTRA_DIST = LICENSE README.md
