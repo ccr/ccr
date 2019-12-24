@@ -4,3 +4,5 @@
 
 # Install these header files.
 include_HEADERS = ccr.h
+
+noinst_HEADERS = ccr_test.h

@@ -8,6 +8,12 @@
 
 #include <netcdf.h>
 
+/** The filter ID for BZIP2 compression. */
+#define BZIP2_ID 307
+
+/** The filter ID for LZ4 compression. */
+#define LZ4_ID 32004
+
 /* This macro prints an error message with line number and name of
  * test program, and the netCDF error string. */
 #define NC_ERR(stat) do {						\

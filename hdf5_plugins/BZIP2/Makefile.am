@@ -16,5 +16,8 @@
 ## Run automake to generate a Makefile.in from this file.
 ##
 
+# This directory stores libtool macros, put there by aclocal.
+ACLOCAL_AMFLAGS = -I m4
+
 SUBDIRS = src #example
 DIST_SUBDIRS = src #example
