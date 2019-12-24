@@ -15,8 +15,8 @@ before_script:
 
 script:
   - pwd
-  - ls /usr/include
-  - ls /usr/include/hdf5/serial
+#  - ls /usr/include
+  - ls /usr/lib/x86_64-linux-gnu
   - export FCFLAGS=-I/usr/include
   - export CPPFLAGS=-I/usr/include/hdf5/serial
   - autoreconf -i
