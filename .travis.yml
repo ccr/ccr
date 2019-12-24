@@ -7,18 +7,26 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget
+    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget libhdf5-dev
 
 env:
 
 before_script:
+  - pushd /usr/lib/x86_64-linux-gnu
+  - sudo ln -s libhdf5_serial.so.100.0.1 libhdf5.so
+  - sudo ln -s libhdf5_serialhl.so.100.0.0 libhdf5_hl.so
+  - ls -l libhdf5*
+  - popd
 
 script:
   - pwd
+#  - ls /usr/include
+  - ls /usr/lib/x86_64-linux-gnu
   - export FCFLAGS=-I/usr/include
+  - export CPPFLAGS=-I/usr/include/hdf5/serial
   - autoreconf -i
-  - ./configure --enable-fortran
-  - export DISTCHECK_CONFIGURE_FLAGS=--enable-fortran
+  - ./configure
+  - cat hdf5_plugins/BZIP2/config.log
   - make -j distcheck
   - ls
 
