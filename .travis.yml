@@ -1,0 +1,24 @@
+language: c
+dist: bionic
+sudo: false
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget
+
+env:
+
+before_script:
+
+script:
+  - pwd
+  - export FCFLAGS=-I/usr/include
+  - autoreconf -i
+  - ./configure --enable-fortran
+  - export DISTCHECK_CONFIGURE_FLAGS=--enable-fortran
+  - make -j distcheck
+
+
