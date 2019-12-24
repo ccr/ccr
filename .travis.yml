@@ -7,13 +7,11 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget
+    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget libhdf5-dev
 
 env:
 
 before_script:
-  - wget https://www.hdfgroup.org/package/hdf5-1-10-6-tar-gz
-  - tar zxf 
   - pushd /usr/lib/x86_64-linux-gnu
   - sudo ln -s libhdf5_serial.so.100.0.0 libhdf5.so
   - sudo ln -s libhdf5_serial.so.100.0.1 libhdf5_hl.so
