@@ -16,9 +16,12 @@ before_script:
 script:
   - pwd
   - ls /usr/include
+  - ls /usr/include/hdf5
   - export FCFLAGS=-I/usr/include
+  - export CPPFLAGS=-I/usr/include/hdf5
   - autoreconf -i
   - ./configure
+  - cat hdf5_plugins/BZIP2/config.log
   - make -j distcheck
   - ls
 
