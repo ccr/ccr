@@ -16,9 +16,9 @@ before_script:
 script:
   - pwd
   - ls /usr/include
-  - ls /usr/include/hdf5
+  - ls /usr/include/hdf5/serial
   - export FCFLAGS=-I/usr/include
-  - export CPPFLAGS=-I/usr/include/hdf5
+  - export CPPFLAGS=-I/usr/include/hdf5/serial
   - autoreconf -i
   - ./configure
   - cat hdf5_plugins/BZIP2/config.log
