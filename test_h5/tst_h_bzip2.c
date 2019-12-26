@@ -44,13 +44,13 @@ main()
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
 
-      /* /\* Create file, setting latest_format in access propertly list */
-      /*  * and H5P_CRT_ORDER_TRACKED in the creation property list. *\/ */
-      /* if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR; */
-      /* if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR; */
-      /* if ((fcpl_id = H5Pcreate(H5P_FILE_CREATE)) < 0) ERR; */
-      /* if (H5Pset_link_creation_order(fcpl_id, H5P_CRT_ORDER_TRACKED|H5P_CRT_ORDER_INDEXED) < 0) ERR; */
-      /* if ((fileid = H5Fcreate(FILE_NAME, H5F_ACC_TRUNC, fcpl_id, fapl_id)) < 0) ERR; */
+      /* Create file, setting latest_format in access propertly list
+       * and H5P_CRT_ORDER_TRACKED in the creation property list. */
+      if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR;
+      if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR;
+      if ((fcpl_id = H5Pcreate(H5P_FILE_CREATE)) < 0) ERR;
+      if (H5Pset_link_creation_order(fcpl_id, H5P_CRT_ORDER_TRACKED|H5P_CRT_ORDER_INDEXED) < 0) ERR;
+      if ((fileid = H5Fcreate(FILE_NAME, H5F_ACC_TRUNC, fcpl_id, fapl_id)) < 0) ERR;
 
       /* if ((grpid = H5Gopen(fileid, "/")) < 0) ERR; */
 
@@ -78,14 +78,12 @@ main()
       /*   	   H5P_DEFAULT, data_out) < 0) ERR; */
 
       /* if (H5Dclose(datasetid) < 0) ERR; */
-      /* if (H5Pclose(fapl_id) < 0 || */
-      /*     H5Fclose(fileid) < 0) */
-      /*    ERR; */
-      /* if (H5Pclose(fapl_id) < 0 || */
-      /*     H5Sclose(spaceid) < 0 || */
-      /*     H5Gclose(grpid) < 0 || */
-      /*     H5Fclose(fileid) < 0) */
-      /*    ERR; */
+      if (H5Pclose(fapl_id) < 0 ||
+          H5Pclose(fcpl_id) < 0 ||
+          H5Fclose(fileid) < 0)
+         ERR;
+          /* H5Sclose(spaceid) < 0 || */
+          /* H5Gclose(grpid) < 0 || */
 
       /* /\* Now reopen the file and check the order. *\/ */
       /* if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR; */
