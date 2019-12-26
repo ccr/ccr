@@ -77,8 +77,8 @@ main()
       if (H5Dwrite(datasetid, H5T_NATIVE_INT, H5S_ALL, H5S_ALL,
         	   H5P_DEFAULT, data_out) < 0) ERR;
 
-      if (H5Dclose(datasetid) < 0) ERR;
-      if (H5Pclose(fapl_id) < 0 ||
+      if (H5Dclose(datasetid) < 0 ||
+          H5Pclose(fapl_id) < 0 ||
           H5Pclose(fcpl_id) < 0 ||
           H5Sclose(spaceid) < 0 ||
           H5Pclose(plistid) < 0 ||
@@ -86,29 +86,29 @@ main()
           H5Fclose(fileid) < 0)
          ERR;
 
-      /* /\* Now reopen the file and check the order. *\/ */
-      /* if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR; */
-      /* if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR; */
-      /* if ((fileid = H5Fopen(FILE_NAME, H5F_ACC_RDONLY, fapl_id)) < 0) ERR; */
-      /* if ((grpid = H5Gopen(fileid, "/")) < 0) ERR; */
+      /* Now reopen the file and check. */
+      if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR;
+      if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR;
+      if ((fileid = H5Fopen(FILE_NAME, H5F_ACC_RDONLY, fapl_id)) < 0) ERR;
+      if ((grpid = H5Gopen2(fileid, "/", H5P_DEFAULT)) < 0) ERR;
 
-      /* if ((datasetid = H5Dopen1(grpid, SIMPLE_VAR_NAME)) < 0) ERR; */
-      /* if ((spaceid = H5Dget_space(datasetid)) < 0) */
-      /* if (H5Sget_simple_extent_dims(spaceid, fdims, fmaxdims) > 0) ERR; */
-      /* if (H5Dread(datasetid, H5T_NATIVE_INT, H5S_ALL, */
-      /*   	  spaceid, H5P_DEFAULT, data_in) < 0) ERR; */
+      if ((datasetid = H5Dopen1(grpid, SIMPLE_VAR_NAME)) < 0) ERR;
+      if ((spaceid = H5Dget_space(datasetid)) < 0)
+      if (H5Sget_simple_extent_dims(spaceid, fdims, fmaxdims) > 0) ERR;
+      if (H5Dread(datasetid, H5T_NATIVE_INT, H5S_ALL,
+        	  spaceid, H5P_DEFAULT, data_in) < 0) ERR;
 
-      /* /\* Check the data. *\/ */
-      /* for (x = 0; x < NX; x++) */
-      /*    for (y = 0; y < NY; y++) */
-      /*       if (data_in[x][y] != data_out[x][y]) ERR_RET; */
+      /* Check the data. */
+      for (x = 0; x < NX; x++)
+         for (y = 0; y < NY; y++)
+            if (data_in[x][y] != data_out[x][y]) ERR;
 
-      /* if (H5Pclose(fapl_id) < 0 || */
-      /*     H5Dclose(datasetid) < 0 || */
-      /*     H5Sclose(spaceid) < 0 || */
-      /*     H5Gclose(grpid) < 0 || */
-      /*     H5Fclose(fileid) < 0) */
-      /*    ERR; */
+      if (H5Pclose(fapl_id) < 0 ||
+          H5Dclose(datasetid) < 0 ||
+          H5Sclose(spaceid) < 0 ||
+          H5Gclose(grpid) < 0 ||
+          H5Fclose(fileid) < 0)
+         ERR;
    }
    SUMMARIZE_ERR;
    FINAL_RESULTS;
