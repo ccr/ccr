@@ -84,6 +84,11 @@ if test "x$enable_fortran" = xyes; then
    AC_LANG_POP(Fortran)
 fi
 
+# Check for the main hdf5 and hdf5_hl library.
+AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([Can't find or link to the hdf5 library.])])
+AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
+                                  [AC_MSG_ERROR([Can't find or link to the hdf5 high-level library.])])
+
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
 
