@@ -52,22 +52,22 @@ main()
       if (H5Pset_link_creation_order(fcpl_id, H5P_CRT_ORDER_TRACKED|H5P_CRT_ORDER_INDEXED) < 0) ERR;
       if ((fileid = H5Fcreate(FILE_NAME, H5F_ACC_TRUNC, fcpl_id, fapl_id)) < 0) ERR;
 
-      /* if ((grpid = H5Gopen(fileid, "/")) < 0) ERR; */
+      if ((grpid = H5Gopen2(fileid, "/", H5P_DEFAULT)) < 0) ERR;
 
-      /* dimsize[0] = maxdimsize[0] = NX; */
-      /* dimsize[1] = maxdimsize[1] = NY; */
-      /* if ((spaceid = H5Screate_simple(NDIMS, dimsize, maxdimsize)) < 0) ERR; */
+      dimsize[0] = maxdimsize[0] = NX;
+      dimsize[1] = maxdimsize[1] = NY;
+      if ((spaceid = H5Screate_simple(NDIMS, dimsize, maxdimsize)) < 0) ERR;
 
-      /* /\* Create property lust. *\/ */
-      /* if ((plistid = H5Pcreate(H5P_DATASET_CREATE)) < 0) ERR; */
+      /* Create property lust. */
+      if ((plistid = H5Pcreate(H5P_DATASET_CREATE)) < 0) ERR;
 
-      /* /\* Set up chunksizes. *\/ */
-      /* chunksize[0] = NX; */
-      /* chunksize[1] = NY; */
-      /* if (H5Pset_chunk(plistid, NDIMS, chunksize) < 0)ERR; */
+      /* Set up chunksizes. */
+      chunksize[0] = NX;
+      chunksize[1] = NY;
+      if (H5Pset_chunk(plistid, NDIMS, chunksize) < 0)ERR;
 
-      /* /\* Set up compression. *\/ */
-      /* if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR; */
+      /* Set up compression. */
+      if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR;
 
       /* /\* Create the variable. *\/ */
       /* if ((datasetid = H5Dcreate(grpid, SIMPLE_VAR_NAME, H5T_NATIVE_INT, */
@@ -80,10 +80,11 @@ main()
       /* if (H5Dclose(datasetid) < 0) ERR; */
       if (H5Pclose(fapl_id) < 0 ||
           H5Pclose(fcpl_id) < 0 ||
+          H5Sclose(spaceid) < 0 ||
+          H5Pclose(plistid) < 0 ||
+          H5Gclose(grpid) < 0 ||
           H5Fclose(fileid) < 0)
          ERR;
-          /* H5Sclose(spaceid) < 0 || */
-          /* H5Gclose(grpid) < 0 || */
 
       /* /\* Now reopen the file and check the order. *\/ */
       /* if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR; */
