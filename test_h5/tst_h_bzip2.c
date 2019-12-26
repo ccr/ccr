@@ -69,15 +69,15 @@ main()
       /* Set up compression. */
       if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR;
 
-      /* /\* Create the variable. *\/ */
-      /* if ((datasetid = H5Dcreate(grpid, SIMPLE_VAR_NAME, H5T_NATIVE_INT, */
-      /*   			 spaceid, plistid)) < 0) ERR; */
+      /* Create the variable. */
+      if ((datasetid = H5Dcreate2(grpid, SIMPLE_VAR_NAME, H5T_NATIVE_INT,
+                                  spaceid, H5P_DEFAULT, plistid, H5P_DEFAULT)) < 0) ERR;
 
-      /* /\* Write the data. *\/ */
-      /* if (H5Dwrite(datasetid, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, */
-      /*   	   H5P_DEFAULT, data_out) < 0) ERR; */
+      /* Write the data. */
+      if (H5Dwrite(datasetid, H5T_NATIVE_INT, H5S_ALL, H5S_ALL,
+        	   H5P_DEFAULT, data_out) < 0) ERR;
 
-      /* if (H5Dclose(datasetid) < 0) ERR; */
+      if (H5Dclose(datasetid) < 0) ERR;
       if (H5Pclose(fapl_id) < 0 ||
           H5Pclose(fcpl_id) < 0 ||
           H5Sclose(spaceid) < 0 ||
