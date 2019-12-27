@@ -46,8 +46,8 @@ main()
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
       char plugin_path[MAX_LEN + 1];
-      if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
-      printf("plugin_path %s\n", plugin_path);
+      /* if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR; */
+      /* printf("plugin_path %s\n", plugin_path); */
 
       /* Create file, setting latest_format in access propertly list
        * and H5P_CRT_ORDER_TRACKED in the creation property list. */
