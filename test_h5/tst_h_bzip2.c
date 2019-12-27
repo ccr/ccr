@@ -14,6 +14,7 @@
 
 #define FILE_NAME "tst_h_bzip2.h5"
 #define STR_LEN 255
+#define MAX_LEN 1024
 
 int
 main()
@@ -37,12 +38,22 @@ main()
       int data_in[NX][NY], data_out[NX][NY];
       hsize_t fdims[NDIMS], fmaxdims[NDIMS];
       hsize_t chunksize[NDIMS], dimsize[NDIMS], maxdimsize[NDIMS];
+      const unsigned cd_values[1] = {9};          /* bzip2 default level is 9 */
       int x, y;
 
       /* Create some data to write. */
       for (x = 0; x < NX; x++)
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
+      char plugin_path[MAX_LEN + 1];
+      if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
+      printf("plugin_path %s\n", plugin_path);
+#define H5Z_FILTER_BZIP2 307
+      if (!H5Zfilter_avail(H5Z_FILTER_BZIP2))
+      {
+          printf ("bzip2 filter not available.\n");
+          return 0;
+      }
 
       /* Create file, setting latest_format in access propertly list
        * and H5P_CRT_ORDER_TRACKED in the creation property list. */
@@ -67,7 +78,9 @@ main()
       if (H5Pset_chunk(plistid, NDIMS, chunksize) < 0)ERR;
 
       /* Set up compression. */
-      if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR;
+      if (H5Pset_filter (plistid, (H5Z_filter_t)307, H5Z_FLAG_MANDATORY,
+                         (size_t)1, cd_values) < 0) ERR;
+      /* if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR; */
 
       /* Create the variable. */
       if ((datasetid = H5Dcreate2(grpid, SIMPLE_VAR_NAME, H5T_NATIVE_INT,
@@ -77,8 +90,8 @@ main()
       if (H5Dwrite(datasetid, H5T_NATIVE_INT, H5S_ALL, H5S_ALL,
         	   H5P_DEFAULT, data_out) < 0) ERR;
 
-      if (H5Dclose(datasetid) < 0) ERR;
-      if (H5Pclose(fapl_id) < 0 ||
+      if (H5Dclose(datasetid) < 0 ||
+          H5Pclose(fapl_id) < 0 ||
           H5Pclose(fcpl_id) < 0 ||
           H5Sclose(spaceid) < 0 ||
           H5Pclose(plistid) < 0 ||
@@ -86,29 +99,29 @@ main()
           H5Fclose(fileid) < 0)
          ERR;
 
-      /* /\* Now reopen the file and check the order. *\/ */
-      /* if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR; */
-      /* if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR; */
-      /* if ((fileid = H5Fopen(FILE_NAME, H5F_ACC_RDONLY, fapl_id)) < 0) ERR; */
-      /* if ((grpid = H5Gopen(fileid, "/")) < 0) ERR; */
+      /* Now reopen the file and check. */
+      if ((fapl_id = H5Pcreate(H5P_FILE_ACCESS)) < 0) ERR;
+      if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR;
+      if ((fileid = H5Fopen(FILE_NAME, H5F_ACC_RDONLY, fapl_id)) < 0) ERR;
+      if ((grpid = H5Gopen2(fileid, "/", H5P_DEFAULT)) < 0) ERR;
 
-      /* if ((datasetid = H5Dopen1(grpid, SIMPLE_VAR_NAME)) < 0) ERR; */
-      /* if ((spaceid = H5Dget_space(datasetid)) < 0) */
-      /* if (H5Sget_simple_extent_dims(spaceid, fdims, fmaxdims) > 0) ERR; */
-      /* if (H5Dread(datasetid, H5T_NATIVE_INT, H5S_ALL, */
-      /*   	  spaceid, H5P_DEFAULT, data_in) < 0) ERR; */
+      if ((datasetid = H5Dopen1(grpid, SIMPLE_VAR_NAME)) < 0) ERR;
+      if ((spaceid = H5Dget_space(datasetid)) < 0)
+      if (H5Sget_simple_extent_dims(spaceid, fdims, fmaxdims) > 0) ERR;
+      if (H5Dread(datasetid, H5T_NATIVE_INT, H5S_ALL,
+        	  spaceid, H5P_DEFAULT, data_in) < 0) ERR;
 
-      /* /\* Check the data. *\/ */
-      /* for (x = 0; x < NX; x++) */
-      /*    for (y = 0; y < NY; y++) */
-      /*       if (data_in[x][y] != data_out[x][y]) ERR_RET; */
+      /* Check the data. */
+      for (x = 0; x < NX; x++)
+         for (y = 0; y < NY; y++)
+            if (data_in[x][y] != data_out[x][y]) ERR;
 
-      /* if (H5Pclose(fapl_id) < 0 || */
-      /*     H5Dclose(datasetid) < 0 || */
-      /*     H5Sclose(spaceid) < 0 || */
-      /*     H5Gclose(grpid) < 0 || */
-      /*     H5Fclose(fileid) < 0) */
-      /*    ERR; */
+      if (H5Pclose(fapl_id) < 0 ||
+          H5Dclose(datasetid) < 0 ||
+          H5Sclose(spaceid) < 0 ||
+          H5Gclose(grpid) < 0 ||
+          H5Fclose(fileid) < 0)
+         ERR;
    }
    SUMMARIZE_ERR;
    FINAL_RESULTS;
