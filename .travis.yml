@@ -20,7 +20,8 @@ before_script:
   - export MY_DIR=`pwd`/local
   - wget https://github.com/live-clones/hdf5/archive/hdf5-1_10_6.tar.gz
   - tar zxf hdf5-1_10_6.tar.gz
-  - cd hdf5-1_10_6
+  - ls
+  - cd hdf5-1.10.6
   - ./configure --prefix=$MY_DIR
   - make install
 
