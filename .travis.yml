@@ -26,7 +26,10 @@ script:
   - export CPPFLAGS=-I/usr/include/hdf5/serial
   - autoreconf -i
   - ./configure
-  - make -j distcheck
-  - ls
+#  - make -j distcheck
+  - make
+  - cd test
+  - make tst_h_bzip2
+  - ./tst_h_bzip2
 
 
