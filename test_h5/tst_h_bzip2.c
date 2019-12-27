@@ -48,6 +48,12 @@ main()
       char plugin_path[MAX_LEN + 1];
       /* if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR; */
       /* printf("plugin_path %s\n", plugin_path); */
+#define H5Z_FILTER_BZIP2 307
+      if (!H5Zfilter_avail(H5Z_FILTER_BZIP2))
+      {
+          printf ("bzip2 filter not available.\n");
+          return 1;
+      }
 
       /* Create file, setting latest_format in access propertly list
        * and H5P_CRT_ORDER_TRACKED in the creation property list. */
