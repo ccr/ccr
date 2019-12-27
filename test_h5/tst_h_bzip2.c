@@ -14,6 +14,7 @@
 
 #define FILE_NAME "tst_h_bzip2.h5"
 #define STR_LEN 255
+#define MAX_LEN 1024
 
 int
 main()
@@ -37,12 +38,16 @@ main()
       int data_in[NX][NY], data_out[NX][NY];
       hsize_t fdims[NDIMS], fmaxdims[NDIMS];
       hsize_t chunksize[NDIMS], dimsize[NDIMS], maxdimsize[NDIMS];
+      const unsigned cd_values[1] = {9};          /* bzip2 default level is 9 */
       int x, y;
 
       /* Create some data to write. */
       for (x = 0; x < NX; x++)
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
+      char plugin_path[MAX_LEN + 1];
+      if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
+      /* printf("plugin_path %s\n", plugin_path); */
 
       /* Create file, setting latest_format in access propertly list
        * and H5P_CRT_ORDER_TRACKED in the creation property list. */
@@ -67,7 +72,9 @@ main()
       if (H5Pset_chunk(plistid, NDIMS, chunksize) < 0)ERR;
 
       /* Set up compression. */
-      if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR;
+      if (H5Pset_filter (plistid, (H5Z_filter_t)307, H5Z_FLAG_MANDATORY,
+                         (size_t)1, cd_values) < 0) ERR;
+      /* if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR; */
 
       /* Create the variable. */
       if ((datasetid = H5Dcreate2(grpid, SIMPLE_VAR_NAME, H5T_NATIVE_INT,
