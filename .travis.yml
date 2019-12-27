@@ -15,18 +15,17 @@ before_script:
   - pushd /usr/lib/x86_64-linux-gnu
   - sudo ln -s libhdf5_serial.so.100.0.1 libhdf5.so
   - sudo ln -s libhdf5_serial_hl.so.100.0.0 libhdf5_hl.so
-  - ls -l libhdf5*
+#  - ls -l libhdf5*
   - popd
 
 script:
   - pwd
 #  - ls /usr/include
-  - ls /usr/lib/x86_64-linux-gnu
+#  - ls /usr/lib/x86_64-linux-gnu
   - export FCFLAGS=-I/usr/include
   - export CPPFLAGS=-I/usr/include/hdf5/serial
   - autoreconf -i
   - ./configure
-  - cat config.log
   - make -j distcheck
   - ls
 
