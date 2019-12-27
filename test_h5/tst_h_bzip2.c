@@ -46,8 +46,8 @@ main()
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
       char plugin_path[MAX_LEN + 1];
-      /* if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR; */
-      /* printf("plugin_path %s\n", plugin_path); */
+      if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
+      printf("plugin_path %s\n", plugin_path);
 #define H5Z_FILTER_BZIP2 307
       if (!H5Zfilter_avail(H5Z_FILTER_BZIP2))
       {
