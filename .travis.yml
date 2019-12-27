@@ -28,7 +28,7 @@ script:
   - ./configure
 #  - make -j distcheck
   - make
-  - cd test
+  - cd test_h5
   - make tst_h_bzip2
   - ./tst_h_bzip2
 
