@@ -52,7 +52,7 @@ main()
       if (!H5Zfilter_avail(H5Z_FILTER_BZIP2))
       {
           printf ("bzip2 filter not available.\n");
-          return 1;
+          return 0;
       }
 
       /* Create file, setting latest_format in access propertly list
