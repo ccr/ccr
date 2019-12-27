@@ -7,23 +7,31 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget libhdf5-dev
+    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget #libhdf5-dev
 
 env:
 
 before_script:
-  - pushd /usr/lib/x86_64-linux-gnu
-  - sudo ln -s libhdf5_serial.so.100.0.1 libhdf5.so
-  - sudo ln -s libhdf5_serial_hl.so.100.0.0 libhdf5_hl.so
+#  - pushd /usr/lib/x86_64-linux-gnu
+#  - sudo ln -s libhdf5_serial.so.100.0.1 libhdf5.so
+#  - sudo ln -s libhdf5_serial_hl.so.100.0.0 libhdf5_hl.so
 #  - ls -l libhdf5*
-  - popd
+#  - popd
+  - export MY_DIR=`pwd`/local
+  - wget https://github.com/live-clones/hdf5/archive/hdf5-1_10_6.tar.gz
+  - tar zxf hdf5-1_10_6.tar.gz
+  - cd hdf5-1_10_6
+  - ./configure --prefix=$MY_DIR
+  - make install
 
 script:
   - pwd
 #  - ls /usr/include
 #  - ls /usr/lib/x86_64-linux-gnu
+  - export MY_DIR=`pwd`/local 
   - export FCFLAGS=-I/usr/include
-  - export CPPFLAGS=-I/usr/include/hdf5/serial
+  - export CPPFLAGS=-I${MY_DIR}/include
+  - export LDFLAGS=-L${MY_DIR}/lib
   - export HDF5_PLUGIN_PATH=`pwd`/hdf5_plugins/BZIP2/src
   - echo $HDF5_PLUGIN_PATH
   - autoreconf -i
