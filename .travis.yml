@@ -24,6 +24,7 @@ script:
 #  - ls /usr/lib/x86_64-linux-gnu
   - export FCFLAGS=-I/usr/include
   - export CPPFLAGS=-I/usr/include/hdf5/serial
+  - export HDF5_PLUGIN_PATH=`pwd`hdf5_plugins/BZIP2/src
   - autoreconf -i
   - ./configure
 #  - make -j distcheck
