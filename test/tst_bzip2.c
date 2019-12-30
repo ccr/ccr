@@ -17,7 +17,6 @@
 #define FILE_NAME "tst_bzip2.nc"
 #define STR_LEN 255
 #define MAX_LEN 1024
-#define H5Z_FILTER_BZIP2 307
 #define X_NAME "X"
 #define Y_NAME "Y"
 #define NDIM2 2
@@ -41,7 +40,7 @@ main()
         int dimid[NDIM2];
         int varid;
         int data_out[NX][NY];
-        const unsigned int cd_values[1] = {9};          /* bzip2 default level is 9 */
+        /* const unsigned int cd_values[1] = {9};          /\* bzip2 default level is 9 *\/ */
         int x, y;
 
         /* Create some data to write. */
@@ -49,7 +48,7 @@ main()
             for (y = 0; y < NY; y++)
                 data_out[x][y] = x * NY + y;
 
-        if (ccr_init()) ERR;
+        if (nc_initialize_ccr()) ERR;
 
         /* Create file. */
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
@@ -61,8 +60,13 @@ main()
         /* Create the variable. */
         if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
 
+        /* These won't work. */
+        if (nc_def_var_bzip2(ncid, varid, -9) != NC_EINVAL) ERR;
+        if (nc_def_var_bzip2(ncid, varid, 0) != NC_EINVAL) ERR;
+        if (nc_def_var_bzip2(ncid, varid, 10) != NC_EINVAL) ERR;
+
         /* Set up compression. */
-        if (nc_def_var_filter(ncid, varid, 307, 1, cd_values)) ERR;
+        if (nc_def_var_bzip2(ncid, varid, 9)) ERR;
 
         /* Write the data. */
         if (nc_put_var(ncid, varid, data_out)) ERR;

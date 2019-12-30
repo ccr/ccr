@@ -29,7 +29,8 @@ extern "C" {
 #endif
 
     /* Library prototypes... */
-    int ccr_init();
+    int nc_initialize_ccr();
+    int nc_def_var_bzip2(int ncid, int varid, int level);
 
 #if defined(__cplusplus)
 }
