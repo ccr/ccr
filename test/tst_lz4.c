@@ -41,7 +41,7 @@ main()
         int varid;
         int data_out[NX][NY];
         int x, y;
-        int level_in, bzip2;
+        int level_in, lz4;
 
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
@@ -61,26 +61,26 @@ main()
         if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
 
         /* These won't work. */
-        if (nc_def_var_bzip2(ncid, varid, -9) != NC_EINVAL) ERR;
-        if (nc_def_var_bzip2(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_bzip2(ncid, varid, 10) != NC_EINVAL) ERR;
+        if (nc_def_var_lz4(ncid, varid, -9) != NC_EINVAL) ERR;
+        if (nc_def_var_lz4(ncid, varid, 0) != NC_EINVAL) ERR;
+        if (nc_def_var_lz4(ncid, varid, 10) != NC_EINVAL) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
-        if (bzip2) ERR;
+        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
+        if (lz4) ERR;
 
         /* Set up compression. */
-        if (nc_def_var_bzip2(ncid, varid, 8)) ERR;
+        if (nc_def_var_lz4(ncid, varid, 8)) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
-        if (!bzip2 || level_in != 8) ERR;
+        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
+        if (!lz4 || level_in != 8) ERR;
         level_in = 0;
-        bzip2 = 1;
-        if (nc_inq_var_bzip2(ncid, varid, NULL, &level_in)) ERR;
-        if (nc_inq_var_bzip2(ncid, varid, &bzip2, NULL)) ERR;
-        if (!bzip2 || level_in != 8) ERR;
-        if (nc_inq_var_bzip2(ncid, varid, NULL, NULL)) ERR;
+        lz4 = 1;
+        if (nc_inq_var_lz4(ncid, varid, NULL, &level_in)) ERR;
+        if (nc_inq_var_lz4(ncid, varid, &lz4, NULL)) ERR;
+        if (!lz4 || level_in != 8) ERR;
+        if (nc_inq_var_lz4(ncid, varid, NULL, NULL)) ERR;
 
         /* Write the data. */
         if (nc_put_var(ncid, varid, data_out)) ERR;
@@ -95,8 +95,8 @@ main()
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
             /* Check setting. */
-            if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
-            if (!bzip2 || level_in != 8) ERR;
+            if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
+            if (!lz4 || level_in != 8) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;

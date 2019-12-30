@@ -32,6 +32,8 @@ extern "C" {
     int nc_initialize_ccr();
     int nc_def_var_bzip2(int ncid, int varid, int level);
     int nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp);
+    int nc_def_var_lz4(int ncid, int varid, int level);
+    int nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp);
 
 #if defined(__cplusplus)
 }
