@@ -1,24 +1,7 @@
-#
-# Copyright by The HDF Group.
-# All rights reserved.
-#
-##
-## Makefile.am
-## Run automake to generate a Makefile.in from this file.
-##
-#
-# HDF5 BZIP2 Library Plugin makefile(.in)
-#
 
-# Shell commands used in Makefiles
-# RM=rm -f
-# CP=cp
-
-# MAJOR = 0
-# MINOR = 1
-# VERSION = $(MAJOR).$(MINOR)
 
 AM_CPPFLAGS = -I$(HDF5_ROOT)/include -I$(BZ2_ROOT)/include
+plugindir = /usr/local/hdf5/lib/plugin
 
 # The libh5bz2 library for plugin module.
 # Build it as shared library.
