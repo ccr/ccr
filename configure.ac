@@ -89,6 +89,7 @@ AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([Can't find or link
 AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
                                   [AC_MSG_ERROR([Can't find or link to the hdf5 high-level library.])])
 
+
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
 
@@ -97,6 +98,7 @@ AC_CONFIG_FILES([Makefile
 	src/Makefile
 	include/Makefile
 	test_h5/Makefile
+	test/Makefile
 	docs/Makefile
         ])
 AC_OUTPUT()
