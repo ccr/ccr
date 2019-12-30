@@ -45,6 +45,8 @@ nc_initialize_ccr()
 /**
  * Turn on bzip2 compression for a variable.
  *
+ * @param ncid File ID.
+ * @param varid Variable ID.
  * @param level From 1 to 9. Set the block size to 100k, 200k ... 900k
  * when compressing. (bzip2 default level is 9).
  *
@@ -69,6 +71,56 @@ nc_def_var_bzip2(int ncid, int varid, int level)
     /* Set up the bzip2 filter for this var. */
     if ((ret = nc_def_var_filter(ncid, varid, BZIP2_ID, 1, &cd_value)))
         return ret;
+
+    return 0;
+}
+
+/**
+ * Learn whether bzip2 compression is on for a variable, and, if so,
+ * the level setting.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param bzip2p Pointer that gets a 0 if bzip2 is not in use for this
+ * var, and a 1 if it is. Ignored if NULL.
+ * @param levelp Pointer that gets the level setting (from 1 to 9), if
+ * bzlip2 is in use. Ignored if NULL.
+ *
+ * @return 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
+{
+    unsigned int level;
+    unsigned int id;
+    size_t nparams;
+    int bzip2 = 0; /* Is bzip2 in use? */
+    int ret;
+
+    /* Get filter information. */
+    if ((ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level)))
+        return ret;
+
+    /* Is bzip2 in use? */
+    if (id == BZIP2_ID)
+        bzip2++;
+
+    /* Does caller want to know if bzip2 is in use? */
+    if (bzip2p)
+        *bzip2p = bzip2;
+
+    /* If bzip2 is in use, check parameter. */
+    if (bzip2)
+    {
+        /* For bzip2, there is one parameter. */
+        if (nparams != 1)
+            return NC_EFILTER;
+
+        /* Tell the caller, if they want to know. */
+        if (levelp)
+            *levelp = level;
+    }
 
     return 0;
 }
