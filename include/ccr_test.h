@@ -8,6 +8,7 @@
 #ifndef _CCR_TEST_H
 #define _CCR_TEST_H
 
+#include "ccr.h"
 #include <assert.h>
 
 /* Err is used to keep track of errors within each set of tests,
