@@ -98,6 +98,7 @@ AC_CONFIG_FILES([Makefile
 	src/Makefile
 	include/Makefile
 	test_h5/Makefile
+	test/Makefile
 	docs/Makefile
         ])
 AC_OUTPUT()

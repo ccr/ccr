@@ -17,6 +17,6 @@ endif
 # FTEST = ftest
 # endif
 
-SUBDIRS = hdf5_plugins include src test_h5 ${DOCS}
+SUBDIRS = hdf5_plugins include src test_h5 test ${DOCS}
 
 EXTRA_DIST = LICENSE README.md
