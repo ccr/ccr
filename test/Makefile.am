@@ -6,8 +6,8 @@
 # Find the header files.
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-AM_LDFLAGS = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
-LDADD = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
+AM_LDFLAGS = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+LDADD = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 
 # Build the test.
 check_PROGRAMS = tst_bzip2
