@@ -8,6 +8,7 @@
    either.
 */
 
+#include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
@@ -30,10 +31,6 @@
 #define DEFLATE_LEVEL 3
 #define SIMPLE_VAR_NAME "data"
 
-size_t H5Z_filter_bzip2(unsigned int flags, size_t cd_nelmts,
-                        const unsigned int cd_values[], size_t nbytes,
-                        size_t *buf_size, void **buf);
-
 int
 main()
 {
@@ -46,33 +43,13 @@ main()
         int data_out[NX][NY];
         const unsigned int cd_values[1] = {9};          /* bzip2 default level is 9 */
         int x, y;
-        const H5Z_class2_t H5Z_BZIP2[1] = {{
-                H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-                (H5Z_filter_t)H5Z_FILTER_BZIP2,         /* Filter id number             */
-                1,              /* encoder_present flag (set to true) */
-                1,              /* decoder_present flag (set to true) */
-                "bzip2",                  /* Filter name for debugging    */
-                NULL,                       /* The "can apply" callback     */
-                NULL,                       /* The "set local" callback     */
-                (H5Z_func_t)H5Z_filter_bzip2,         /* The actual filter function   */
-            }};
-        char plugin_path[MAX_LEN + 1];
 
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
             for (y = 0; y < NY; y++)
                 data_out[x][y] = x * NY + y;
 
-        if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
-        printf("plugin_path %s\n", plugin_path);
-
-        if (H5Zregister(H5Z_BZIP2) < 0) ERR;
-
-        if (!H5Zfilter_avail(H5Z_FILTER_BZIP2))
-        {
-            printf ("bzip2 filter not available.\n");
-            return 1;
-        }
+        if (ccr_init()) ERR;
 
         /* Create file. */
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
@@ -80,10 +57,6 @@ main()
         /* Create dims. */
         if (nc_def_dim(ncid, X_NAME, NX, &dimid[0]));
         if (nc_def_dim(ncid, Y_NAME, NY, &dimid[0]));
-
-        /* if (H5Pset_filter (plistid, (H5Z_filter_t)307, H5Z_FLAG_MANDATORY, */
-        /*                    (size_t)1, cd_values) < 0) ERR; */
-        /* /\* if (H5Pset_deflate(plistid, DEFLATE_LEVEL) < 0) ERR; *\/ */
 
         /* Create the variable. */
         if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;

@@ -29,6 +29,7 @@ extern "C" {
 #endif
 
     /* Library prototypes... */
+    int ccr_init();
 
 #if defined(__cplusplus)
 }
