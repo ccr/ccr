@@ -1,11 +1,10 @@
-/* This is part of the netCDF package. Copyright 2018 University
-   Corporation for Atmospheric Research/Unidata See COPYRIGHT file for
-   conditions of use.
-
-   Test HDF5 dataset code, even more. These are not intended to be
-   exhaustive tests, but they use HDF5 the same way that netCDF-4
-   does, so if these tests don't work, than netCDF-4 won't work
-   either.
+/*
+ * This is a test in the Community Codex Repository.
+ *
+ * This test checks the LZ4 filter.
+ *
+ * Ed Hartnett
+ * 12/30/19
 */
 
 #include "ccr_test.h"

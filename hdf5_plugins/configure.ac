@@ -26,6 +26,7 @@ LT_INIT()
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([BZIP2])
+AC_CONFIG_SUBDIRS([LZ4])
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
