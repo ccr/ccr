@@ -12,8 +12,8 @@ check_PROGRAMS = tst_h_bzip2 tst_h_lz4
 # Each test must link to the filter it needs.
 tst_h_bzip2_AM_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 tst_h_bzip2_LDADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
-tst_h_lz4_AM_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
-tst_h_lz4_LDADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
+tst_h_lz4_AM_LDFLAGS = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+tst_h_lz4_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 
 # Run the tests.
 TESTS = tst_h_bzip2 tst_h_lz4

@@ -48,9 +48,9 @@
 #include "H5PLextern.h"
 #include "lz4.h"
 
-static size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
-        const unsigned int cd_values[], size_t nbytes,
-        size_t *buf_size, void **buf);
+size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
+                      const unsigned int cd_values[], size_t nbytes,
+                      size_t *buf_size, void **buf);
 
 #define H5Z_FILTER_LZ4 32004
 
@@ -86,7 +86,7 @@ const H5Z_class2_t H5Z_LZ4[1] = {{
 H5PL_type_t   H5PLget_plugin_type(void) {return H5PL_TYPE_FILTER;}
 const void *H5PLget_plugin_info(void) {return H5Z_LZ4;}
 
-static size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
+size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
         const unsigned int cd_values[], size_t nbytes,
         size_t *buf_size, void **buf)
 {
