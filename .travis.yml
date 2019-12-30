@@ -45,6 +45,5 @@ script:
   - ./tst_h_bzip2
   - ls -l
   - ncdump -s -h tst_h_bzip2.h5
-  - ./tst_h_bzip2
 
 
