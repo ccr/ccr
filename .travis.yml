@@ -44,7 +44,7 @@ script:
   - make tst_h_bzip2
   - ./tst_h_bzip2
   - ls -l
-  - ncdump -s tst_h_bzip2.h5
+  - ncdump -s -h tst_h_bzip2.h5
   - ./tst_h_bzip2
 
 
