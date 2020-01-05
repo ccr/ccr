@@ -23,10 +23,10 @@ AC_CONFIG_MACRO_DIR([m4])
 LT_PREREQ([2.4])
 LT_INIT()
 
-
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([BZIP2])
 AC_CONFIG_SUBDIRS([LZ4])
+AC_CONFIG_SUBDIRS([BITGROOM])
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
