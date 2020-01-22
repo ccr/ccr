@@ -6,14 +6,7 @@
 AC_PREREQ([2.59])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.0-development], [])
-
-# Find out about the host we're building on.
-AC_CANONICAL_HOST
-AC_CANONICAL_BUILD
-
-# Find out about the target we're building for.
-AC_CANONICAL_TARGET
+AC_INIT([ccr], [1.0], [])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
