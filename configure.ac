@@ -6,7 +6,7 @@
 AC_PREREQ([2.59])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.0], [])
+AC_INIT([ccr], [1.1-development], [])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -89,8 +89,10 @@ AC_CONFIG_SUBDIRS([hdf5_plugins])
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
 	src/Makefile
+        fsrc/Makefile
 	include/Makefile
 	test_h5/Makefile
+	ftest/Makefile
 	test/Makefile
 	docs/Makefile
         ])
