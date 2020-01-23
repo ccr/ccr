@@ -4,13 +4,11 @@
 
 module ccr
 
-  ! interface
-  !    function glm_read_dims(ncid, nevent, ngroup, nflash) bind(c)
-  !      use iso_c_binding
-  !      integer(C_INT), value :: ncid
-  !      integer(C_SIZE_T), intent(INOUT) :: nevent, ngroup, nflash
-  !    end function glm_read_dims
-  ! end interface
+  interface
+     function nc_initialize_ccr() bind(c)
+       use iso_c_binding
+     end function nc_initialize_ccr
+  end interface
 
   ! interface
   !    function glm_read_event_arrays(ncid, nevent, event_id, time_offset, &
@@ -43,7 +41,7 @@ module ccr
   !    end function glm_read_group_arrays
   ! end interface
 
-  ! contains
+  contains
   !   function fglm_read_dims(ncid, nevent, ngroup, nflash) result(status)
   !     use iso_c_binding
   !     implicit none
@@ -58,4 +56,11 @@ module ccr
   !     ngroup = ngroup8
   !     nflash = nflash8
   !   end function fglm_read_dims
+    function nf_initialize_ccr() result(status)
+      use iso_c_binding
+      implicit none
+      integer :: status
+      integer(C_INT) :: cstatus
+      status = nc_initialize_ccr()
+    end function nf_initialize_ccr
 end module ccr
