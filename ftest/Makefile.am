@@ -34,4 +34,4 @@ TESTS = ${GLM_FTESTS}
 # TESTS = tst_bzip2 tst_lz4
 
 # Delete files created in testing.
-CLEANFILES = tst_*.nc
+CLEANFILES = ftst_*.nc
