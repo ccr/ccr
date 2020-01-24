@@ -85,7 +85,7 @@ program ftst_ccr_bzip2
   end do
 
   ! Initialize the CCR.
-  call check( nf_initialize_ccr() )
+  call check( nf90_initialize_ccr() )
 
   ! Create the file.
   call check( nf90_create(FILE_NAME, NF90_NETCDF4, ncid) )

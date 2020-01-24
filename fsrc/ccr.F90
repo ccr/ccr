@@ -56,11 +56,11 @@ module ccr
   !     ngroup = ngroup8
   !     nflash = nflash8
   !   end function fglm_read_dims
-    function nf_initialize_ccr() result(status)
+    function nf90_initialize_ccr() result(status)
       use iso_c_binding
       implicit none
       integer :: status
       integer(C_INT) :: cstatus
       status = nc_initialize_ccr()
-    end function nf_initialize_ccr
+    end function nf90_initialize_ccr
 end module ccr
