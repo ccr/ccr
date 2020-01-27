@@ -1,19 +1,48 @@
-/* This is the code file for the Community Codex Repository library for netCDF.
+/**
+ * @file
+ * This is the code file for the Community Codex Repository library
+ * for netCDF.
  *
- * Ed Hartnett
- * 12/30/19
+ * @author Ed Hartnett
+ * @date 12/30/19
+ */
+
+/**
+ * @mainpage CCR
+ *
+ * The Community Codec Repository supports compression (and other)
+ * filters for netCDF/HDF5 files which are not natively supported by
+ * the netCDF C library.
+ *
+ * Initialization
+ *
+ * nc_initialize_ccr()
+ *
+ * BZIP2
+ *
+ * nc_def_var_bzip2()
+ * nc_inq_var_bzip2()
+ *
+ * LZ4
+ *
+ * nc_def_var_lz4()
+ * nc_inq_var_lz4()
+ *
  */
 
 #include "ccr.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
+/** The HDF5 ID for the BZIP2 filter. */
 #define H5Z_FILTER_BZIP2 307
 
+/** Filter function for bzip2. */
 size_t H5Z_filter_bzip2(unsigned int flags, size_t cd_nelmts,
                         const unsigned int cd_values[], size_t nbytes,
                         size_t *buf_size, void **buf);
 
+/** Filter function for LZ4. */
 size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
                       const unsigned int cd_values[], size_t nbytes,
                       size_t *buf_size, void **buf);
