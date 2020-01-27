@@ -13,8 +13,7 @@ program ftst_ccr_bzip2
   character (len = *), parameter :: FILE_NAME = "ftst_ccr_bzip2.nc"
   integer :: ncid
 
-  ! We are writing 4D data, a 12 x 6 x 2 lon-lat-lvl grid, with 2
-  ! timesteps of data.
+  ! We are writing 4D data.
   integer, parameter :: NDIMS = 4, NRECS = 2
   integer, parameter :: NLVLS = 20, NLATS = 60, NLONS = 120
   character (len = *), parameter :: LVL_NAME = "level"
@@ -31,6 +30,7 @@ program ftst_ccr_bzip2
   real :: lats(NLATS), lons(NLONS)
   integer :: lon_varid, lat_varid
   integer, parameter :: COMPRESSION_LEVEL = 3
+  integer :: bzip2p, levelp
 
   ! We will create two netCDF variables, one each for temperature and
   ! pressure fields.
@@ -38,13 +38,6 @@ program ftst_ccr_bzip2
   character (len = *), parameter :: TEMP_NAME="temperature"
   integer :: pres_varid, temp_varid
   integer :: dimids(NDIMS)
-
-  ! We recommend that each variable carry a "units" attribute.
-  character (len = *), parameter :: UNITS = "units"
-  character (len = *), parameter :: PRES_UNITS = "hPa"
-  character (len = *), parameter :: TEMP_UNITS = "celsius"
-  character (len = *), parameter :: LAT_UNITS = "degrees_north"
-  character (len = *), parameter :: LON_UNITS = "degrees_east"
 
   ! Program variables to hold the data we will write out. We will only
   ! need enough space to hold one timestep of data; one record.
@@ -60,20 +53,18 @@ program ftst_ccr_bzip2
   ! Loop indices
   integer :: lvl, lat, lon, rec, i
 
+  ! Program variables to hold the data we will read in. We will only
+  ! need enough space to hold one timestep of data; one record.
+  ! Allocate memory for data.
+  real, dimension(:,:,:), allocatable :: pres_in
+  real, dimension(:,:,:), allocatable :: temp_in
+
   print *, '*** Testing CCR Fortran library...'
 
   ! Allocate memory.
   allocate(pres_out(NLONS, NLATS, NLVLS))
   allocate(temp_out(NLONS, NLATS, NLVLS))
 
-  ! Create pretend data. If this were not an example program, we would
-  ! have some real data to write, for example, model output.
-  do lat = 1, NLATS
-     lats(lat) = START_LAT + (lat - 1) * 1.0
-  end do
-  do lon = 1, NLONS
-     lons(lon) = START_LON + (lon - 1) * 1.0
-  end do
   i = 0
   do lvl = 1, NLVLS
      do lat = 1, NLATS
@@ -91,62 +82,35 @@ program ftst_ccr_bzip2
   ! Create the file.
   call check( nf90_create(FILE_NAME, NF90_NETCDF4, ncid) )
 
-  ! Define the dimensions. The record dimension is defined to have
-  ! unlimited length - it can grow as needed. In this example it is
-  ! the time dimension.
+  ! Define the dimensions.
   call check( nf90_def_dim(ncid, LVL_NAME, NLVLS, lvl_dimid) )
   call check( nf90_def_dim(ncid, LAT_NAME, NLATS, lat_dimid) )
   call check( nf90_def_dim(ncid, LON_NAME, NLONS, lon_dimid) )
   call check( nf90_def_dim(ncid, REC_NAME, NF90_UNLIMITED, rec_dimid) )
 
-  ! Define the coordinate variables. We will only define coordinate
-  ! variables for lat and lon.  Ordinarily we would need to provide
-  ! an array of dimension IDs for each variable's dimensions, but
-  ! since coordinate variables only have one dimension, we can
-  ! simply provide the address of that dimension ID (lat_dimid) and
-  ! similarly for (lon_dimid).
-  call check( nf90_def_var(ncid, LAT_NAME, NF90_REAL, lat_dimid, lat_varid) )
-  call check( nf90_def_var(ncid, LON_NAME, NF90_REAL, lon_dimid, lon_varid) )
-
-  ! Assign units attributes to coordinate variables.
-  call check( nf90_put_att(ncid, lat_varid, UNITS, LAT_UNITS) )
-  call check( nf90_put_att(ncid, lon_varid, UNITS, LON_UNITS) )
-
-  ! The dimids array is used to pass the dimids of the dimensions of
-  ! the netCDF variables. Both of the netCDF variables we are creating
-  ! share the same four dimensions. In Fortran, the unlimited
-  ! dimension must come last on the list of dimids.
-  dimids = (/ lon_dimid, lat_dimid, lvl_dimid, rec_dimid /)
-
   ! Define the netCDF variables for the pressure and temperature data.
-  !call nf_set_log_level(3)
+  dimids = (/ lon_dimid, lat_dimid, lvl_dimid, rec_dimid /)
   call check( nf90_def_var(ncid, PRES_NAME, NF90_REAL, dimids, pres_varid) )
   call check( nf90_def_var_bzip2(ncid, pres_varid, COMPRESSION_LEVEL) )
   call check( nf90_def_var(ncid, TEMP_NAME, NF90_REAL, dimids, temp_varid) )
   call check( nf90_def_var_bzip2(ncid, temp_varid, COMPRESSION_LEVEL) )
 
-  ! Assign units attributes to the netCDF variables.
-  call check( nf90_put_att(ncid, pres_varid, UNITS, PRES_UNITS) )
-  call check( nf90_put_att(ncid, temp_varid, UNITS, TEMP_UNITS) )
+  ! Check the compression settings.
+  call check( nf90_inq_var_bzip2(ncid, pres_varid, bzip2p, levelp) )
+  if (levelp .ne. COMPRESSION_LEVEL) stop 2
+  if (bzip2p .ne. 1) stop 2
+  levelp = 0
+  bzip2p = 0
+  call check( nf90_inq_var_bzip2(ncid, temp_varid, bzip2p, levelp) )
+  if (levelp .ne. COMPRESSION_LEVEL) stop 2
+  if (bzip2p .ne. 1) stop 2
 
   ! End define mode.
   call check( nf90_enddef(ncid) )
 
-  ! Write the coordinate variable data. This will put the latitudes
-  ! and longitudes of our data grid into the netCDF file.
-  call check( nf90_put_var(ncid, lat_varid, lats) )
-  call check( nf90_put_var(ncid, lon_varid, lons) )
-
-  ! These settings tell netcdf to write one timestep of data. (The
-  ! setting of start(4) inside the loop below tells netCDF which
-  ! timestep to write.)
+  ! Write the pretend data.
   count = (/ NLONS, NLATS, NLVLS, 1 /)
   start = (/ 1, 1, 1, 1 /)
-
-  ! Write the pretend data. This will write our surface pressure and
-  ! surface temperature data. The arrays only hold one timestep worth
-  ! of data. We will just rewrite the same data for each timestep. In
-  ! a real :: application, the data would change between timesteps.
   do rec = 1, NRECS
      start(4) = rec
      call check( nf90_put_var(ncid, pres_varid, pres_out, start = start, &
@@ -155,9 +119,55 @@ program ftst_ccr_bzip2
                               count = count) )
   end do
 
-  ! Close the file. This causes netCDF to flush all buffers and make
-  ! sure your data are really written to disk.
+  ! Close the file.
   call check( nf90_close(ncid) )
+
+  ! Allocate memory.
+  allocate(pres_in(NLONS, NLATS, NLVLS))
+  allocate(temp_in(NLONS, NLATS, NLVLS))
+
+  ! Re-open the file.
+  call check( nf90_open(FILE_NAME, nf90_nowrite, ncid) )
+
+  ! Get the varids of the pressure and temperature netCDF variables.
+  call check( nf90_inq_varid(ncid, PRES_NAME, pres_varid) )
+  call check( nf90_inq_varid(ncid, TEMP_NAME, temp_varid) )
+
+  ! Check the compression settings.
+  call check( nf90_inq_var_bzip2(ncid, pres_varid, bzip2p, levelp) )
+  if (levelp .ne. COMPRESSION_LEVEL) stop 2
+  if (bzip2p .ne. 1) stop 2
+  levelp = 0
+  bzip2p = 0
+  call check( nf90_inq_var_bzip2(ncid, temp_varid, bzip2p, levelp) )
+  if (levelp .ne. COMPRESSION_LEVEL) stop 2
+  if (bzip2p .ne. 1) stop 2
+
+  ! Read the data and check it.
+  count = (/ NLONS, NLATS, NLVLS, 1 /)
+  start = (/ 1, 1, 1, 1 /)
+  do rec = 1, NRECS
+     start(4) = rec
+     call check( nf90_get_var(ncid, pres_varid, pres_in, start = start, &
+                              count = count) )
+     call check( nf90_get_var(ncid, temp_varid, temp_in, start, count) )
+
+     i = 0
+     do lvl = 1, NLVLS
+        do lat = 1, NLATS
+           do lon = 1, NLONS
+              if (pres_in(lon, lat, lvl) /= SAMPLE_PRESSURE + i) stop 2
+              if (temp_in(lon, lat, lvl) /= SAMPLE_TEMP + i) stop 2
+              i = i + 1
+           end do
+        end do
+     end do
+     ! next record
+  end do
+
+  ! Close the file.
+  call check( nf90_close(ncid) )
+
   print *, '*** SUCCESS!!'
 
 contains
