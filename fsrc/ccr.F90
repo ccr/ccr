@@ -32,6 +32,14 @@ module ccr
      end function nc_def_var_lz4
   end interface
 
+  interface
+     function nc_inq_var_lz4(ncid, varid, lz4p, levelp) bind(c)
+       use iso_c_binding
+       integer(C_INT), value :: ncid, varid
+       integer(C_INT), intent(inout):: lz4p, levelp
+     end function nc_inq_var_lz4
+  end interface
+
   contains
     function nf90_initialize_ccr() result(status)
       use iso_c_binding
@@ -71,5 +79,16 @@ module ccr
       ! C varids start at 0, fortran at 1.
       status = nc_def_var_lz4(ncid, varid - 1, level)
     end function nf90_def_var_lz4
+
+    function nf90_inq_var_lz4(ncid, varid, lz4p, levelp) result(status)
+      use iso_c_binding
+      implicit none
+      integer, intent(in) :: ncid, varid
+      integer, intent(inout) :: lz4p, levelp
+      integer :: status
+
+      ! C varids start at 0, fortran at 1.
+      status = nc_inq_var_lz4(ncid, varid - 1, lz4p, levelp)
+    end function nf90_inq_var_lz4
 
 end module ccr
