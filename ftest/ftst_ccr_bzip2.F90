@@ -30,6 +30,7 @@ program ftst_ccr_bzip2
   ! These program variables hold the latitudes and longitudes.
   real :: lats(NLATS), lons(NLONS)
   integer :: lon_varid, lat_varid
+  integer, parameter :: COMPRESSION_LEVEL = 3
 
   ! We will create two netCDF variables, one each for temperature and
   ! pressure fields.
@@ -118,8 +119,11 @@ program ftst_ccr_bzip2
   dimids = (/ lon_dimid, lat_dimid, lvl_dimid, rec_dimid /)
 
   ! Define the netCDF variables for the pressure and temperature data.
+  !call nf_set_log_level(3)
   call check( nf90_def_var(ncid, PRES_NAME, NF90_REAL, dimids, pres_varid) )
+  call check( nf90_def_var_bzip2(ncid, pres_varid, COMPRESSION_LEVEL) )
   call check( nf90_def_var(ncid, TEMP_NAME, NF90_REAL, dimids, temp_varid) )
+  call check( nf90_def_var_bzip2(ncid, temp_varid, COMPRESSION_LEVEL) )
 
   ! Assign units attributes to the netCDF variables.
   call check( nf90_put_att(ncid, pres_varid, UNITS, PRES_UNITS) )
