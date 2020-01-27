@@ -20,4 +20,3 @@ libh5bz2_la_LDFLAGS = -version-info 0:0:0
 # Build it as shared library.
 plugin_LTLIBRARIES = libh5bz2.la
 libh5bz2_la_SOURCES = H5Zbzip2.c
-
