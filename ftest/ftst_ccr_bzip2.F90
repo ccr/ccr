@@ -15,7 +15,7 @@ program ftst_ccr_bzip2
 
   ! We are writing 4D data.
   integer, parameter :: NDIMS = 4, NRECS = 2
-  integer, parameter :: NLVLS = 20, NLATS = 60, NLONS = 120
+  integer, parameter :: NLVLS = 20, NLATS = 300, NLONS = 600
   character (len = *), parameter :: LVL_NAME = "level"
   character (len = *), parameter :: LAT_NAME = "latitude"
   character (len = *), parameter :: LON_NAME = "longitude"
