@@ -20,14 +20,13 @@
  *
  * BZIP2
  *
- * nc_def_var_bzip2()
- * nc_inq_var_bzip2()
+ * - nc_def_var_bzip2()
+ * - nc_inq_var_bzip2()
  *
  * LZ4
  *
- * nc_def_var_lz4()
- * nc_inq_var_lz4()
- *
+ * - nc_def_var_lz4()
+ * - nc_inq_var_lz4()
  */
 
 #include "ccr.h"
