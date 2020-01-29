@@ -1,9 +1,9 @@
-! @file
-!
-! This is the Fortran wrapper for the CCR library.
-!
-! @author Ed Hartnett
-! @date 1/25/20
+!> @file
+!!
+!! This is the Fortran wrapper for the CCR library.
+!!
+!! @author Ed Hartnett
+!! @date 1/25/20
 
 module ccr
 
