@@ -16,17 +16,31 @@
  *
  * Initialization
  *
+ * In C:
  * nc_initialize_ccr()
+ *
+ * In Fortran:
+ * nf90_initialize_ccr()
  *
  * BZIP2
  *
+ * In C:
  * - nc_def_var_bzip2()
  * - nc_inq_var_bzip2()
  *
+ * In Fortran:
+ * - nf90_def_var_bzip2()
+ * - nf90_inq_var_bzip2()
+ *
  * LZ4
  *
+ * In C:
  * - nc_def_var_lz4()
  * - nc_inq_var_lz4()
+ *
+ * In Fortran:
+ * - nf90_def_var_lz4()
+ * - nf90_inq_var_lz4()
  */
 
 #include "ccr.h"
