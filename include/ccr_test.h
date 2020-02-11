@@ -8,8 +8,10 @@
 #ifndef _CCR_TEST_H
 #define _CCR_TEST_H
 
+/* #include "config.h" */
 #include "ccr.h"
 #include <assert.h>
+#include <stdlib.h>
 
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
