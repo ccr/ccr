@@ -8,6 +8,7 @@
 #ifndef _CCR_TEST_H
 #define _CCR_TEST_H
 
+/* #include "config.h" */
 #include "ccr.h"
 #include <assert.h>
 #include <stdlib.h>

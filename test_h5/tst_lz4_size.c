@@ -4,6 +4,7 @@
  * This is a test for the LZ4 filter.
  */
 
+#include "ccr_test.h"
 #include "hdf5.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,10 @@
 #define NFILE 2
 #define MAX_NAME 80
 
+size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
+                      const unsigned int cd_values[], size_t nbytes,
+                      size_t *buf_size, void **buf);
+
 int
 main (void)
 {
@@ -33,6 +38,16 @@ main (void)
     unsigned int values_out[NPARAM];
     int wdata[DIM0][DIM1], rdata[DIM0][DIM1];
     hsize_t f, i, j;
+    const H5Z_class2_t H5Z_LZ4[1] = {{
+            H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
+            (H5Z_filter_t)LZ4_ID,         /* Filter id number             */
+            1,              /* encoder_present flag (set to true) */
+            1,              /* decoder_present flag (set to true) */
+            "lz4",                  /* Filter name for debugging    */
+            NULL,                       /* The "can apply" callback     */
+            NULL,                       /* The "set local" callback     */
+            (H5Z_func_t)H5Z_filter_lz4,         /* The actual filter function   */
+        }};
     int ret_value = 1;
 
     /* Initialize data. */
@@ -41,6 +56,8 @@ main (void)
             wdata[i][j] = i * j - j;
 
     printf("\n *** Testing LZ4 compression filter...\n");
+
+    if (H5Zregister(H5Z_LZ4) < 0) ERR;
 
     for (f = 0; f < NFILE; f++)
     {
@@ -183,6 +200,9 @@ done:
     if (dset_id >= 0) H5Dclose (dset_id);
     if (space_id >= 0) H5Sclose (space_id);
     if (file_id >= 0) H5Fclose (file_id);
+
+    SUMMARIZE_ERR;
+    FINAL_RESULTS;
 
     return ret_value;
 }
