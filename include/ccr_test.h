@@ -10,6 +10,7 @@
 
 #include "ccr.h"
 #include <assert.h>
+#include <stdlib.h>
 
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
