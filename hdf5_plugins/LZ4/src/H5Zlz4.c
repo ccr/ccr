@@ -134,7 +134,17 @@ size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
             else /* do the decompression */
             {
 #if LZ4_VERSION_NUMBER > 10300
-                int compressedBytes = LZ4_decompress_fast(rpos, roBuf, blockSize);
+	      /* 20200906 csz++
+	       LZ4_decompress_fast() is now deprecated in favor of LZ4_decompress_safe()
+	       LZ4LIB_API int LZ4_decompress_safe (const char* src, char* dst, int compressedSize, int dstCapacity);
+	       LZ4LIB_API int LZ4_decompress_fast (const char* src, char* dst, int originalSize);
+	       Examining prototypes shows blockSize == originalSize
+	       Need arguments for compressedSize and dstCapacity:
+	       compressedSize is the exact complete size of the compressed block.
+	       dstCapacity is the size of destination buffer (which must be already allocated), presumed an upper bound of decompressed size 
+	       20200906 csz-- */ 
+	      //int compressedBytes = LZ4_decompress_fast(rpos, roBuf, blockSize);
+	      int compressedBytes = LZ4_decompress_safe(rpos, roBuf, blockSize, compressedBlockSize);
 #else
                 int compressedBytes = LZ4_uncompress(rpos, roBuf, blockSize);
 #endif
