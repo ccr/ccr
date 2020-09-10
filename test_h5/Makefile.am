@@ -7,16 +7,18 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
 # Build the tests.
-check_PROGRAMS = tst_h_bzip2 tst_h_lz4
+check_PROGRAMS = tst_h_bzip2 tst_h_lz4 tst_lz4_size
 
 # Each test must link to the filter it needs.
 tst_h_bzip2_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 tst_h_bzip2_LDADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 tst_h_lz4_LDFLAGS = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 tst_h_lz4_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+tst_lz4_size_LDFLAGS = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+tst_lz4_size_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 
 # Run the tests.
-TESTS = tst_h_bzip2 tst_h_lz4
+TESTS = tst_h_bzip2 tst_h_lz4 tst_lz4_size
 
 # Delete files created in testing.
 CLEANFILES = tst_*.h5
