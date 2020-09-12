@@ -48,6 +48,15 @@ test "x$enable_lz4" = xno || enable_lz4=yes
 AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 
+# Does the user want BITGROOM?
+AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
+AC_ARG_ENABLE([bitgroom],
+              [AS_HELP_STRING([--disable-bitgroom],
+                              [Disable the build and install of BitGroom filter library.])])
+test "x$enable_bitgroom" = xno || enable_bitgroom=yes
+AC_MSG_RESULT($enable_bitgroom)
+AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
+
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
 dnl AC_ARG_ENABLE([blosc],
@@ -75,21 +84,15 @@ dnl test "x$enable_lzf" = xno || enable_lzf=yes
 dnl AC_MSG_RESULT($enable_lzf)
 AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
 
-dnl # Does the user want BITGROOM?
-dnl AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
-dnl AC_ARG_ENABLE([bitgroom],
-dnl              [AS_HELP_STRING([--disable-bitgroom],
-dnl                              [Disable the build and install of bitgroom filter library.])])
-dnl test "x$enable_bitgroom" = xno || enable_bitgroom=yes
-dnl AC_MSG_RESULT($enable_bitgroom)
-AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
-
 # Build the filter libraries as desired.
 if test "x$enable_bzip2" = xyes; then
    AC_CONFIG_SUBDIRS([BZIP2])
 fi
 if test "x$enable_lz4" = xyes; then
    AC_CONFIG_SUBDIRS([LZ4])
+fi
+if test "x$enable_bitgroom" = xyes; then
+   AC_CONFIG_SUBDIRS([BITGROOM])
 fi
 dnl if test "x$enable_blosc" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([BLOSC])
@@ -99,9 +102,6 @@ dnl    AC_CONFIG_SUBDIRS([JPEG])
 dnl fi
 dnl if test "x$enable_lzf" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([LZF])
-dnl fi
-dnl if test "x$enable_bitgroom" = xyes; then
-dnl    AC_CONFIG_SUBDIRS([BITGROOM])
 dnl fi
 #AC_CONFIG_SUBDIRS([BSHUF])
 

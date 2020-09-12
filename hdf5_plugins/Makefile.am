@@ -17,6 +17,11 @@ if BUILD_LZ4
 LZ4 = LZ4
 endif
 
+# Does the user want to build BitGroom?
+if BUILD_BITGROOM
+BITGROOM = BITGROOM
+endif
+
 # # Does the user want to build blosc?
 # if BUILD_BLOSC
 # BLOSC = BLOSC
@@ -32,10 +37,5 @@ endif
 # LZF = LZF
 # endif
 
-# # Does the user want to build bitgroom?
-# if BUILD_BITGROOM
-# BITGROOM = BITGROOM
-# endif
-
 # Build the desired subdirectories.
-SUBDIRS = $(BZIP2) $(LZ4) $(BLOSC) $(JPEG) $(LZF) $(BITGROOM)
+SUBDIRS = $(BZIP2) $(LZ4) $(BITGROOM) $(BLOSC) $(JPEG) $(LZF)
