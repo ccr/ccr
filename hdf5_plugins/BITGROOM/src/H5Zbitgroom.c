@@ -105,13 +105,13 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
 can_apply /* [fnc] Callback to determine if current variable meets filter criteria */
-(hid_t dcpl, /* I [id] Property list ID */
+(hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
 set_local /* [fnc] Callback to determine and set per-variable filter parameters */
-(hid_t dcpl, /* I [id] Property list ID */
+(hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
@@ -236,7 +236,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
 can_apply /* [fnc] Callback to determine if current variable meets filter criteria */
-(hid_t dcpl, /* I [id] Property list ID */
+(hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
 {
@@ -252,7 +252,7 @@ can_apply /* [fnc] Callback to determine if current variable meets filter criter
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
 set_local /* [fnc] Callback to determine and set per-variable filter parameters */
-(hid_t dcpl, /* I [id] Property list ID */
+(hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
 {
