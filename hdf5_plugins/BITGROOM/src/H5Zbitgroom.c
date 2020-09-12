@@ -93,7 +93,7 @@ typedef union{ /* ptr_unn */
   void *vp;
 } ptr_unn;
 
-/* Forward-declare functions used in H5Z_class2_t filter structure */
+/* Forward-declare functions before their names appear in H5Z_class2_t filter structure */
 size_t /* O [B] Number of bytes processed from input buffer (?) */
 H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
