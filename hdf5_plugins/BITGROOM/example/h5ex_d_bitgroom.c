@@ -13,7 +13,7 @@
 /************************************************************
 
   This example shows how to write data and read it from a dataset
-  using BitGroom compression.
+  using BitGroom quantization.
   BitGroom filter is not available in HDF5.
   The example uses a new feature available in HDF5 version 1.8.11
   to discover, load and register filters at run time.
@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FILE            "h5ex_d_BitGroom.h5"
+#define FILE            "h5ex_d_bitgroom.h5"
 #define DATASET         "DS1"
 #define DIM0            32
 #define DIM1            64
@@ -50,7 +50,7 @@ main (void)
     unsigned        filter_config;
     const unsigned int    cd_values[1] = {3};     /* lz4 default is 3 */
     unsigned int    values_out[1] = {99};
-    int             wdata[DIM0][DIM1],          /* Write buffer */
+    float           wdata[DIM0][DIM1],          /* Write buffer */
                     rdata[DIM0][DIM1],          /* Read buffer */
                     max;
     hsize_t         i, j;
@@ -77,8 +77,8 @@ main (void)
     if (space_id < 0) goto done;
 
     /*
-     * Create the dataset creation property list, add the gzip
-     * compression filter and set the chunk size.
+     * Create the dataset creation property list, add the BitGroom
+     * quantization filter and set the chunk size.
      */
     dcpl_id = H5Pcreate (H5P_DATASET_CREATE);
     if (dcpl_id < 0) goto done;
@@ -94,8 +94,8 @@ main (void)
     if (avail) {
         status = H5Zget_filter_info (H5Z_FILTER_BITGROOM, &filter_config);
         if ( (filter_config & H5Z_FILTER_CONFIG_ENCODE_ENABLED) &&
-                (filter_config & H5Z_FILTER_CONFIG_DECODE_ENABLED) )
-            printf ("BitGroom filter is available for encoding and decoding.\n");
+	     (filter_config & H5Z_FILTER_CONFIG_DECODE_ENABLED) )
+	  printf ("BitGroom filter is available for encoding and decoding.\n");
     }
     else {
         printf ("H5Zfilter_avail - not found.\n");
@@ -117,8 +117,8 @@ main (void)
     /*
      * Write the data to the dataset.
      */
-    printf ("....Writing BitGroom compressed data ................\n");
-    status = H5Dwrite (dset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, wdata[0]);
+    printf ("....Writing BitGroom quantized data ................\n");
+    status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, wdata[0]);
     if (status < 0) printf ("failed to write data.\n");
 
     /*
@@ -160,7 +160,7 @@ main (void)
     if (dcpl_id < 0) goto done;
 
     /*
-     * Retrieve and print the filter id, compression level and filter's name for BitGroom.
+     * Retrieve and print the filter id, quantization level and filter's name for BitGroom.
      */
     filter_id = H5Pget_filter2 (dcpl_id, (unsigned) 0, &flags, &nelmts, values_out, sizeof(filter_name), filter_name, NULL);
     printf ("Filter info is available from the dataset creation property \n ");
@@ -168,7 +168,7 @@ main (void)
     switch (filter_id) {
         case H5Z_FILTER_BITGROOM:
             printf ("%d\n", filter_id);
-            printf ("   Number of parameters is %d with the value %u\n", nelmts, values_out[0]);
+            printf ("   Number of parameters is %lu with the value %u\n", nelmts, values_out[0]);
             printf ("   To find more about the filter check %s\n", filter_name);
             break;
         default:
@@ -179,8 +179,8 @@ main (void)
     /*
      * Read the data using the default properties.
      */
-    printf ("....Reading BitGroom compressed data ................\n");
-    status = H5Dread (dset_id, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rdata[0]);
+    printf ("....Reading BitGroom quantized data ................\n");
+    status = H5Dread (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rdata[0]);
     if (status < 0) printf ("failed to read data.\n");
 
     /*
@@ -197,7 +197,7 @@ main (void)
     /*
      * Print the maximum value.
      */
-    printf ("Maximum value in %s is %d\n", DATASET, max);
+    printf ("Maximum value in %s is %g\n", DATASET, max);
     /*
      * Check that filter is registered with the library now.
      */

@@ -39,9 +39,9 @@ AC_SUBST([HDF5_PLUGIN_DIR])
 # Are the BitGroom library and header present?
 # 20200912 fxm: Eventually move quantization library into, e.g., ccr_ppc.[c/h]?
 # For now, keep filter source code ccr_bgr() in plugin
-# 20200912: hypothesis that not invoking these lines prevent depcomp installation?
-AC_CHECK_HEADERS([lz4.h], [], [AC_MSG_ERROR([lz4.h is required, set CPPFLAGS.])])
-AC_CHECK_LIB([lz4], [LZ4_compress], [], [AC_MSG_ERROR([liblz4 is required, set LDFLAGS.])])
+# 20200912: does not invoking these lines prevent depcomp installation?
+#AC_CHECK_HEADERS([lz4.h], [], [AC_MSG_ERROR([lz4.h is required, set CPPFLAGS.])])
+#AC_CHECK_LIB([lz4], [LZ4_compress], [], [AC_MSG_ERROR([liblz4 is required, set LDFLAGS.])])
 
 # We need the math library
 AC_CHECK_LIB([m], [floor], [], [AC_MSG_ERROR([Math library is required.])])

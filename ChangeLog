@@ -1,4 +1,6 @@
 2020-09-12  Charlie Zender  <zender@uci.edu>
 
+	* Add example directory with h5ex_d_bitgroom.c test
+
 	* Add BITGROOM filter, first CCR quantization filter
 
