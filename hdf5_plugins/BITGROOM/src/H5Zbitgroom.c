@@ -197,9 +197,6 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
     ptr_unn mss_val=(ptr_unn)NULL; /* [val] Value of missing value */
     ptr_unn op1; /* I/O [frc] Values to quantize */
-    unsigned int ui32;
-    unsigned int *ui32p;
-    unsigned long long ui64;
     
     if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports datum size = %lu B, has_mss_val = %d\n",fnc_nm,datum_size,has_mss_val);
 
@@ -210,8 +207,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
       case 4:
 	/* Single-precision floating-point data */
 	if(has_mss_val){
-	  ui32=cd_values[CCR_FLT_PRM_PSN_MSS_VAL];
-	  mss_val.fp=(float *)(&ui32);
+	  mss_val.fp=(float *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
 	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
 	} /* !has_mss_val */
 	op1.fp=(float *)(*bfr_inout);
