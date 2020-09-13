@@ -52,8 +52,8 @@
 #endif
 
 /* Standard header files */
-// fxm: needed for M_LN10, M_LN2 in ccr_bgr() 
 #ifdef HAVE_MATH_H
+/* Needed for M_LN10, M_LN2 in ccr_bgr() */
 # include <math.h> /* sin cos cos sin 3.14159 */
 #endif
 
@@ -184,8 +184,8 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 
   if(flags & H5Z_FLAG_REVERSE){
 
-    /* Currently supported quantization methods (BitGrooming, fxm) store results in IEEE754 format 
-       These quantized buffers are full of legal IEEE754 and need no decompression */
+    /* Currently supported quantization methods (BitGrooming) store results in IEEE754 format 
+       These quantized buffers are full of legal IEEE754 numbers that need no decompression */
     return nbytes;
 
   }else{ /* !flags */
@@ -216,7 +216,6 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	} /* !has_mss_val */
 	op1.fp=(float *)(*bfr_inout);
 	ccr_bgr(nsd,NC_FLOAT,nbytes/sizeof(float),has_mss_val,mss_val,op1);
-	//if(has_mss_val) mss_val.vp=free(mss_val.vp);
 	break;
       case 8:
 	/* Double-precision floating-point data */
@@ -226,7 +225,6 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	} /* !has_mss_val */
 	op1.dp=(double *)(*bfr_inout);
 	ccr_bgr(nsd,NC_DOUBLE,nbytes/sizeof(double),has_mss_val,mss_val,op1);
-	//if(has_mss_val) mss_val.vp=free(mss_val.vp);
 	break;
       default:
 	(void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
@@ -314,18 +312,12 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
   /* Set datum size in filter parameter list */
   ccr_flt_prm[CCR_FLT_PRM_PSN_DATUM_SIZE]=datum_size;
 
-  /* Which variable is this? fxm */
+  /* Which variable is this? fxm find and add variable name to debugging info */
 
-  /* 20200911 fxm find, set, and pass per-variable has_mss_val and mss_val arguments here
-     attr=H5ACreate(dataset,"_FillValue",H5T_NATIVE_FLOAT,H5SCreate(H5S_SCALAR),H5P_DEFAULT);
-     H5ARead(attr,H5T_NATIVE_FLOAT,&value);
+  /* Find, set, and pass per-variable has_mss_val and mss_val arguments
      https://support.hdfgroup.org/HDF5/doc_resource/H5Fill_Values.html */
   int has_mss_val=0; /* [flg] Flag for missing values */
-  ptr_unn mss_val; /* [val] Value of missing value */
-  mss_val.vp=NULL;
 
-  const char att_nm[]="_FillValue"; /* [sng] Attribute name */
-  hid_t att_id; /* [id] Attribute ID */
   H5D_fill_value_t status;
   rcd=H5Pfill_value_defined(dcpl,&status);
   if(rcd < 0){
@@ -340,6 +332,8 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
     else if(status == H5D_FILL_VALUE_USER_DEFINED) (void)fprintf(stdout,"Fill-value is defined by user application\n");
   } /* !CCR_FLT_DBG_INFO */
 
+  ptr_unn mss_val; /* [val] Value of missing value */
+  mss_val.vp=NULL;
   if(status == H5D_FILL_VALUE_USER_DEFINED && data_class == H5T_FLOAT){
     unsigned int *ui32p; /* [ptr] Pointer to missing value */
 
@@ -364,6 +358,9 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
       /* Copy second four-bytes of missing value into next unsigned int parameter */
       cd_values[CCR_FLT_PRM_PSN_MSS_VAL+1L]=*(ui32p+1);
     } /* !datum_size */
+
+    /* Free fill value memory */
+    if(mss_val.vp) free(mss_val.vp);
   } /* !status */
 
   /* Set missing value flag in filter parameter list */
