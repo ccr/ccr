@@ -62,12 +62,15 @@
 
 /* Tokens and typedefs */
 #define H5Z_FILTER_BITGROOM 37373 /* fxm: Placeholder Filter ID during development */
-#define CCR_FLT_NAME "HDF5 BitGroom filter"
-#define CCR_FLT_PRM_NBR 3 /* [nbr] Number of parameters sent to filter (in cd_params array) */
+#define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
+#define CCR_FLT_NAME "BitGroom filter for HDF5" /* [sng] Filter name in vernacular for HDF5 messages */
+#define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
+#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array) */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATA_CLASS 2 /* [nbr] Ordinal position of data_class in parameter list (cd_params array) */
-#define CCR_FLT_BGR_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
+#define CCR_FLT_PRM_PSN_HAS_MSS_VAL 3 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
+#define CCR_FLT_PRM_PSN_MSS_VAL 4 /* [nbr] Ordinal position of missing value in parameter list (cd_params array) */
 
 /* Compatibility tokens and typedefs retain source-code compatibility between NCO and filter
    These tokens mimic netCDF/NCO code but do not rely on or interfere with either */
@@ -191,34 +194,48 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     int nsd=cd_values[CCR_FLT_PRM_PSN_NSD];
     size_t datum_size=cd_values[CCR_FLT_PRM_PSN_DATUM_SIZE];
     H5T_class_t data_class=(H5T_class_t)cd_values[CCR_FLT_PRM_PSN_DATA_CLASS];
-    // 20200912: fxm account for missing values
-    int has_mss_val=0; /* [flg] Flag for missing values */
-    //int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
+    int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
     ptr_unn mss_val=(ptr_unn)NULL; /* [val] Value of missing value */
-    //ptr_unn mss_val=cd_values[CCR_FLT_PRM_PSN_MSS_VAL]; /* [val] Value of missing value */
     ptr_unn op1; /* I/O [frc] Values to quantize */
+    unsigned int ui32;
+    unsigned int *ui32p;
+    unsigned long long ui64;
     
+    if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports datum size = %lu B, has_mss_val = %d\n",fnc_nm,datum_size,has_mss_val);
+
     /* Quantization is only for floating-point data */
     if(data_class == H5T_FLOAT){ 
       switch(datum_size){
 	/* Cast input buffer pointer to correct numeric type */
       case 4:
 	/* Single-precision floating-point data */
+	if(has_mss_val){
+	  ui32=cd_values[CCR_FLT_PRM_PSN_MSS_VAL];
+	  mss_val.fp=(float *)(&ui32);
+	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
+	} /* !has_mss_val */
 	op1.fp=(float *)(*bfr_inout);
 	ccr_bgr(nsd,NC_FLOAT,nbytes/sizeof(float),has_mss_val,mss_val,op1);
+	//if(has_mss_val) mss_val.vp=free(mss_val.vp);
 	break;
       case 8:
 	/* Double-precision floating-point data */
+	if(has_mss_val){
+	  mss_val.dp=(double *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
+	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
+	} /* !has_mss_val */
 	op1.dp=(double *)(*bfr_inout);
 	ccr_bgr(nsd,NC_DOUBLE,nbytes/sizeof(double),has_mss_val,mss_val,op1);
+	//if(has_mss_val) mss_val.vp=free(mss_val.vp);
 	break;
       default:
-	(void)fprintf(stderr, "ERROR: %s reports datum size = %lu B is invalid for %s filter\n",fnc_nm,datum_size,CCR_FLT_NAME);
+	(void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
 	goto error;
 	break;
       } /* !datum_size */
+
     }else{
-      (void)fprintf(stderr, "ERROR: %s reports data type class identifier = %d is invalid for %s filter\n",fnc_nm,data_class,CCR_FLT_NAME);
+      (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports data type class identifier = %d is invalid\n",CCR_FLT_NAME,fnc_nm,data_class);
       goto error;
     } /* !data_class */
 
@@ -242,7 +259,7 @@ can_apply /* [fnc] Callback to determine if current variable meets filter criter
 {
   /* Data space must be simple, i.e., a multi-dimensional array */
   if(H5Sis_simple(space) <= 0){
-    fprintf(stderr,"Warning: Cannot apply %s filter. Data space is not simple.\n",CCR_FLT_NAME);
+    fprintf(stderr,"Warning: Cannot apply filter \"%s\" filter because data space is not simple.\n",CCR_FLT_NAME);
     return 0;
   } /* !H5Sis_simple(space) */
 
@@ -261,7 +278,7 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
   herr_t rcd; /* [flg] Return code */
   
   /* Initialize filter parameters with default values */
-  unsigned int ccr_flt_prm[CCR_FLT_PRM_NBR]={CCR_FLT_BGR_NSD_DFL,0,0};
+  unsigned int ccr_flt_prm[CCR_FLT_PRM_NBR]={CCR_FLT_NSD_DFL,0,0,0,0,0};
 
   /* Initialize output variables for call to H5Pget_filter_by_id() */
   unsigned int flags=0;
@@ -273,7 +290,7 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
      Ignore name and filter_config by setting last three arguments to 0/NULL */
   rcd=H5Pget_filter_by_id(dcpl,H5Z_FILTER_BITGROOM,&flags,&cd_nelmts,cd_values,0,NULL,NULL);
   if(rcd < 0){
-    (void)fprintf(stderr,"ERROR: %s reports H5Pget_filter_by_id() failed to get %s filter flags and parameters for current variable\n",fnc_nm,CCR_FLT_NAME);
+    (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Pget_filter_by_id() failed to get filter flags and parameters for current variable\n",CCR_FLT_NAME,fnc_nm);
     return 0;
   } /* !rcd */
 
@@ -281,7 +298,7 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
   int data_class; /* [enm] Data type class identifier (HDF5 equivalent of nc_type) */
   data_class=(int)H5Tget_class(type); 
   if(data_class < 0){
-    (void)fprintf(stderr, "ERROR: %s reports H5Tget_class() returned invalid data type class identifier = %d for configuring %s filter for current variable\n",fnc_nm,data_class,CCR_FLT_NAME);
+    (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Tget_class() returned invalid data type class identifier = %d for current variable\n",CCR_FLT_NAME,fnc_nm,data_class);
     return 0;
   } /* !data_class */
   /* Set data class in filter parameter list */
@@ -291,20 +308,71 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
   size_t datum_size; /* [B] Bytes per data value */
   datum_size=H5Tget_size(type);
   if(datum_size <= 0){
-    (void)fprintf(stderr,"ERROR: %s reports H5Tget_size() returned invalid datum size = %lu B for %s filter\n",fnc_nm,datum_size,CCR_FLT_NAME);
+    (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Tget_size() returned invalid datum size = %lu B\n",CCR_FLT_NAME,fnc_nm,datum_size);
     return 0;
   } /* !datum_size */
   /* Set datum size in filter parameter list */
   ccr_flt_prm[CCR_FLT_PRM_PSN_DATUM_SIZE]=datum_size;
 
-  /* 20200911 fxm find, set, and pass per-variable hss_mss_val and mss_val arguments here
+  /* Which variable is this? fxm */
+
+  /* 20200911 fxm find, set, and pass per-variable has_mss_val and mss_val arguments here
      attr=H5ACreate(dataset,"_FillValue",H5T_NATIVE_FLOAT,H5SCreate(H5S_SCALAR),H5P_DEFAULT);
-     H5AWrite(attr,H5T_NATIVE_FLOAT,&value); */
+     H5ARead(attr,H5T_NATIVE_FLOAT,&value);
+     https://support.hdfgroup.org/HDF5/doc_resource/H5Fill_Values.html */
+  int has_mss_val=0; /* [flg] Flag for missing values */
+  ptr_unn mss_val; /* [val] Value of missing value */
+  mss_val.vp=NULL;
+
+  const char att_nm[]="_FillValue"; /* [sng] Attribute name */
+  hid_t att_id; /* [id] Attribute ID */
+  H5D_fill_value_t status;
+  rcd=H5Pfill_value_defined(dcpl,&status);
+  if(rcd < 0){
+    (void)fprintf(stdout,"ERROR: \"%s\" filter callback function %s reports H5Pfill_value_defined() returns error code = %d\n",CCR_FLT_NAME,fnc_nm,rcd);
+    return 0;
+  } /* !rcd */
+
+  if(CCR_FLT_DBG_INFO){
+    (void)fprintf(stdout,"INFO: \"%s\" filter callback function %s reports H5Pfill_value_defined() status = %d meaning ... ",CCR_FLT_NAME,fnc_nm,status);
+    if(status == H5D_FILL_VALUE_UNDEFINED) (void)fprintf(stdout,"Fill-value is undefined\n");    
+    else if(status == H5D_FILL_VALUE_DEFAULT) (void)fprintf(stdout,"Fill-value is the library default\n");
+    else if(status == H5D_FILL_VALUE_USER_DEFINED) (void)fprintf(stdout,"Fill-value is defined by user application\n");
+  } /* !CCR_FLT_DBG_INFO */
+
+  if(status == H5D_FILL_VALUE_USER_DEFINED && data_class == H5T_FLOAT){
+    unsigned int *ui32p; /* [ptr] Pointer to missing value */
+
+    has_mss_val=1;
+    mss_val.vp=(void *)malloc(datum_size);
+    rcd=H5Pget_fill_value(dcpl,type,mss_val.vp);
+    if(rcd < 0){
+      (void)fprintf(stdout,"ERROR: \"%s\" filter callback function %s reports H5Pget_fill_value() returns error code = %d\n",CCR_FLT_NAME,fnc_nm,rcd);
+      return 0;
+    } /* !rcd */
+
+    /* Set missing value in filter parameter list */
+    if(datum_size == 4){
+      if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter callback function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
+      ui32p=(unsigned int *)mss_val.fp;
+      cd_values[CCR_FLT_PRM_PSN_MSS_VAL]=*ui32p;
+    }else if(datum_size == 8){
+      if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter callback function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
+      ui32p=(unsigned int *)mss_val.dp;
+      /* Copy first four-bytes of missing value into unsigned int parameter */
+      cd_values[CCR_FLT_PRM_PSN_MSS_VAL]=*ui32p;
+      /* Copy second four-bytes of missing value into next unsigned int parameter */
+      cd_values[CCR_FLT_PRM_PSN_MSS_VAL+1L]=*(ui32p+1);
+    } /* !datum_size */
+  } /* !status */
+
+  /* Set missing value flag in filter parameter list */
+  ccr_flt_prm[CCR_FLT_PRM_PSN_HAS_MSS_VAL]=has_mss_val;
 
   /* Update invoked filter with generic parameters as invoked with variable-specific values */
   rcd=H5Pmodify_filter(dcpl,H5Z_FILTER_BITGROOM,flags,CCR_FLT_PRM_NBR,cd_values);
   if(rcd < 0){
-    (void)fprintf(stderr,"ERROR: %s reports H5Pmodify_filter() unable to set %s filter parameters\n",fnc_nm,CCR_FLT_NAME);
+    (void)fprintf(stderr,"ERROR: \"%s\" filter callback function %s reports H5Pmodify_filter() unable to modify filter parameters\n",CCR_FLT_NAME,fnc_nm);
     return 0;
   } /* !rcd */
 
@@ -422,7 +490,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     } /* end else */
     break; /* !NC_DOUBLE */
   default: 
-    (void)fprintf(stderr, "ERROR: %s reports datum size = %d B is invalid for %s filter\n",fnc_nm,type,CCR_FLT_NAME);
+    (void)fprintf(stderr,"ERROR: %s reports datum size = %d B is invalid for %s filter\n",fnc_nm,type,CCR_FLT_NAME);
     break;
   } /* !type */
   
