@@ -1,9 +1,4 @@
-/* 
-   Copyright (C) 2020--present Charlie Zender
-
-   Portions (can_apply(), set_local()) Copyright (c) 2019, CNES, have this license:
-   This source code is licensed under MIT-style license (found in the
-   COPYING file in the root directory of this source tree). */
+/* Copyright (C) 2020--present Charlie Zender */
 
  /*
  * This file is an example of an HDF5 filter plugin.
@@ -107,13 +102,13 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
  void **bfr_inout); /* I/O [frc] Values to quantize */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-can_apply /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-set_local /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
@@ -128,8 +123,8 @@ const H5Z_class2_t H5Z_BITGROOM[1]={{
 #endif
     1, /* [flg] Encoder availability flag */
     CCR_FLT_NAME, /* [sng] Filter name for debugging */
-    can_apply, /* [fnc] Callback to determine if current variable meets filter criteria */
-    set_local, /* [fnc] Callback to determine and set per-variable filter parameters */
+    ccr_can_apply_bitgroom, /* [fnc] Callback to determine if current variable meets filter criteria */
+    ccr_set_local_bitgroom, /* [fnc] Callback to determine and set per-variable filter parameters */
     (H5Z_func_t)H5Z_filter_bitgroom, /* [fnc] Function to implement filter */
   }}; /* !H5Z_BITGROOM */
 
@@ -246,7 +241,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 } /* !H5Z_filter_bitgroom() */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-can_apply /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
@@ -259,15 +254,15 @@ can_apply /* [fnc] Callback to determine if current variable meets filter criter
 
   /* Filter can be applied */
   return 1;
-} /* !can_apply() */
+} /* !ccr_can_apply_bitgroom() */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-set_local /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
 {
-  const char fnc_nm[]="set_local()"; /* [sng] Function name */
+  const char fnc_nm[]="ccr_set_local_bitgroom()"; /* [sng] Function name */
 
   herr_t rcd; /* [flg] Return code */
   
@@ -370,7 +365,7 @@ set_local /* [fnc] Callback to determine and set per-variable filter parameters 
   } /* !rcd */
 
   return 1;
-} /* !set_local() */
+} /* !ccr_set_local_bitgroom() */
 
 void
 ccr_bgr /* [fnc] BitGroom buffer of float values */
