@@ -1,5 +1,7 @@
 2020-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Add Zstandard filter
+
 	* More tidying and clarity in internal code, eliminate digit-rounding code
 
 2020-09-14  Charlie Zender  <zender@uci.edu>

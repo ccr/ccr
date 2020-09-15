@@ -1,6 +1,6 @@
 # Copyright by The HDF Group. All rights reserved.
 
-# This file builds main directory for the hdf5_plugings project.
+# This file builds main directory for the hdf5_plugins project.
 
 # Ed Hartnett 12/24/2019
 
@@ -22,6 +22,11 @@ if BUILD_BITGROOM
 BITGROOM = BITGROOM
 endif
 
+# Does the user want to build Zstandard?
+if BUILD_ZSTANDARD
+ZSTANDARD = ZSTANDARD
+endif
+
 # # Does the user want to build blosc?
 # if BUILD_BLOSC
 # BLOSC = BLOSC
@@ -38,4 +43,4 @@ endif
 # endif
 
 # Build the desired subdirectories.
-SUBDIRS = $(BZIP2) $(LZ4) $(BITGROOM) $(BLOSC) $(JPEG) $(LZF)
+SUBDIRS = $(BZIP2) $(LZ4) $(BITGROOM) $(ZSTANDARD) $(BLOSC) $(JPEG) $(LZF)

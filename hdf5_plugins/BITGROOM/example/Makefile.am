@@ -1,8 +1,6 @@
-# Copyright by The HDF Group. All rights reserved.
+# This builds the BitGroom example directory
 
-# This builds the BitGroom example directory.
-
-# Charlie 9/12/20
+# Charlie Zender 9/12/20
 
 # Link to our filter library
 AM_LDFLAGS = ${top_builddir}/src/libh5bgr.la
