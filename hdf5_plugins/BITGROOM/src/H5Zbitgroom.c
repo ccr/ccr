@@ -58,7 +58,7 @@
 /* Tokens and typedefs */
 #define H5Z_FILTER_BITGROOM 37373 /* fxm: Placeholder Filter ID during development */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
-#define CCR_FLT_NAME "BitGroom filter for HDF5" /* [sng] Filter name in vernacular for HDF5 messages */
+#define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
 #define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array) */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
@@ -273,15 +273,15 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
     return 0;
   } /* !rcd */
 
-  /* Data type for this variable */
-  int data_class; /* [enm] Data type class identifier (HDF5 equivalent of nc_type) */
-  data_class=(int)H5Tget_class(type); 
+  /* Data class for this variable */
+  H5T_class_t data_class; /* [enm] Data type class identifier (H5T_FLOAT, H5T_INT, H5T_STRING, ...) */
+  data_class=H5Tget_class(type); 
   if(data_class < 0){
-    (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Tget_class() returned invalid data type class identifier = %d for current variable\n",CCR_FLT_NAME,fnc_nm,data_class);
+    (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Tget_class() returned invalid data type class identifier = %d for current variable\n",CCR_FLT_NAME,fnc_nm,(int)data_class);
     return 0;
   } /* !data_class */
   /* Set data class in filter parameter list */
-  ccr_flt_prm[CCR_FLT_PRM_PSN_DATA_CLASS]=data_class;
+  ccr_flt_prm[CCR_FLT_PRM_PSN_DATA_CLASS]=(unsigned int)data_class;
 
   /* Datum size for this variable */
   size_t datum_size; /* [B] Bytes per data value */
@@ -291,7 +291,7 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
     return 0;
   } /* !datum_size */
   /* Set datum size in filter parameter list */
-  ccr_flt_prm[CCR_FLT_PRM_PSN_DATUM_SIZE]=datum_size;
+  ccr_flt_prm[CCR_FLT_PRM_PSN_DATUM_SIZE]=(unsigned int)datum_size;
 
   /* Which variable is this? fxm find and add variable name to debugging info */
 
