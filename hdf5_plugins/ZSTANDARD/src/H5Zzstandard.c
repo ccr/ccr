@@ -149,15 +149,23 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
   }else{ /* !flags */
     
     /* Set parameters needed by compression library filter */
-    const int cmp_lvl_min=1; /* [enm] Minimum compression aggression level == ZSTD_minCLevel() */
+    const int cmp_lvl_min=1; /* [enm] Minimum compression aggression level NB: Could use ZSTD_minCLevel() instead, though those levels can be negative so just stick with 1 */
+    const int cmp_lvl_max=ZSTD_maxCLevel(); /* [enm] Maximum compression aggression level */
     int cmp_lvl; /* [enm] Compression aggression level */
+
+    /* 20200915: ZSTD_H_235446 defines ZSTD_CLEVEL_DEFAULT == 3 
+       However, earlier zstd.h may not define this token, as evidenced by failure of 
+       Travis CI on Ubuntu Bionic to find this token with that version of Zstandard */
+#ifndef ZSTD_CLEVEL_DEFAULT
+# define ZSTD_CLEVEL_DEFAULT 3
+#endif
 
     /* NB: <zstd.h> sets ZSTD_CLEVEL_DEFAULT == 3 */
     if(cd_nelmts > 0) cmp_lvl=(int)cd_values[CCR_FLT_PRM_PSN_CMP_LVL]; else cmp_lvl=ZSTD_CLEVEL_DEFAULT;
     if(cmp_lvl < cmp_lvl_min) cmp_lvl=cmp_lvl_min;
-    else if(cmp_lvl > ZSTD_maxCLevel()) cmp_lvl=ZSTD_maxCLevel();
+    else if(cmp_lvl > cmp_lvl_max) cmp_lvl=cmp_lvl_max;
     
-    if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports cmp_lvl = %u\n",fnc_nm,cmp_lvl);
+    if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports cmp_lvl = %d\n",fnc_nm,cmp_lvl);
     
     size_t cmp_sz; /* [B] Compressed size written into output buffer (or error code) */
     size_t cmp_sz_max; /* [B] Maximum compressed size in worst case single-pass scenario */
