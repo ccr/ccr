@@ -65,7 +65,7 @@
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATA_CLASS 2 /* [nbr] Ordinal position of data_class in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_HAS_MSS_VAL 3 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
-#define CCR_FLT_PRM_PSN_MSS_VAL 4 /* [nbr] Ordinal position of missing value in parameter list (cd_params array) */
+#define CCR_FLT_PRM_PSN_MSS_VAL 4 /* [nbr] Ordinal position of missing value in parameter list (cd_params array) NB: Missing value (_FillValue) uses two cd_params slots so it can be single or double-precision. Single-precision values are read as first 4-bytes starting at cd_params[4] (and cd_params[5] is ignored), while double-precision values are read as first 8-bytes starting at cd_params[4] and ending with cd_params[5]. */
 
 /* Compatibility tokens and typedefs retain source-code compatibility between NCO and filter
    These tokens mimic netCDF/NCO code but do not rely on or interfere with either */
@@ -92,13 +92,13 @@ typedef union{ /* ptr_unn */
 } ptr_unn;
 
 /* Forward-declare functions before their names appear in H5Z_class2_t filter structure */
-size_t /* O [B] Number of bytes processed from input buffer (?) */
+size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
 H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
- size_t nbytes, /* I [B] Number of bytes in input buffer (before quantization/compression) */
- size_t *buf_size, /* O [B] Number of bytes in output buffer (after quantization/compression) */
+ size_t bfr_sz_in, /* I [B] Number of bytes in input buffer (before forward/reverse filter) */
+ size_t *bfr_sz_out, /* O [B] Number of bytes in output buffer (after forward/reverse filter) */
  void **bfr_inout); /* I/O [frc] Values to quantize */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
@@ -137,22 +137,12 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
  ptr_unn mss_val, /* I [val] Value of missing value */
  ptr_unn op1); /* I/O [frc] Values to quantize */
 
-/* Forward declaration for eventual inclusion of DigitRounding quantization */
-/*
- * Round the float value keeping nsd significant digits. Fast computation method.
- *
- * The fast method uses an approximation of the number of digit before the floating point
- * instead of using log10() function.
- *
- */
-double ccr_dgr(double v, int nsd);
-
 /* Function definitions */
 H5PL_type_t /* O [enm] Plugin type */
 H5PLget_plugin_type /* [fnc] Provide plug-in type provided by this shared library */
 (void)
-{ /* Purpose: Provide plug-in type provided by this shared library to the HDF5 filter plugin mechanism
-     This function is usually called after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
+{ /* Purpose: Describe plug-in type provided by this shared library
+     The HDF5 plugin mechanism usually calls this function after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
   return H5PL_TYPE_FILTER;
 } /* !H5PLget_plugin_type() */
 
@@ -160,17 +150,17 @@ const void * /* O [enm] */
 H5PLget_plugin_info /* [fnc] Return structure */
 (void)
 { /* Purpose: Provide structure that defines BitGroom filter so the filter may be dynamically registered with the plugin mechanism
-     This function is usually called after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
+     The HDF5 plugin mechanism usually calls this function after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
   return H5Z_BITGROOM;
 } /* !H5PLget_plugin_info() */
 
-size_t /* O [B] Number of input buffer bytes processed by this invocation of filter (?) */
+size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
 H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
- size_t nbytes, /* I [B] Number of bytes in input buffer (before quantization/compression) */
- size_t *buf_size, /* O [B] Number of bytes in output buffer (after quantization/compression) */
+ size_t bfr_sz_in, /* I [B] Number of bytes in input buffer (before forward/reverse filter) */
+ size_t *bfr_sz_out, /* O [B] Number of bytes in output buffer (after forward/reverse filter) */
  void **bfr_inout) /* I/O [frc] Values to quantize */
 {
   /* Purpose: Dynamic filter invoked by HDF5 to BitGroom a variable */
@@ -181,7 +171,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 
     /* Currently supported quantization methods (BitGrooming) store results in IEEE754 format 
        These quantized buffers are full of legal IEEE754 numbers that need no decompression */
-    return nbytes;
+    return bfr_sz_in;
 
   }else{ /* !flags */
 
@@ -206,7 +196,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
 	} /* !has_mss_val */
 	op1.fp=(float *)(*bfr_inout);
-	ccr_bgr(nsd,NC_FLOAT,nbytes/sizeof(float),has_mss_val,mss_val,op1);
+	ccr_bgr(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
 	break;
       case 8:
 	/* Double-precision floating-point data */
@@ -215,7 +205,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
 	} /* !has_mss_val */
 	op1.dp=(double *)(*bfr_inout);
-	ccr_bgr(nsd,NC_DOUBLE,nbytes/sizeof(double),has_mss_val,mss_val,op1);
+	ccr_bgr(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
 	break;
       default:
 	(void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
@@ -228,7 +218,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
       goto error;
     } /* !data_class */
 
-    return nbytes;
+    return bfr_sz_in;
 
   } /* !flags */
   
@@ -483,31 +473,3 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   } /* !type */
   
 } /* ccr_bgr() */
-  
-void
-ccr_dgr_flt /* [fnc] DigitRound buffer of float values */
-(const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
- const size_t nbytes, /* I [B] Buffer size */
- void **bfr_inout) /* I/O [frc] Values to quantize */
-{
-  /* Cast input buffer to float */
-  float *bfr_flt=(float *)*bfr_inout;
-
-  /* DigitRound array */
-  for(size_t idx=0;idx<nbytes/sizeof(float);idx++)
-    bfr_flt[idx]=(float)ccr_dgr((double)bfr_flt[idx],nsd);
-} /* ccr_dgr_flt() */
-
-void
-ccr_dgr_dbl /* [fnc] DigitRound buffer of double values */
-(const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
- const size_t nbytes, /* I [B] Buffer size */
- const void **bfr_inout) /* I/O [frc] Values to quantize */
-{
-  /* Cast input buffer to double */
-  double *bfr_dbl=(double *)*bfr_inout;
-
-  /* DigitRound array */
-  for(size_t idx=0;idx < nbytes/sizeof(double);idx++)
-    bfr_dbl[idx]=ccr_dgr(bfr_dbl[idx],nsd);
-} /* ccr_dgr_dbl() */

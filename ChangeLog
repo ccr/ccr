@@ -1,3 +1,7 @@
+2020-09-15  Charlie Zender  <zender@uci.edu>
+
+	* More tidying and clarity in internal code, eliminate digit-rounding code
+
 2020-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Rename to ccr_can_apply_bitgroom(), ccr_set_local_bitgroom() to avoid namespace pollution
