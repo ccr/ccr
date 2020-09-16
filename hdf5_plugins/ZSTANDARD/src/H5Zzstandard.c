@@ -53,6 +53,7 @@
 /* Tokens and typedefs */
 #define H5Z_FILTER_ZSTANDARD 32015 /* NB: Registered with HDF */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
+#define CCR_FLT_HELP "HINT: Read the description of Zstandard compression levels and their speed vs. compression-ratio tradeoffs at https://zstd.net"
 #define CCR_FLT_NAME "Zstandard filter for HDF5; http://www.zstd.net" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_PRM_NBR 1 /* [nbr] Number of parameters sent to filter (in cd_params array) */
 #define CCR_FLT_PRM_PSN_CMP_LVL 0 /* [nbr] Ordinal position of CMP_LVL in parameter list (cd_params array) */
@@ -149,7 +150,7 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
   }else{ /* !flags */
     
     /* Set parameters needed by compression library filter */
-    const int cmp_lvl_min=1; /* [enm] Minimum compression aggression level NB: Could use ZSTD_minCLevel() instead, though those levels can be negative so just stick with 1 */
+    const int cmp_lvl_min=ZSTD_minCLevel(); /* [enm] Minimum compression aggression level NB: Could use ZSTD_minCLevel() instead, though those levels can be negative so just stick with 1 */
     const int cmp_lvl_max=ZSTD_maxCLevel(); /* [enm] Maximum compression aggression level */
     int cmp_lvl; /* [enm] Compression aggression level */
 
@@ -162,10 +163,18 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
 
     /* NB: <zstd.h> sets ZSTD_CLEVEL_DEFAULT == 3 */
     if(cd_nelmts > 0) cmp_lvl=(int)cd_values[CCR_FLT_PRM_PSN_CMP_LVL]; else cmp_lvl=ZSTD_CLEVEL_DEFAULT;
-    if(cmp_lvl < cmp_lvl_min) cmp_lvl=cmp_lvl_min;
-    else if(cmp_lvl > cmp_lvl_max) cmp_lvl=cmp_lvl_max;
+    if(cmp_lvl < cmp_lvl_min){
+      (void)fprintf(stderr,"WARNING: \"%s\" filter function %s must adjust actual compression level from user-requested value of %d to minimum Zstandard-supported compression level = %d\n",CCR_FLT_NAME,fnc_nm,cmp_lvl,cmp_lvl_min);
+      (void)fprintf(stderr,"%s\n",CCR_FLT_HELP);
+      cmp_lvl=cmp_lvl_min;
+    } /* !cmp_lvl */
+    if(cmp_lvl > cmp_lvl_max){
+      (void)fprintf(stderr,"WARNING: \"%s\" filter function %s must adjust actual compression level from user-requested value of %d to maximum Zstandard-supported compression level = %d\n",CCR_FLT_NAME,fnc_nm,cmp_lvl,cmp_lvl_max);
+      (void)fprintf(stderr,"%s\n",CCR_FLT_HELP);
+      cmp_lvl=cmp_lvl_max;
+    } /* !cmp_lvl */
     
-    if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports cmp_lvl = %d\n",fnc_nm,cmp_lvl);
+    if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports cmp_lvl = %d, cmp_lvl_min = %d, cmp_lvl_max = %d\n",fnc_nm,cmp_lvl,cmp_lvl_min,cmp_lvl_max);
     
     size_t cmp_sz; /* [B] Compressed size written into output buffer (or error code) */
     size_t cmp_sz_max; /* [B] Maximum compressed size in worst case single-pass scenario */
