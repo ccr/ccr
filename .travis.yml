@@ -7,7 +7,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget liblz4-dev
+    - pkg-config gfortran netcdf-bin libnetcdf-dev libnetcdff-dev wget liblz4-dev libzstd-dev
 
 env:
 
