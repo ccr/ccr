@@ -227,6 +227,7 @@ nc_def_var_lz4(int ncid, int varid, int level)
         printf ("lz4 filter not available.\n");
         return NC_EFILTER;
     }
+
     /* Set up the lz4 filter for this var. */
     if ((ret = nc_def_var_filter(ncid, varid, LZ4_ID, 1, &cd_value)))
         return ret;
@@ -258,8 +259,15 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
     int ret;
 
     /* Get filter information. */
-    if ((ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level)))
-        return ret;
+    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+    if (ret == NC_ENOFILTER)
+    {
+	if (lz4p)
+	    *lz4p = 0;
+	return 0;
+    }
+    else if (ret)
+	return ret;
 
     /* Is lz4 in use? */
     if (id == LZ4_ID)
