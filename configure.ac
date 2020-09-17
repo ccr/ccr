@@ -79,6 +79,9 @@ AC_ARG_ENABLE([lz4],
 test "x$enable_lz4" = xno || enable_lz4=yes
 AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
+if test "x$enable_set_log_level_func" = xyes -a "x$enable_netcdf_4" = xyes; then
+   AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
+fi
 
 # Does the user want BITGROOM?
 AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
@@ -148,6 +151,9 @@ AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
+
+# Generate the config.h file.
+AC_CONFIG_HEADERS([config.h])
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
