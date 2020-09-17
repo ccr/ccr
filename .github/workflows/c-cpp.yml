@@ -56,4 +56,5 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --disable-bitgroom 
+        ./configure --disable-lz4 --disable-zstd --disable-bitgroom
+        make
