@@ -47,11 +47,6 @@ script:
   - autoreconf -i
   - ./configure
 #  - make -j distcheck
-  - make
-  - cd test_h5
-  - make tst_h_bzip2
-  - ./tst_h_bzip2
-  - ls -l
-  - ${MY_DIR}/bin/ncdump -s -h tst_h_bzip2.h5
+  - make -j check
 
 
