@@ -57,4 +57,4 @@ jobs:
       run: |
         autoreconf -i
         ./configure --disable-lz4 --disable-zstd --disable-bitgroom
-        make
+        make -j distcheck
