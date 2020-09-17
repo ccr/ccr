@@ -62,6 +62,69 @@ if test "x$enable_docs" = xyes; then
    AC_CONFIG_FILES([docs/Doxyfile])
 fi
 
+# Does the user want BZIP2?
+AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])
+AC_ARG_ENABLE([bzip2],
+              [AS_HELP_STRING([--disable-bzip2],
+                              [Disable the build and install of bzip2 filter library.])])
+test "x$enable_bzip2" = xno || enable_bzip2=yes
+AC_MSG_RESULT($enable_bzip2)
+AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
+
+# Does the user want LZ4?
+AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+AC_ARG_ENABLE([lz4],
+              [AS_HELP_STRING([--disable-lz4],
+                              [Disable the build and install of lz4 filter library.])])
+test "x$enable_lz4" = xno || enable_lz4=yes
+AC_MSG_RESULT($enable_lz4)
+AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
+
+# Does the user want BITGROOM?
+AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
+AC_ARG_ENABLE([bitgroom],
+              [AS_HELP_STRING([--disable-bitgroom],
+                              [Disable the build and install of BitGroom filter library.])])
+test "x$enable_bitgroom" = xno || enable_bitgroom=yes
+AC_MSG_RESULT($enable_bitgroom)
+AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
+
+# Does the user want Zstandard?
+AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
+AC_ARG_ENABLE([zstd],
+              [AS_HELP_STRING([--disable-zstd],
+                              [Disable the build and install of Zstandard filter library.])])
+test "x$enable_zstd" = xno || enable_zstd=yes
+AC_MSG_RESULT($enable_zstd)
+AM_CONDITIONAL(BUILD_ZSTANDARD, [test "x$enable_zstd" = xyes])
+
+dnl # Does the user want BLOSC?
+dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
+dnl AC_ARG_ENABLE([blosc],
+dnl               [AS_HELP_STRING([--disable-blosc],
+dnl                               [Disable the build and install of blosc filter library.])])
+dnl test "x$enable_blosc" = xno || enable_blosc=yes
+dnl AC_MSG_RESULT($enable_blosc)
+AM_CONDITIONAL(BUILD_BLOSC, [test "x$enable_blosc" = xyes])
+
+dnl # Does the user want JPEG?
+dnl AC_MSG_CHECKING([whether JPEG filter library should be built and installed])
+dnl AC_ARG_ENABLE([jpeg],
+dnl               [AS_HELP_STRING([--disable-jpeg],
+dnl                               [Disable the build and install of jpeg filter library.])])
+dnl test "x$enable_jpeg" = xno || enable_jpeg=yes
+dnl AC_MSG_RESULT($enable_jpeg)
+AM_CONDITIONAL(BUILD_JPEG, [test "x$enable_jpeg" = xyes])
+
+dnl # Does the user want LZF?
+dnl AC_MSG_CHECKING([whether LZF filter library should be built and installed])
+dnl AC_ARG_ENABLE([lzf],
+dnl               [AS_HELP_STRING([--disable-lzf],
+dnl                               [Disable the build and install of lzf filter library.])])
+dnl test "x$enable_lzf" = xno || enable_lzf=yes
+dnl AC_MSG_RESULT($enable_lzf)
+AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
+
 # We need the math library
 AC_CHECK_LIB([m], [floor], [],
 [AC_MSG_ERROR([Can't find or link to the math library.])])
