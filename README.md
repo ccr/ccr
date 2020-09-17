@@ -15,4 +15,23 @@ Version 1.0 of the CCR supports:
 * BZIP2 compression
 * LZ4 compression
 
+# Building CCR
+
+## Dependencies
+
+CCR relies on third-party compression libraries. These libraries must
+be installed on the target system before CCR is built.
+
+Library   | Source 
+--------- |-------
+LZ4       | https://github.com/lz4/lz4
+Zstandard | https://facebook.github.io/zstd/
+
+## Autotools Build
+
+
+
+
+
+
 
