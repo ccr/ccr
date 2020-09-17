@@ -19,8 +19,9 @@ Version 1.0 of the CCR supports:
 
 ## Dependencies
 
-CCR relies on third-party compression libraries. These libraries must
-be installed on the target system before CCR is built.
+CCR depends on netcdf-c, hdf5, and (optionally) third-party
+compression libraries. These libraries must be installed on the target
+system before CCR is built.
 
 Library   | Source                                    | Notes
 --------- |-------                                    | -----
@@ -38,7 +39,10 @@ library files for the third-party libraries.
 
 Example:
 <pre>
-CFLAGS='-g -Wall' CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include' LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/lib' ./configure  --disable-lz4 --disable-zstd 
+export CFLAGS='-g -Wall'
+export CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include'
+export LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/lib'
+./configure  --disable-lz4 --disable-zstd 
 </pre>
 
 Build the CCR code with make, and run tests with make check.

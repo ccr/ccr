@@ -43,6 +43,7 @@
  * - nf90_inq_var_lz4()
  */
 
+#include "config.h"
 #include "ccr.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
@@ -55,10 +56,13 @@ size_t H5Z_filter_bzip2(unsigned int flags, size_t cd_nelmts,
                         const unsigned int cd_values[], size_t nbytes,
                         size_t *buf_size, void **buf);
 
+#ifdef BUILD_LZ4
 /** Filter function for LZ4. */
 size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
                       const unsigned int cd_values[], size_t nbytes,
                       size_t *buf_size, void **buf);
+#endif /* BUILD_LZ4 */
+
 /**
  * Initialize Community Codec Repository library.
  *
@@ -78,6 +82,7 @@ nc_initialize_ccr()
             NULL,                       /* The "set local" callback     */
             (H5Z_func_t)H5Z_filter_bzip2,         /* The actual filter function   */
         }};
+#ifdef BUILD_LZ4
     const H5Z_class2_t H5Z_LZ4[1] = {{
             H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
             (H5Z_filter_t)LZ4_ID,         /* Filter id number             */
@@ -88,6 +93,7 @@ nc_initialize_ccr()
             NULL,                       /* The "set local" callback     */
             (H5Z_func_t)H5Z_filter_lz4,         /* The actual filter function   */
         }};
+#endif /* BUILD_LZ4 */
 
     /* char plugin_path[MAX_LEN + 1]; */
     /* if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR; */
@@ -96,8 +102,10 @@ nc_initialize_ccr()
     if (H5Zregister(H5Z_BZIP2) < 0)
         return NC_EFILTER;
 
+#ifdef BUILD_LZ4
     if (H5Zregister(H5Z_LZ4) < 0)
         return NC_EFILTER;
+#endif /* BUILD_LZ4 */
 
     return 0;
 }
@@ -159,7 +167,15 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
     int ret;
 
     /* Get filter information. */
-    if ((ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level)))
+    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+    if (ret == NC_ENOFILTER)
+    {
+	/* No filter means no bzip2. */
+	if (bzip2p)
+	    *bzip2p = 0;
+	return 0;
+    }
+    else if (ret)
         return ret;
 
     /* Is bzip2 in use? */
@@ -211,6 +227,7 @@ nc_def_var_lz4(int ncid, int varid, int level)
         printf ("lz4 filter not available.\n");
         return NC_EFILTER;
     }
+
     /* Set up the lz4 filter for this var. */
     if ((ret = nc_def_var_filter(ncid, varid, LZ4_ID, 1, &cd_value)))
         return ret;
@@ -242,8 +259,15 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
     int ret;
 
     /* Get filter information. */
-    if ((ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level)))
-        return ret;
+    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+    if (ret == NC_ENOFILTER)
+    {
+	if (lz4p)
+	    *lz4p = 0;
+	return 0;
+    }
+    else if (ret)
+	return ret;
 
     /* Is lz4 in use? */
     if (id == LZ4_ID)

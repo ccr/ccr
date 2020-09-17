@@ -79,6 +79,9 @@ AC_ARG_ENABLE([lz4],
 test "x$enable_lz4" = xno || enable_lz4=yes
 AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
+if test "x$enable_set_log_level_func" = xyes -a "x$enable_netcdf_4" = xyes; then
+   AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
+fi
 
 # Does the user want BITGROOM?
 AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
@@ -132,6 +135,62 @@ AC_CHECK_LIB([m], [floor], [],
 # Check for netCDF C library.
 AC_SEARCH_LIBS([nc_create], [netcdf], [],
                             [AC_MSG_ERROR([Can't find or link to the netcdf C library, set CPPFLAGS/LDFLAGS.])])
+AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
+
+# Do we have netCDF-4?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_NC4
+# error
+#endif]
+])], [have_netcdf4=yes], [have_netcdf4=no])
+AC_MSG_CHECKING([whether netCDF provides netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf4}])
+
+# Do we have a parallel build of netCDF-4? (Really we should be
+# checking NC_HAS_PARALLEL4, but that was only recently introduced, so
+# we will go with NC_HAS_PARALLEL.)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PARALLEL
+# error
+#endif]
+])], [have_netcdf_par=yes], [have_netcdf_par=no])
+AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf_par}])
+
+# Do we have szip?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_SZIP_WRITE
+# error
+#endif]
+])], [have_szip_write=yes], [have_szip_write=no])
+AC_MSG_CHECKING([whether netCDF provides szip write capability])
+AC_MSG_RESULT([${have_szip_write}])
+
+# Do we have parallel filter support? Parallel filters are required
+# for iotype NETCDF4P to use compression.
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PAR_FILTERS
+# error
+#endif]
+])], [have_par_filters=yes], [have_par_filters=no])
+AC_MSG_CHECKING([whether netCDF provides parallel filter support])
+AC_MSG_RESULT([${have_par_filters}])
+if test "x$have_par_filters" = xyes ; then
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netcdf-c supports filters with parallel I/O])
+fi
+
+# Is this version 4.7.2, which does not work?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
+# error
+#endif]
+])], [have_472=yes], [have_472=no])
+AC_MSG_CHECKING([whether this is netcdf-c-4.7.2])
+AC_MSG_RESULT([${have_472}])
+if test "x$have_472" = xyes; then
+   AC_MSG_ERROR([cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
+fi
 
 # Check for netCDF Fortran library.
 if test "x$enable_fortran" = xyes; then
@@ -148,6 +207,9 @@ AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
+
+# Generate the config.h file.
+AC_CONFIG_HEADERS([config.h])
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
