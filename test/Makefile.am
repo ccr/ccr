@@ -11,7 +11,7 @@ LDADD = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/lib
 
 # Build the test.
 check_PROGRAMS = tst_bzip2 tst_lz4
-TESTS = tst_bzip2 tst_lz4
+#TESTS = tst_bzip2 tst_lz4
 
 # Delete files created in testing.
 CLEANFILES = tst_*.nc

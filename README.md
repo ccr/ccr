@@ -15,4 +15,36 @@ Version 1.0 of the CCR supports:
 * BZIP2 compression
 * LZ4 compression
 
+# Building CCR
+
+## Dependencies
+
+CCR relies on third-party compression libraries. These libraries must
+be installed on the target system before CCR is built.
+
+Library   | Source                                    | Notes
+--------- |-------                                    | -----
+netcdf-c  | https://github.com/Unidata/netcdf-c       | required
+HDF5      | https://www.hdfgroup.org/downloads/hdf5   | required
+LZ4       | https://github.com/lz4/lz4                | optional
+Zstandard | https://facebook.github.io/zstd/          | optional 
+
+## Autotools Build
+
+To build, first run the configure script. The configure script will
+try to locate all the necessary dependencies. Use the CPPFLAGS and
+LDFLAGS environment variables to specify the locations of include and
+library files for the third-party libraries.
+
+Example:
+<pre>
+CFLAGS='-g -Wall' CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include' LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/lib' ./configure  --disable-lz4 --disable-zstd 
+</pre>
+
+Build the CCR code with make, and run tests with make check.
+
+
+
+
+
 
