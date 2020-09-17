@@ -11,6 +11,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include"
+      LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib"
+
     steps:
     - uses: actions/checkout@v2
     - name: cache-hdf5
@@ -52,8 +56,6 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        export CPPFLAGS='-I/home/runner/netcdf-c/include -I/home/runner/hdf5/include'
-        export LDFLAGS='-L/home/runner/netcdf-c/lib -L/home/runner/hdf5/lib'
         ./configure --disable-lz4 --disable-zstd --disable-bitgroom 
     - name: make
       run: make
