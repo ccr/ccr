@@ -62,7 +62,7 @@
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
 #define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
-#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array) */
+#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:BITGROOM_FLT_PRM_NBR */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATA_CLASS 2 /* [nbr] Ordinal position of data_class in parameter list (cd_params array) */

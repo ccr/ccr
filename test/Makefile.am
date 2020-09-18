@@ -10,7 +10,7 @@ AM_LDFLAGS = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/sr
 LDADD = ${top_builddir}/src/libccr.la ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 
 # Build the tests.
-check_PROGRAMS = tst_bzip2 tst_lz4
+check_PROGRAMS = tst_bzip2 tst_lz4 tst_bitgroom tst_zstandard
 
 # Always run the bzip2 test.
 TESTS = tst_bzip2
@@ -20,6 +20,20 @@ if BUILD_LZ4
 AM_LDFLAGS += ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 LDADD += ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 TESTS += tst_lz4
+endif
+
+# Build BitGroom tests, if needed.
+if BUILD_BITGROOM
+AM_LDFLAGS += ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+LDADD += ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+TESTS += tst_bitgroom
+endif
+
+# Build Zstandard tests, if needed.
+if BUILD_ZSTANDARD
+AM_LDFLAGS += ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+LDADD += ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+TESTS += tst_zstandard
 endif
 
 # Delete files created in testing.

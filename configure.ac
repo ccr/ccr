@@ -37,7 +37,7 @@ AC_SYS_LARGEFILE
 AC_MSG_CHECKING([whether Fortran library should be built])
 AC_ARG_ENABLE([fortran],
               [AS_HELP_STRING([--enable-fortran],
-                              [build the ncglm Fortran library.])])
+                              [build the CCR Fortran library.])])
 test "x$enable_fortran" = xyes || enable_fortran=no
 AC_MSG_RESULT([$enable_fortran])
 AM_CONDITIONAL(BUILD_FORTRAN, [test "x$enable_fortran" = xyes])

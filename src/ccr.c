@@ -378,8 +378,8 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
  *
  * @param ncid File ID.
  * @param varid Variable ID.
- * @param nsd Number of Significant Digits for quantization. Single and
- * double precision NSDs are in [1,7], [1,15], respectively. (Default is 3).
+ * @param nsd Number of significant digits to retain. Allowed single- and
+ * double-precision NSDs are 1-7 and 1-15, respectively. (Default is 3).
  *
  * @return 0 for success, error code otherwise.
  * @author Charlie Zender
@@ -408,7 +408,7 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
     }
   
   /* Set up the BitGroom filter for this var. */
-  if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, 1, &cd_value)))
+  if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, BITGROOM_FLT_PRM_NBR, &cd_value)))
     return ret;
 
   return 0;
@@ -431,14 +431,14 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
 int
 nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 {
-  unsigned int nsd;
+  unsigned int nsd[BITGROOM_FLT_PRM_NBR];
   unsigned int id;
   size_t nparams;
   int bitgroom = 0; /* Is BitGroom in use? */
   int ret;
   
   /* Get filter information. */
-  ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &nsd);
+  ret = nc_inq_var_filter(ncid, varid, &id, &nparams, nsd);
   if (ret == NC_ENOFILTER)
     {
       if (bitgroomp)
@@ -459,14 +459,15 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
   /* If BitGroom is in use, check parameter. */
   if (bitgroom)
     {
-      /* For BitGroom, there is one parameter. */
-      fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd = %d\n",id,nparams,nsd);
-      if (nparams != 1)
+      /* BitGroom has 6 internal parameter.
+	 We expose only one, NSD, through this API */
+      //fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
+      if (nparams != BITGROOM_FLT_PRM_NBR)
 	return NC_EFILTER;
       
       /* Tell the caller, if they want to know. */
       if (nsdp)
-	*nsdp = nsd;
+	*nsdp =(int)nsd[0];
     }
   
   return 0;
