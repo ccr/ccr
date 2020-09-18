@@ -13,9 +13,9 @@ BZIP2 = BZIP2
 endif
 
 # Does the user want to build lz4?
-#if BUILD_LZ4
+if BUILD_LZ4
 LZ4 = LZ4
-#endif
+endif
 
 # Does the user want to build BitGroom?
 if BUILD_BITGROOM
