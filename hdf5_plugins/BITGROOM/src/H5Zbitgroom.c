@@ -6,7 +6,9 @@
  * HDF5 datasets quantized with BitGrooming.
  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h" /* Autotools tokens */
+#endif
 #include <stdio.h>
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>

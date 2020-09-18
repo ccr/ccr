@@ -14,6 +14,12 @@
 /** The filter ID for LZ4 compression. */
 #define LZ4_ID 32004
 
+/** The filter ID for BitGroom quantization. */
+#define BITGROOM_ID 37373
+
+/** The filter ID for Zstandard compression. */
+#define ZSTANDARD_ID 32015
+
 /* This macro prints an error message with line number and name of
  * test program, and the netCDF error string. */
 #define NC_ERR(stat) do {						\
