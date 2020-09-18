@@ -15,6 +15,8 @@ Version 1.0 of the CCR supports:
 * BZIP2 compression
 * LZ4 compression
 
+For full documentation see https://ccr.github.io/ccr/.
+
 # Building CCR
 
 ## Dependencies

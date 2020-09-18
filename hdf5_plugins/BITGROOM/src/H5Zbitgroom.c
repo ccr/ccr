@@ -284,7 +284,19 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
   if(data_class < 0){
     (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Tget_class() returned invalid data type class identifier = %d for current variable\n",CCR_FLT_NAME,fnc_nm,(int)data_class);
     return 0;
+  }else if(data_class != H5T_FLOAT){
+    if(CCR_FLT_DBG_INFO){
+      (void)fprintf(stdout,"INFO: \"%s\" filter callback function %s reports H5Tget_class() returned data type class identifier = %d != H5T_FLOAT = %d. Attempting to remove quantization filter using H5Premove_filter()...",CCR_FLT_NAME,fnc_nm,(int)data_class,H5T_FLOAT);
+    } /* !CCR_FLT_DBG_INFO */
+    rcd=H5Premove_filter(dcpl,H5Z_FILTER_BITGROOM);
+    if(rcd < 0){
+      if(CCR_FLT_DBG_INFO) (void)fprintf(stdout,"failure :(\n");
+      return 0;
+    } /* !rcd */
+    if(CCR_FLT_DBG_INFO) (void)fprintf(stdout,"success!\n");
+    return 1;
   } /* !data_class */
+  
   /* Set data class in filter parameter list */
   ccr_flt_prm[CCR_FLT_PRM_PSN_DATA_CLASS]=(unsigned int)data_class;
 
