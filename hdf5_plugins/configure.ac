@@ -94,27 +94,13 @@ dnl AC_MSG_RESULT($enable_lzf)
 AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
 
 # Build the filter libraries as desired.
-if test "x$enable_bzip2" = xyes; then
-   AC_CONFIG_SUBDIRS([BZIP2])
-fi
-if test "x$enable_lz4" = xyes; then
-   AC_CONFIG_SUBDIRS([LZ4])
-fi
-if test "x$enable_bitgroom" = xyes; then
-   AC_CONFIG_SUBDIRS([BITGROOM])
-fi
-if test "x$enable_zstd" = xyes; then
-   AC_CONFIG_SUBDIRS([ZSTANDARD])
-fi
-dnl if test "x$enable_blosc" = xyes; then
+AC_CONFIG_SUBDIRS([BZIP2])
+AC_CONFIG_SUBDIRS([LZ4])
+AC_CONFIG_SUBDIRS([BITGROOM])
+AC_CONFIG_SUBDIRS([ZSTANDARD])
 dnl    AC_CONFIG_SUBDIRS([BLOSC])
-dnl fi
-dnl if test "x$enable_jpeg" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([JPEG])
-dnl fi
-dnl if test "x$enable_lzf" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([LZF])
-dnl fi
 #AC_CONFIG_SUBDIRS([BSHUF])
 
 # These files will be created when the configure script is run.

@@ -7,5 +7,7 @@
 # This directory stores libtool macros, put there by aclocal.
 ACLOCAL_AMFLAGS = -I m4
 
-# Build these subdirectories.
-SUBDIRS = src #example
+# Build thesesubdirectories.
+if BUILD_LZ4
+SUBDIRS = src example
+endif
