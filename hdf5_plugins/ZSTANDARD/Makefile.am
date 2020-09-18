@@ -8,4 +8,4 @@
 ACLOCAL_AMFLAGS = -I m4
 
 # Build these subdirectories
-SUBDIRS = src #example
+SUBDIRS = src example

@@ -33,6 +33,15 @@ AC_ARG_WITH([hdf5-plugin-dir],
 AC_MSG_RESULT($HDF5_PLUGIN_DIR)
 AC_SUBST([HDF5_PLUGIN_DIR])
 
+# Does the user want LZ4?
+AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+AC_ARG_ENABLE([lz4],
+              [AS_HELP_STRING([--disable-lz4],
+                              [Disable the build and install of lz4 filter library.])])
+test "x$enable_lz4" = xno || enable_lz4=yes
+AC_MSG_RESULT($enable_lz4)
+AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
+
 # Is the lz4 library present?
 AC_CHECK_HEADERS([lz4.h], [], [AC_MSG_ERROR([lz4.h is required, set CPPFLAGS.])])
 AC_CHECK_LIB([lz4], [LZ4_compress], [], [AC_MSG_ERROR([liblz4 is required, set LDFLAGS.])])
