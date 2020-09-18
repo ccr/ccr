@@ -387,24 +387,31 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
 int
 nc_def_var_bitgroom(int ncid, int varid, int nsd)
 {
-    unsigned int cd_value = nsd;
-    int ret;
-
-    /* NSD must be between 1 and 15 */
-    if (nsd < 1 || nsd > 15)
-        return NC_EINVAL;
-
-    if (!H5Zfilter_avail(BITGROOM_ID))
+  /* NB: Internally, the filter requires six elements for cd_value
+     However, only the first element, NSD, is required, as the other
+     arguments can be and are derived from the dcpl (data_class, datum_size),
+     and extra queries of the variable (has_mss_val, mss_val).
+     Hence, we expose and require only the minimal number (1) of 
+     filter parameters to the netCDF mechanism.
+     Everything else should be automagical (knock on wood). */ 
+  unsigned int cd_value = nsd;
+  int ret;
+  
+  /* NSD must be between 1 and 15 */
+  if (nsd < 1 || nsd > 15)
+    return NC_EINVAL;
+  
+  if (!H5Zfilter_avail(BITGROOM_ID))
     {
-        printf ("BitGroom filter not available.\n");
-        return NC_EFILTER;
+      printf ("BitGroom filter not available.\n");
+      return NC_EFILTER;
     }
+  
+  /* Set up the BitGroom filter for this var. */
+  if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, 1, &cd_value)))
+    return ret;
 
-    /* Set up the BitGroom filter for this var. */
-    if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, 1, &cd_value)))
-        return ret;
-
-    return 0;
+  return 0;
 }
 
 /**
@@ -424,41 +431,133 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
 int
 nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 {
-    unsigned int nsd;
+  unsigned int nsd;
+  unsigned int id;
+  size_t nparams;
+  int bitgroom = 0; /* Is BitGroom in use? */
+  int ret;
+  
+  /* Get filter information. */
+  ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &nsd);
+  if (ret == NC_ENOFILTER)
+    {
+      if (bitgroomp)
+	*bitgroomp = 0;
+      return 0;
+    }
+  else if (ret)
+    return ret;
+  
+  /* Is BitGroom in use? */
+  if (id == BITGROOM_ID)
+    bitgroom++;
+  
+  /* Does caller want to know if BitGroom is in use? */
+  if (bitgroomp)
+    *bitgroomp = bitgroom;
+  
+  /* If BitGroom is in use, check parameter. */
+  if (bitgroom)
+    {
+      /* For BitGroom, there is one parameter. */
+      fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd = %d\n",id,nparams,nsd);
+      if (nparams != 1)
+	return NC_EFILTER;
+      
+      /* Tell the caller, if they want to know. */
+      if (nsdp)
+	*nsdp = nsd;
+    }
+  
+  return 0;
+}
+
+/**
+ * Turn on Zstandard compression for a variable.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param level From -131072 to 22 (depends on Zstandard version). 
+ * when compressing. (Zstandard default level is 3).
+ *
+ * @return 0 for success, error code otherwise.
+ * @author Charlie Zender
+ */
+int
+nc_def_var_zstandard(int ncid, int varid, int level)
+{
+    unsigned int cd_value = level;
+    int ret;
+
+    /* Level must be between 1 and 9. */
+    if (level < -131072 || level > 22)
+        return NC_EINVAL;
+
+    if (!H5Zfilter_avail(ZSTANDARD_ID))
+    {
+        printf ("Zstandard filter not available.\n");
+        return NC_EFILTER;
+    }
+
+    /* Set up the Zstandard filter for this var. */
+    if ((ret = nc_def_var_filter(ncid, varid, ZSTANDARD_ID, 1, &cd_value)))
+        return ret;
+
+    return 0;
+}
+
+/**
+ * Learn whether Zstandard compression is on for a variable, and, if so,
+ * the level setting.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param zstandardp Pointer that gets a 0 if Zstandard is not in use for this
+ * var, and a 1 if it is. Ignored if NULL.
+ * @param levelp Pointer that gets the level setting (from 1 to 9), if
+ * bzlip2 is in use. Ignored if NULL.
+ *
+ * @return 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
+{
+    unsigned int level;
     unsigned int id;
     size_t nparams;
-    int bitgroom = 0; /* Is BitGroom in use? */
+    int zstandard = 0; /* Is Zstandard in use? */
     int ret;
 
     /* Get filter information. */
-    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &nsd);
+    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
     if (ret == NC_ENOFILTER)
     {
-	if (bitgroomp)
-	    *bitgroomp = 0;
+	if (zstandardp)
+	    *zstandardp = 0;
 	return 0;
     }
     else if (ret)
 	return ret;
 
-    /* Is BitGroom in use? */
-    if (id == BITGROOM_ID)
-        bitgroom++;
+    /* Is Zstandard in use? */
+    if (id == ZSTANDARD_ID)
+        zstandard++;
 
-    /* Does caller want to know if BitGroom is in use? */
-    if (bitgroomp)
-        *bitgroomp = bitgroom;
+    /* Does caller want to know if Zstandard is in use? */
+    if (zstandardp)
+        *zstandardp = zstandard;
 
-    /* If BitGroom is in use, check parameter. */
-    if (bitgroom)
+    /* If Zstandard is in use, check parameter. */
+    if (zstandard)
     {
-        /* For BitGroom, there is one parameter. */
+        /* For Zstandard, there is one parameter. */
         if (nparams != 1)
             return NC_EFILTER;
 
         /* Tell the caller, if they want to know. */
-        if (nsdp)
-            *nsdp = nsd;
+        if (levelp)
+            *levelp = level;
     }
 
     return 0;

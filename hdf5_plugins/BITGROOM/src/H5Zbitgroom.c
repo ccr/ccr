@@ -182,8 +182,11 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     size_t datum_size=cd_values[CCR_FLT_PRM_PSN_DATUM_SIZE];
     H5T_class_t data_class=(H5T_class_t)cd_values[CCR_FLT_PRM_PSN_DATA_CLASS];
     int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
-    ptr_unn mss_val=(ptr_unn)NULL; /* [val] Value of missing value */
+    ptr_unn mss_val; /* [val] Value of missing value */
     ptr_unn op1; /* I/O [frc] Values to quantize */
+
+    /* ISO C, including gcc -pedantic, forbids casting unions (like mss_val) to incompatible data-types (e.g., NULL, which is void *) so, instead, initialize union member to NULL */
+    mss_val.vp=NULL;
     
     if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports datum size = %lu B, has_mss_val = %d\n",fnc_nm,datum_size,has_mss_val);
 
