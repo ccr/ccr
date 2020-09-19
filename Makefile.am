@@ -1,5 +1,5 @@
 # This is an automake file for the NetCDF Community Codec Repository
-# (crr).
+# (CCR).
 
 # Ed Hartnett 12/24/2019
 

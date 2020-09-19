@@ -1,3 +1,9 @@
+2020-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Add BitGroom/Zstandard tests for C/netCDF API, C/HDF5 API, and Fortran/netCDF API
+
+	* Add BitGroom/Zstandard Fortran API
+
 2020-09-17  Charlie Zender  <zender@uci.edu>
 
 	* BitGroom: auto-turn-off quantization filter for non-H5T_FLOAT variables

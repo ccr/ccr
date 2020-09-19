@@ -177,7 +177,9 @@ main()
                 }
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
-		 if (data_in[x] == data_out[x]+73 ) ERR;
+		  /* Check the data. Quantization alter data, so do not check for equality :) */
+		  /* fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
+		  if (data_in[x] == data_out[x]+73 ) ERR;
                 if (nc_close(ncid)) ERR;
             }
         } /* next file */

@@ -1,21 +1,20 @@
 /*
  * This is a test in the Community Codec Repository.
  *
- * This test checks the LZ4 filter.
+ * This test checks the Zstandard filter.
  *
- * Ed Hartnett
- * 12/30/19
+ * Charlie Zender 9/19/20
  */
 
 #include "ccr_test.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
-#define FILE_NAME "tst_h_lz4.h5"
+#define FILE_NAME "tst_h_zstandard.h5"
 #define STR_LEN 255
 #define MAX_LEN 1024
 
-size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
+size_t H5Z_filter_zstandard(unsigned int flags, size_t cd_nelmts,
                       const unsigned int cd_values[], size_t nbytes,
                       size_t *buf_size, void **buf);
 
@@ -41,17 +40,17 @@ main()
         int data_in[NX][NY], data_out[NX][NY];
         hsize_t fdims[NDIMS], fmaxdims[NDIMS];
         hsize_t chunksize[NDIMS], dimsize[NDIMS], maxdimsize[NDIMS];
-        const unsigned cd_values[1] = {3};          /* LZ4 default level is 3 */
+        const unsigned cd_values[1] = {3};          /* Zstandard default level is 3 */
         int x, y;
-        const H5Z_class2_t H5Z_LZ4[1] = {{
+        const H5Z_class2_t H5Z_ZSTANDARD[1] = {{
                 H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-                (H5Z_filter_t)LZ4_ID,         /* Filter id number             */
+                (H5Z_filter_t)ZSTANDARD_ID,         /* Filter id number             */
                 1,              /* encoder_present flag (set to true) */
                 1,              /* decoder_present flag (set to true) */
-                "lz4",                  /* Filter name for debugging    */
+                "Zstandard",                  /* Filter name for debugging    */
                 NULL,                       /* The "can apply" callback     */
                 NULL,                       /* The "set local" callback     */
-                (H5Z_func_t)H5Z_filter_lz4,         /* The actual filter function   */
+                (H5Z_func_t)H5Z_filter_zstandard,         /* The actual filter function   */
             }};
 
         /* Create some data to write. */
@@ -59,11 +58,11 @@ main()
             for (y = 0; y < NY; y++)
                 data_out[x][y] = x * NY + y;
 
-        if (H5Zregister(H5Z_LZ4) < 0) ERR;
+        if (H5Zregister(H5Z_ZSTANDARD) < 0) ERR;
 
-        if (!H5Zfilter_avail(LZ4_ID))
+        if (!H5Zfilter_avail(ZSTANDARD_ID))
         {
-            printf ("lz4 filter not available.\n");
+            printf ("Zstandard filter not available.\n");
             return 1;
         }
 
@@ -90,7 +89,7 @@ main()
         if (H5Pset_chunk(plistid, NDIMS, chunksize) < 0)ERR;
 
         /* Set up compression. */
-        if (H5Pset_filter (plistid, (H5Z_filter_t)LZ4_ID, H5Z_FLAG_MANDATORY,
+        if (H5Pset_filter (plistid, (H5Z_filter_t)ZSTANDARD_ID, H5Z_FLAG_MANDATORY,
                            (size_t)1, cd_values) < 0) ERR;
 
         /* Create the variable. */

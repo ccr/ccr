@@ -51,14 +51,14 @@ Build the CCR code with make, and run tests with make check.
 
 ## Obtain Optional External Libraries as Pre-built Packages
 
-Codec     |  Environment | Command
+Codec     |  Environment | Install Command
 --------- |------------- | ---------------
 LZ4       |  Debian      | sudo aptitude install liblz4-dev
 LZ4       |  MacPorts    | sudo port install lz4
-LZ4       |  Fedora	 | sudo dnf install lz4-devel
-Zstandard |  Debian	 | sudo aptitude install libzstd-dev
-Zstandard |  MacPorts	 | sudo port install zstd
-Zstandard |  Fedora	 | sudo dnf install libzstd-devel
+LZ4       |  Fedora      | sudo dnf install lz4-devel
+Zstandard |  Debian      | sudo aptitude install libzstd-dev
+Zstandard |  MacPorts    | sudo port install zstd
+Zstandard |  Fedora      | sudo dnf install libzstd-devel
 
 
 

@@ -459,8 +459,9 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
   /* If BitGroom is in use, check parameter. */
   if (bitgroom)
     {
-      /* BitGroom has 6 internal parameter.
-	 We expose only one, NSD, through this API */
+      /* BitGroom has 6 internal parameters.
+	 We expose only the first (NSD) through this API because a variable's properties 
+	 uniquely determine the remainder and exposing them to users, well, invites disaster */
       //fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
       if (nparams != BITGROOM_FLT_PRM_NBR)
 	return NC_EFILTER;

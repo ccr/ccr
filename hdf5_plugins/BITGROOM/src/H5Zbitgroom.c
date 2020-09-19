@@ -243,7 +243,7 @@ ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets 
 {
   /* Data space must be simple, i.e., a multi-dimensional array */
   if(H5Sis_simple(space) <= 0){
-    fprintf(stderr,"Warning: Cannot apply filter \"%s\" filter because data space is not simple.\n",CCR_FLT_NAME);
+    fprintf(stderr,"WARNING: Cannot apply filter \"%s\" filter because data space is not simple.\n",CCR_FLT_NAME);
     return 0;
   } /* !H5Sis_simple(space) */
 
