@@ -40,6 +40,9 @@ AC_SUBST([HDF5_PLUGIN_DIR])
 AC_CHECK_HEADERS([zstd.h], [], [AC_MSG_ERROR([zstd.h is required, set CPPFLAGS.])])
 AC_CHECK_LIB([zstd], [ZSTD_compress], [], [AC_MSG_ERROR([libzstd is required, set LDFLAGS.])])
 
+# Modern Zstandard libraries support ZSTD_minCLevel()
+AC_CHECK_FUNC([ZSTD_minCLevel],AC_DEFINE([HAVE_ZSTD_MINCLEVEL],1,[Define to 1 if 'ZSTD_minCLevel()' is present]),ccr_have_zstd_minclevel=no)
+
 # We need the math library (20200915 fxm for what?)
 AC_CHECK_LIB([m], [floor], [], [AC_MSG_ERROR([Math library is required.])])
 

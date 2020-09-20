@@ -150,7 +150,11 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
   }else{ /* !flags */
     
     /* Set parameters needed by compression library filter */
-    const int cmp_lvl_min=ZSTD_minCLevel(); /* [enm] Minimum compression aggression level NB: Could use ZSTD_minCLevel() instead, though those levels can be negative so just stick with 1 */
+#ifdef HAVE_ZSTD_MINCLEVEL
+    const int cmp_lvl_min=ZSTD_minCLevel(); /* [enm] Minimum compression aggression level reported by modern (~v. 1.4.5, ~2020) Zstandard libraries, not distributed by Ubuntu Bionic */
+#else
+    const int cmp_lvl_min=0; /* [enm] Old Zstandard, ern can be negative so just stick with 1 */
+#endif
     const int cmp_lvl_max=ZSTD_maxCLevel(); /* [enm] Maximum compression aggression level */
     int cmp_lvl; /* [enm] Compression aggression level */
 

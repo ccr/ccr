@@ -134,7 +134,7 @@ AC_CHECK_LIB([m], [floor], [],
 
 # Check for netCDF C library.
 AC_SEARCH_LIBS([nc_create], [netcdf], [],
-                            [AC_MSG_ERROR([Can't find or link to the netcdf C library, set CPPFLAGS/LDFLAGS.])])
+                            [AC_MSG_ERROR([Can't find or link to the netCDF C library, set CPPFLAGS/LDFLAGS.])])
 AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Do we have netCDF-4?
@@ -176,7 +176,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides parallel filter support])
 AC_MSG_RESULT([${have_par_filters}])
 if test "x$have_par_filters" = xyes ; then
-   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netcdf-c supports filters with parallel I/O])
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netCDF-C supports filters with parallel I/O])
 fi
 
 # Is this version 4.7.2, which does not work?
@@ -195,14 +195,14 @@ fi
 # Check for netCDF Fortran library.
 if test "x$enable_fortran" = xyes; then
    AC_LANG_PUSH(Fortran)
-   AC_SEARCH_LIBS([nf_create], [netcdff], [], [AC_MSG_ERROR([Can't find or link to the netcdf Fortran library, set CPPFLAGS/LDFLAGS.])])
+   AC_SEARCH_LIBS([nf_create], [netcdff], [], [AC_MSG_ERROR([Can't find or link to the netCDF Fortran library, set CPPFLAGS/LDFLAGS.])])
    AC_LANG_POP(Fortran)
 fi
 
 # Check for the main hdf5 and hdf5_hl library.
-AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([Can't find or link to the hdf5 library.])])
+AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([Can't find or link to the HDF5 library.])])
 AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
-                                  [AC_MSG_ERROR([Can't find or link to the hdf5 high-level library.])])
+                                  [AC_MSG_ERROR([Can't find or link to the HDF5 high-level library.])])
 
 
 # Build the HDF5 plugins.
