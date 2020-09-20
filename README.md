@@ -56,9 +56,11 @@ Codec     |  Environment | Install Command
 LZ4       |  Debian      | sudo aptitude install liblz4-dev
 LZ4       |  MacPorts    | sudo port install lz4
 LZ4       |  Fedora      | sudo dnf install lz4-devel
+LZ4       |  CentOS      | sudo yum install lz4-devel
 Zstandard |  Debian      | sudo aptitude install libzstd-dev
 Zstandard |  MacPorts    | sudo port install zstd
 Zstandard |  Fedora      | sudo dnf install libzstd-devel
+Zstandard |  CentOS      | sudo yum install libzstd-devel
 
 
 

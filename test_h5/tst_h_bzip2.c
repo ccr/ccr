@@ -24,7 +24,7 @@ int
 main()
 {
    printf("\n*** Checking HDF5 variable functions some more.\n");
-   printf("*** Checking HDF5 variable compession and filters...");
+   printf("*** Checking HDF5 variable compression and filters...");
    {
 #define NUM_ELEMENTS 6
 #define MAX_NAME_LEN 50

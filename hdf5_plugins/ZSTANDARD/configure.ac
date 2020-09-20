@@ -42,6 +42,8 @@ AC_CHECK_LIB([zstd], [ZSTD_compress], [], [AC_MSG_ERROR([libzstd is required, se
 
 # Modern Zstandard libraries support ZSTD_minCLevel()
 AC_CHECK_FUNC([ZSTD_minCLevel],AC_DEFINE([HAVE_ZSTD_MINCLEVEL],1,[Define to 1 if 'ZSTD_minCLevel()' is present]),ccr_have_zstd_minclevel=no)
+AC_CHECK_FUNC([ZSTD_maxCLevel],AC_DEFINE([HAVE_ZSTD_MAXCLEVEL],1,[Define to 1 if 'ZSTD_maxCLevel()' is present]),ccr_have_zstd_maxclevel=no)
+AC_CHECK_FUNC([ZSTD_getFrameContentSize],AC_DEFINE([HAVE_ZSTD_GETFRAMECONTENTSIZE],1,[Define to 1 if 'ZSTD_getFrameContentSize()' is present]),ccr_have_zstd_getframecontentsize=no)
 
 # We need the math library (20200915 fxm for what?)
 AC_CHECK_LIB([m], [floor], [], [AC_MSG_ERROR([Math library is required.])])
