@@ -491,7 +491,8 @@ nc_def_var_zstandard(int ncid, int varid, int level)
     unsigned int cd_value = level;
     int ret;
 
-    /* Level must be between 1 and 9. */
+    /* Level must be between -131072 and 22 on Zstandard v. 1.4.5 (~202009)
+       Earlier versions have fewer levels (especially fewer negative levels) */
     if (level < -131072 || level > 22)
         return NC_EINVAL;
 

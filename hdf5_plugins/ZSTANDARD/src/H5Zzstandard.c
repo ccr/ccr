@@ -166,7 +166,7 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
 #ifdef HAVE_ZSTD_MAXCLEVEL
     const int cmp_lvl_max=ZSTD_maxCLevel(); /* [enm] Maximum compression aggression level */
 #else /* !HAVE_ZSTD_MAXCLEVEL */
-    /* 20200920: Zstandard 1.3.1 distributed with Ubuntu Xenial 16.04 LTS lacks ZSTD_maxCLevel() */
+    /* 20200920: Zstandard 0.5 distributed with Ubuntu Xenial 16.04 LTS lacks ZSTD_maxCLevel() */
     const int cmp_lvl_max=19; /* [enm] Maximum compression aggression level (supported by v. 1.3.1)*/
 #endif /* !HAVE_ZSTD_MAXCLEVEL */
 
