@@ -1,4 +1,4 @@
-# This file builds the test directory for the ccr library. These tests
+# This file builds the test directory for the CCR library. These tests
 # depend on netCDF.
 
 # Ed Hartnett 12/30/2019

@@ -172,7 +172,7 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
 
     int cmp_lvl; /* [enm] Compression aggression level */
 
-    /* 20200915: ZSTD_H_235446 defines ZSTD_CLEVEL_DEFAULT == 3 
+    /* 20200915: Zstandard defines ZSTD_CLEVEL_DEFAULT == 3 since version 0.7.4 (~2016)
        However, earlier zstd.h may not define this token, as evidenced by failure of 
        Travis CI on Ubuntu Bionic to find this token with that version of Zstandard */
 #ifndef ZSTD_CLEVEL_DEFAULT

@@ -1,4 +1,4 @@
-j# This file builds the fsrc directory for the CCR library.
+# This file builds the fsrc directory for the CCR library.
 
 # Ed Hartnett 1/23/2020
 
