@@ -79,7 +79,7 @@ AC_ARG_ENABLE([lz4],
 test "x$enable_lz4" = xno || enable_lz4=yes
 AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
-if test "x$enable_set_log_level_func" = xyes -a "x$enable_netcdf_4" = xyes; then
+if test "x$enable_lz4" = xyes; then
    AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
 fi
 
