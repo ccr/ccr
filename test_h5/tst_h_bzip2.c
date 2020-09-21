@@ -24,7 +24,7 @@ int
 main()
 {
    printf("\n*** Checking HDF5 variable functions some more.\n");
-   printf("*** Checking HDF5 variable compession and filters...");
+   printf("*** Checking HDF5 variable compression and filters...");
    {
 #define NUM_ELEMENTS 6
 #define MAX_NAME_LEN 50
@@ -61,8 +61,11 @@ main()
 	 for (y = 0; y < NY; y++)
 	    data_out[x][y] = x * NY + y;
 
-      if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
-      printf("plugin_path %s\n", plugin_path);
+      /* 20200920 H5PLget() was introduced in HDF5 1.10.1 
+	 CCR should run with HDF 1.8.x 
+	 Removing this test for now */
+      //if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR;
+      //printf("plugin_path %s\n", plugin_path);
 
       if (H5Zregister(H5Z_BZIP2) < 0) ERR;
 

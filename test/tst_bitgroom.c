@@ -1,9 +1,11 @@
 /* This is part of the CCR package. Copyright 2020.
 
-   Test LZ4 compression.
+   Test BitGroom quantization.
 
-   Ed Hartnett 1/20/20
+   Charlie Zender 9/18/20, Ed Hartnett 1/20/20
 */
+
+#include <math.h> /* Needed for round() test */
 
 #include "ccr.h"
 #include "ccr_test.h"
@@ -11,8 +13,8 @@
 #include <H5DSpublic.h>
 #include <netcdf.h>
 
-#define FILE_NAME "tst_lz4.nc"
-#define TEST "tst_lz4"
+#define FILE_NAME "tst_bitgroom.nc"
+#define TEST "tst_bitgroom"
 #define STR_LEN 255
 #define MAX_LEN 1024
 #define X_NAME "X"
@@ -36,15 +38,17 @@
 int
 main()
 {
-    printf("\n*** Checking LZ4 filter.\n");
-    printf("*** Checking LZ4 compression...");
+    printf("\n*** Checking BitGroom filter.\n");
+    printf("*** Checking BitGroom quantization...");
     {
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int data_out[NX][NY];
+        float data_out[NX][NY];
         int x, y;
-        int level_in, lz4;
+	int nsd_in;
+	int params[BITGROOM_FLT_PRM_NBR];
+        int bitgroom;
 
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
@@ -63,29 +67,31 @@ main()
 	  ;
 
         /* Create the variable. */
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+        if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
 
         /* These won't work. */
-        if (nc_def_var_lz4(ncid, varid, -9) != NC_EINVAL) ERR;
-        if (nc_def_var_lz4(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_lz4(ncid, varid, 10) != NC_EINVAL) ERR;
+        if (nc_def_var_bitgroom(ncid, varid, -9) != NC_EINVAL) ERR;
+        if (nc_def_var_bitgroom(ncid, varid, 0) != NC_EINVAL) ERR;
+        if (nc_def_var_bitgroom(ncid, varid, 16) != NC_EINVAL) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-        if (lz4) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
+        if (bitgroom) ERR;
 
-        /* Set up compression. */
-        if (nc_def_var_lz4(ncid, varid, 3)) ERR;
+        /* Set up quantization. */
+        if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-        if (!lz4 || level_in != 3) ERR;
-        level_in = 0;
-        lz4 = 1;
-        if (nc_inq_var_lz4(ncid, varid, NULL, &level_in)) ERR;
-        if (nc_inq_var_lz4(ncid, varid, &lz4, NULL)) ERR;
-        if (!lz4 || level_in != 3) ERR;
-        if (nc_inq_var_lz4(ncid, varid, NULL, NULL)) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
+        nsd_in = params[0];
+        if (!bitgroom || nsd_in != 3) ERR;
+        nsd_in = 0;
+        bitgroom = 1;
+        if (nc_inq_var_bitgroom(ncid, varid, NULL, params)) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, NULL)) ERR;
+        nsd_in = params[0];
+        if (!bitgroom || nsd_in != 3) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, NULL, NULL)) ERR;
 
         /* Write the data. */
         if (nc_put_var(ncid, varid, data_out)) ERR;
@@ -94,29 +100,32 @@ main()
         if (nc_close(ncid)) ERR;
 
         {
-            int data_in[NX][NY];
+            float data_in[NX][NY];
 
             /* Now reopen the file and check. */
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
             /* Check setting. */
-            if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-            if (!lz4 || level_in != 3) ERR;
+            if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
+	    nsd_in=params[0];
+            if (!bitgroom || nsd_in != 3) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
 
-            /* Check the data. */
+            /* Check the data. Quantization alter data, so do not check for equality :) */
+	    /* fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
             for (x = 0; x < NX; x++)
                for (y = 0; y < NY; y++)
-                  if (data_in[x][y] != data_out[x][y]) ERR;
+		 if (round(data_in[x][y]) <= data_out[x][y]-2 ||
+		     round(data_in[x][y]) >= data_out[x][y]+2 ) ERR;
 
             /* Close the file. */
             if (nc_close(ncid)) ERR;
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking LZ4 size of compression...");
+    printf("*** Checking BitGroom size of quantization...");
     {
         int ncid;
         int dimid[NDIM2];
@@ -124,7 +133,7 @@ main()
         int *data_out;
         int *data_in;
         int x, y, f;
-        int level_in, lz4;
+        int nsd_in, bitgroom;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
         if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
@@ -139,7 +148,7 @@ main()
         {
             char file_name[STR_LEN + 1];
 
-            sprintf(file_name, "%s_%s.nc", TEST, (f ? "lz4" : "uncompressed"));
+            sprintf(file_name, "%s_%s.nc", TEST, (f ? "bitgroom" : "unquantized"));
             nc_set_log_level(3);
 
             /* Create file. */
@@ -148,27 +157,29 @@ main()
 	      ;
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
 	      ;
-            if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+            if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
-                if (nc_def_var_lz4(ncid, varid, 3)) ERR;
+                if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
             if (nc_put_var(ncid, varid, data_out)) ERR;
             if (nc_close(ncid)) ERR;
 
             /* Check file. */
             {
                 if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
-                if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
+                if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
                 if (f)
                 {
-                    if (!lz4 || level_in != 3) ERR;
+                    if (!bitgroom || nsd_in != 3) ERR;
                 }
                 else
                 {
-                    if (lz4) ERR;
+                    if (bitgroom) ERR;
                 }
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
-                    if (data_in[x] != data_out[x]) ERR;
+		  /* Check the data. Quantization alter data, so do not check for equality :) */
+		  /* fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
+		  if (data_in[x] == data_out[x]+73 ) ERR;
                 if (nc_close(ncid)) ERR;
             }
         } /* next file */

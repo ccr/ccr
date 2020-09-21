@@ -26,5 +26,25 @@ tst_lz4_size_LDFLAGS = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 tst_lz4_size_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 endif
 
+# Build the BitGroom tests?
+if BUILD_BITGROOM
+#TESTS += tst_h_bitgroom
+check_PROGRAMS += tst_h_bitgroom
+tst_h_bitgroom_LDFLAGS = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+tst_h_bitgroom_LDADD = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+#tst_bitgroom_size_LDFLAGS = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+#tst_bitgroom_size_LDADD = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
+endif
+
+# Build the Zstandard tests?
+if BUILD_ZSTANDARD
+TESTS += tst_h_zstandard tst_zstandard_size
+check_PROGRAMS += tst_h_zstandard tst_zstandard_size
+tst_h_zstandard_LDFLAGS = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+tst_h_zstandard_LDADD = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+tst_zstandard_size_LDFLAGS = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+tst_zstandard_size_LDADD = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
+endif
+
 # Delete files created in testing.
 CLEANFILES = tst_*.h5
