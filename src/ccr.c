@@ -56,6 +56,20 @@
  *
  * BitGroom
  *
+ * The BitGroom filter quantizes the mantissa of floating point values
+ * (integers are unaffected) by the appropriate amount to retain not
+ * less than the requested Number of Significant Digits (NSD), usually
+ * taken as the intrinsic precision of the measured or modeled data.
+ * BitGroomed data remain in IEEE-754 format, and are more accurate
+ * than other quantization filters such as BitShaving and Bitsetting.
+ * Consider BitGroom as a pre-filter for subsequent lossless compression 
+ * which with the simple mantissas yields better compression ratios.
+ * Zender, C. S. (2016), Bit Grooming: Statistically accurate 
+ * precision-preserving quantization with compression, evaluated in 
+ * the netCDF Operators (NCO, v4.4.8+), Geosci. Model Dev., 9, 
+ * 3199-3211, doi:10.5194/gmd-9-3199-2016.
+ * For more info see http://nco.sf.net/nco.html#bg.
+ *
  * In C:
  * - nc_def_var_bitgroom()
  * - nc_inq_var_bitgroom()
