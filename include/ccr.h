@@ -18,7 +18,7 @@
 #define BITGROOM_ID 37373
 
 /** Number of parameters used internally by filter and returned by nc_inq_var_bitgroom() */
-#define BITGROOM_FLT_PRM_NBR 6 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
+#define BITGROOM_FLT_PRM_NBR 5 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
 
 /** The filter ID for Zstandard compression. */
 #define ZSTANDARD_ID 32015

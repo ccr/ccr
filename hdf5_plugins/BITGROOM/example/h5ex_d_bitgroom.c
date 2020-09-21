@@ -45,11 +45,11 @@ main (void)
     char            filter_name[80];
     hsize_t         dims[2] = {DIM0, DIM1},
                     chunk[2] = {CHUNK0, CHUNK1};
-    size_t          nelmts = 6;                /* number of elements in cd_values */
+    size_t          nelmts = 5;                /* number of elements in cd_values */
     unsigned int    flags;
     unsigned        filter_config;
-    const unsigned int    cd_values[6] = {3,4,1,0,0,0}; /* BitGroom default is NSD,sizeof(data),data_class,has_mss_val,mss_val[,mss_ */
-    unsigned int    values_out[6] = {99,99,99,99,99,99};
+    const unsigned int    cd_values[5] = {3,4,0,0,0}; /* BitGroom default is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
+    unsigned int    values_out[6] = {99,99,99,99,99};
     float           wdata[DIM0][DIM1],          /* Write buffer */
                     rdata[DIM0][DIM1],          /* Read buffer */
                     max;
@@ -168,7 +168,7 @@ main (void)
     switch (filter_id) {
         case H5Z_FILTER_BITGROOM:
             printf ("%d\n", filter_id);
-            printf ("   Number of parameters is %lu with the values %u, %u, %u, %u, %u, %u\n", nelmts,values_out[0],values_out[1],values_out[2],values_out[3],values_out[4],values_out[5]);
+            printf ("   Number of parameters is %lu with the values %u, %u, %u, %u, %u\n", nelmts,values_out[0],values_out[1],values_out[2],values_out[3],values_out[4]);
             printf ("   To find more about the filter check %s\n", filter_name);
             break;
         default:
