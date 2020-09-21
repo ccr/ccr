@@ -57,8 +57,10 @@ main()
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
         /* Create dims. */
-        if (nc_def_dim(ncid, X_NAME, NX, &dimid[0]));
-        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[0]));
+        if (nc_def_dim(ncid, X_NAME, NX, &dimid[0]))
+	  ;
+        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[0]))
+	  ;
 
         /* Create the variable. */
         if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
@@ -142,8 +144,10 @@ main()
 
             /* Create file. */
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
-            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]));
-            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]));
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
+	      ;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
+	      ;
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
             if (f)
                 if (nc_def_var_lz4(ncid, varid, 3)) ERR;

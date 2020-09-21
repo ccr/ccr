@@ -53,15 +53,16 @@ Build the CCR code with make, and run tests with make check.
 
 Codec     |  Environment | Install Command
 --------- |------------- | ---------------
-LZ4       |  Debian      | sudo aptitude install liblz4-dev
-LZ4       |  MacPorts    | sudo port install lz4
-LZ4       |  Fedora      | sudo dnf install lz4-devel
 LZ4       |  CentOS      | sudo yum install lz4-devel
-Zstandard |  Debian      | sudo aptitude install libzstd1-dev
-Zstandard |  MacPorts    | sudo port install zstd
-Zstandard |  Fedora      | sudo dnf install libzstd-devel
+LZ4       |  Conda       | conda install lz4
+LZ4       |  Debian      | sudo aptitude install liblz4-dev
+LZ4       |  Fedora      | sudo dnf install lz4-devel
+LZ4       |  MacPorts    | sudo port install lz4
 Zstandard |  CentOS      | sudo yum install libzstd-devel
-
+Zstandard |  Conda       | conda install zstd
+Zstandard |  Debian      | sudo aptitude install libzstd1-dev
+Zstandard |  Fedora      | sudo dnf install libzstd-devel
+Zstandard |  MacPorts    | sudo port install zstd
 
 
 
