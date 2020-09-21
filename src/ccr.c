@@ -24,6 +24,11 @@
  *
  * BZIP2
  *
+ * Bzip2 is a free and open-source file compression program that uses
+ * the Burrows–Wheeler algorithm. For more information see
+ * https://www.sourceware.org/bzip2/ and
+ * https://en.wikipedia.org/wiki/Bzip2.
+ *
  * In C:
  * - nc_def_var_bzip2()
  * - nc_inq_var_bzip2()
@@ -33,6 +38,13 @@
  * - nf90_inq_var_bzip2()
  *
  * LZ4
+ *
+ * "LZ4 is a lossless data compression algorithm that is focused on
+ * compression and decompression speed. It belongs to the LZ77 family
+ * of byte-oriented compression schemes" (Wikipedia). For full
+ * documentaton see http://lz4.github.io/lz4/. For additional info see
+ * https://github.com/lz4/lz4 and
+ * https://en.wikipedia.org/wiki/LZ4_(compression_algorithm).
  *
  * In C:
  * - nc_def_var_lz4()
@@ -53,6 +65,15 @@
  * - nf90_inq_var_bitgroom()
  *
  * Zstandard
+ *
+ * From the Zstandard documentation: "Zstandard is a fast compression
+ * algorithm, providing high compression ratios. It also offers a
+ * special mode for small data, called dictionary compression. The
+ * reference library offers a very wide range of speed / compression
+ * trade-off, and is backed by an extremely fast decoder (see
+ * benchmarks below). Zstandard library is provided as open source
+ * software using a BSD license. Its format is stable and published as
+ * IETF RFC 8478." For more info see https://facebook.github.io/zstd/.
  *
  * In C:
  * - nc_def_var_zstandard()

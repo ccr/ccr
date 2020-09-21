@@ -29,6 +29,7 @@ Library   | Source                                    | Notes
 --------- |-------                                    | -----
 netcdf-c  | https://github.com/Unidata/netcdf-c       | required
 HDF5      | https://www.hdfgroup.org/downloads/hdf5   | required
+bzip2     | https://www.sourceware.org/bzip2/         | optional
 LZ4       | https://github.com/lz4/lz4                | optional
 Zstandard | https://facebook.github.io/zstd/          | optional 
 
