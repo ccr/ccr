@@ -1,7 +1,7 @@
-# This is an automake file for the NetCDF Community Codec Repository
-# (crr).
+# This is an automake file for the netCDF Community Codec Repository
+# (CCR).
 
-# Ed Hartnett 12/24/2019
+# Ed Hartnett 12/24/2019, Charlie Zender 9/20/20
 
 # This directory stores libtool macros, put there by aclocal.
 ACLOCAL_AMFLAGS = -I m4
@@ -18,7 +18,7 @@ FTEST = ftest
 endif
 
 # Run make in these subdirectories.
-SUBDIRS = hdf5_plugins include src ${FSRC} ${FTEST} test_h5 test	\
-${DOCS}
+SUBDIRS = hdf5_plugins include src $(FSRC) $(FTEST) test_h5 test	\
+$(DOCS)
 
 EXTRA_DIST = LICENSE README.md

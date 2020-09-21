@@ -127,7 +127,12 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
 
     size_t dcmp_sz; /* [B] Actual decompressed size of source frame content, if known, otherwise error code */
     size_t dcmp_sz_max; /* [B] Decompressed size of source frame content, if known, otherwise error code */
+#ifdef HAVE_ZSTD_GETFRAMECONTENTSIZE
     dcmp_sz_max=ZSTD_getFrameContentSize(*bfr_inout,bfr_sz_in);
+#else  /* !HAVE_ZSTD_GETFRAMECONTENTSIZE */
+    /* 20200920: Zstandard 1.3.1 distributed with Ubuntu Xenial 16.04 LTS lacks ZSTD_getFrameContentSize() */
+    dcmp_sz_max=ZSTD_getDecompressedSize(*bfr_inout,bfr_sz_in);
+#endif  /* !HAVE_ZSTD_GETFRAMECONTENTSIZE */
     if(ZSTD_isError(dcmp_sz_max)){
       (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports error return code = %lu from ZSTD_getFrameContentSize()\n",CCR_FLT_NAME,fnc_nm,dcmp_sz_max);
       goto error;
@@ -150,11 +155,24 @@ H5Z_filter_zstandard /* [fnc] HDF5 Zstandard Filter */
   }else{ /* !flags */
     
     /* Set parameters needed by compression library filter */
-    const int cmp_lvl_min=ZSTD_minCLevel(); /* [enm] Minimum compression aggression level NB: Could use ZSTD_minCLevel() instead, though those levels can be negative so just stick with 1 */
+#ifdef HAVE_ZSTD_MINCLEVEL
+    /* Reported by modern (~v. 1.4.5, ~2020) Zstandard libraries, not distributed by Ubuntu Bionic */
+   const int cmp_lvl_min=ZSTD_minCLevel(); /* [enm] Minimum compression aggression level */
+#else /* !HAVE_ZSTD_MINCLEVEL */
+   /* 20200920: Zstandard distributed with Ubuntu Bionic Travis CI build environment ZSTD_minCLevel() */
+   /* 20200920: Zstandard 1.3.1 distributed with Ubuntu Xenial 16.04 LTS lacks ZSTD_minCLevel() */
+   const int cmp_lvl_min=1; /* [enm] Minimum compression aggression level */
+#endif /* !HAVE_ZSTD_MINCLEVEL */
+#ifdef HAVE_ZSTD_MAXCLEVEL
     const int cmp_lvl_max=ZSTD_maxCLevel(); /* [enm] Maximum compression aggression level */
+#else /* !HAVE_ZSTD_MAXCLEVEL */
+    /* 20200920: Zstandard 0.5 distributed with Ubuntu Xenial 16.04 LTS lacks ZSTD_maxCLevel() */
+    const int cmp_lvl_max=19; /* [enm] Maximum compression aggression level (supported by v. 1.3.1)*/
+#endif /* !HAVE_ZSTD_MAXCLEVEL */
+
     int cmp_lvl; /* [enm] Compression aggression level */
 
-    /* 20200915: ZSTD_H_235446 defines ZSTD_CLEVEL_DEFAULT == 3 
+    /* 20200915: Zstandard defines ZSTD_CLEVEL_DEFAULT == 3 since version 0.7.4 (~2016)
        However, earlier zstd.h may not define this token, as evidenced by failure of 
        Travis CI on Ubuntu Bionic to find this token with that version of Zstandard */
 #ifndef ZSTD_CLEVEL_DEFAULT

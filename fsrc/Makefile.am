@@ -1,11 +1,11 @@
-# This file builds the fsrc directory for the ccr library.
+# This file builds the fsrc directory for the CCR library.
 
 # Ed Hartnett 1/23/2020
 
 # Find the header files.
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-#AM_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+#AM_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5bgr.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5zstd.la
 LIBADD = ${top_builddir}/src/libccr.la
 
 # This is a libtool library.

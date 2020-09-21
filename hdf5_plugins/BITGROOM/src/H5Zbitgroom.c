@@ -6,7 +6,9 @@
  * HDF5 datasets quantized with BitGrooming.
  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h" /* Autotools tokens */
+#endif
 #include <stdio.h>
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -60,7 +62,7 @@
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
 #define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
-#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array) */
+#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:BITGROOM_FLT_PRM_NBR */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATA_CLASS 2 /* [nbr] Ordinal position of data_class in parameter list (cd_params array) */
@@ -180,8 +182,11 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     size_t datum_size=cd_values[CCR_FLT_PRM_PSN_DATUM_SIZE];
     H5T_class_t data_class=(H5T_class_t)cd_values[CCR_FLT_PRM_PSN_DATA_CLASS];
     int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
-    ptr_unn mss_val=(ptr_unn)NULL; /* [val] Value of missing value */
+    ptr_unn mss_val; /* [val] Value of missing value */
     ptr_unn op1; /* I/O [frc] Values to quantize */
+
+    /* ISO C, including gcc -pedantic, forbids casting unions (like mss_val) to incompatible data-types (e.g., NULL, which is void *) so, instead, initialize union member to NULL */
+    mss_val.vp=NULL;
     
     if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports datum size = %lu B, has_mss_val = %d\n",fnc_nm,datum_size,has_mss_val);
 
@@ -238,7 +243,7 @@ ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets 
 {
   /* Data space must be simple, i.e., a multi-dimensional array */
   if(H5Sis_simple(space) <= 0){
-    fprintf(stderr,"Warning: Cannot apply filter \"%s\" filter because data space is not simple.\n",CCR_FLT_NAME);
+    fprintf(stderr,"WARNING: Cannot apply filter \"%s\" filter because data space is not simple.\n",CCR_FLT_NAME);
     return 0;
   } /* !H5Sis_simple(space) */
 
