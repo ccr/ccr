@@ -18,6 +18,9 @@
  *
  * Initialization
  *
+ * Before being used the CCR must be built and installed, and
+ * initialized in user code.
+ *
  * In C:
  * nc_initialize_ccr()
  *
