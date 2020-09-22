@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Installs
+      run: |
+        sudo apt-get install doxygen graphviz
     - name: cache-hdf5
       id: cache-hdf5
       uses: actions/cache@v2
