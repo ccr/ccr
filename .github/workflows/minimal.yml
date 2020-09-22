@@ -56,6 +56,6 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --disable-bitgroom
+        ./configure --disable-lz4 --disable-zstd --disable-bitgroom --enable-docs
         export DISTCHECK_CONFIGURE_FLAGS='--disable-lz4 --disable-zstd --disable-bitgroom'
         make check
