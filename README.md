@@ -33,6 +33,21 @@ bzip2     | https://www.sourceware.org/bzip2/         | optional
 LZ4       | https://github.com/lz4/lz4                | optional
 Zstandard | https://facebook.github.io/zstd/          | optional 
 
+### Obtain Optional External Libraries as Pre-built Packages
+
+Codec     |  Environment | Install Command
+--------- |------------- | ---------------
+LZ4       |  CentOS      | sudo yum install lz4-devel
+LZ4       |  Conda       | conda install lz4
+LZ4       |  Debian      | sudo aptitude install liblz4-dev
+LZ4       |  Fedora      | sudo dnf install lz4-devel
+LZ4       |  MacPorts    | sudo port install lz4
+Zstandard |  CentOS      | sudo yum install libzstd-devel
+Zstandard |  Conda       | conda install zstd
+Zstandard |  Debian      | sudo aptitude install libzstd1-dev
+Zstandard |  Fedora      | sudo dnf install libzstd-devel
+Zstandard |  MacPorts    | sudo port install zstd
+
 ## Autotools Build
 
 To build, first run the configure script. The configure script will
@@ -50,20 +65,19 @@ export LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_h
 
 Build the CCR code with make, and run tests with make check.
 
-## Obtain Optional External Libraries as Pre-built Packages
+# REFERENCES
 
-Codec     |  Environment | Install Command
---------- |------------- | ---------------
-LZ4       |  CentOS      | sudo yum install lz4-devel
-LZ4       |  Conda       | conda install lz4
-LZ4       |  Debian      | sudo aptitude install liblz4-dev
-LZ4       |  Fedora      | sudo dnf install lz4-devel
-LZ4       |  MacPorts    | sudo port install lz4
-Zstandard |  CentOS      | sudo yum install libzstd-devel
-Zstandard |  Conda       | conda install zstd
-Zstandard |  Debian      | sudo aptitude install libzstd1-dev
-Zstandard |  Fedora      | sudo dnf install libzstd-devel
-Zstandard |  MacPorts    | sudo port install zstd
+Delaunay, X., A. Courtois, and F. Gouillon (2019), Evaluation of
+lossless and lossy algorithms for the compression of scientific
+datasets in netCDF-4 or HDF5 files, Geosci. Model Dev., 12(9),
+4099-4113, doi:10.5194/gmd-2018-250, retrieved on Sep 21, 2020 from
+https://www.researchgate.net/publication/335987647_Evaluation_of_lossless_and_lossy_algorithms_for_the_compression_of_scientific_datasets_in_netCDF-4_or_HDF5_files.
 
+Hartnett, E. (2011), netCDF-4/HDF5 File Format,
+https://earthdata.nasa.gov/files/ESDS-RFC-022v1.pdf
 
-
+Zender, C. S. (2016), Bit Grooming: Statistically accurate
+precision-preserving quantization with compression, evaluated in the
+netCDF Operators (NCO, v4.4.8+), Geosci. Model Dev., 9, 3199-3211,
+doi:10.5194/gmd-9-3199-2016 Retrieved on Sep 21, 2020 from
+https://www.researchgate.net/publication/301575383_Bit_Grooming_Statistically_accurate_precision-preserving_quantization_with_compression_evaluated_in_the_netCDF_Operators_NCO_v448.

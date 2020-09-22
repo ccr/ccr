@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Installs
+      run: |
+        sudo apt-get install doxygen graphviz
     - name: cache-hdf5
       id: cache-hdf5
       uses: actions/cache@v2
@@ -56,6 +59,6 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --disable-bitgroom
+        ./configure --disable-lz4 --disable-zstd --disable-bitgroom --enable-docs
         export DISTCHECK_CONFIGURE_FLAGS='--disable-lz4 --disable-zstd --disable-bitgroom'
         make check

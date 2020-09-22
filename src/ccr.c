@@ -14,7 +14,12 @@
  * filters for netCDF/HDF5 files which are not natively supported by
  * the netCDF C library.
  *
+ * @image html NetCDF_Filters.png
+ *
  * Initialization
+ *
+ * Before being used the CCR must be built and installed, and
+ * initialized in user code.
  *
  * In C:
  * nc_initialize_ccr()
@@ -457,7 +462,7 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
  * @param varid Variable ID.
  * @param bitgroomp Pointer that gets a 0 if BitGroom is not in use for this
  * var, and a 1 if it is. Ignored if NULL.
- * @param levelp Pointer that gets the NSD setting (from 1 to 15), if
+ * @param nsdp Pointer that gets the NSD setting (from 1 to 15), if
  * BitGroom is in use. Ignored if NULL.
  *
  * @return 0 for success, error code otherwise.
