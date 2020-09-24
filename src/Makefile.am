@@ -6,10 +6,10 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
 #AM_LDFLAGS = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
-libccr_la_LIBADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
+#libccr_la_LIBADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 
 if BUILD_LZ4
-libccr_la_LIBADD += ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+libccr_la_LIBADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 endif
 
 # This is a libtool library.

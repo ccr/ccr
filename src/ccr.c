@@ -16,17 +16,6 @@
  *
  * @image html NetCDF_Filters.png
  *
- * Initialization
- *
- * Before being used the CCR must be built and installed, and
- * initialized in user code.
- *
- * In C:
- * nc_initialize_ccr()
- *
- * In Fortran:
- * nf90_initialize_ccr()
- *
  * BZIP2
  *
  * Bzip2 is a free and open-source file compression program that uses
@@ -109,34 +98,34 @@
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
-/** The HDF5 ID for the BZIP2 filter. */
-#define H5Z_FILTER_BZIP2 307
+/* /\** The HDF5 ID for the BZIP2 filter. *\/ */
+/* #define H5Z_FILTER_BZIP2 307 */
 
-/** Filter function for bzip2. */
-size_t H5Z_filter_bzip2(unsigned int flags, size_t cd_nelmts,
-                        const unsigned int cd_values[], size_t nbytes,
-                        size_t *buf_size, void **buf);
+/* /\** Filter function for bzip2. *\/ */
+/* size_t H5Z_filter_bzip2(unsigned int flags, size_t cd_nelmts, */
+/*                         const unsigned int cd_values[], size_t nbytes, */
+/*                         size_t *buf_size, void **buf); */
 
-#ifdef BUILD_LZ4
-/** Filter function for LZ4. */
-size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
-                      const unsigned int cd_values[], size_t nbytes,
-                      size_t *buf_size, void **buf);
-#endif /* BUILD_LZ4 */
+/* #ifdef BUILD_LZ4 */
+/* /\** Filter function for LZ4. *\/ */
+/* size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, */
+/*                       const unsigned int cd_values[], size_t nbytes, */
+/*                       size_t *buf_size, void **buf); */
+/* #endif /\* BUILD_LZ4 *\/ */
 
-#ifdef BUILD_BITGROOM
-/** Filter function for BitGroom. */
-size_t H5Z_filter_bitgroom(unsigned int flags, size_t cd_nelmts,
-                      const unsigned int cd_values[], size_t nbytes,
-                      size_t *buf_size, void **buf);
-#endif /* BUILD_BITGROOM */
+/* #ifdef BUILD_BITGROOM */
+/* /\** Filter function for BitGroom. *\/ */
+/* size_t H5Z_filter_bitgroom(unsigned int flags, size_t cd_nelmts, */
+/*                       const unsigned int cd_values[], size_t nbytes, */
+/*                       size_t *buf_size, void **buf); */
+/* #endif /\* BUILD_BITGROOM *\/ */
 
-#ifdef BUILD_ZSTANDARD
-/** Filter function for Zstandard. */
-size_t H5Z_filter_zstandard(unsigned int flags, size_t cd_nelmts,
-                      const unsigned int cd_values[], size_t nbytes,
-                      size_t *buf_size, void **buf);
-#endif /* BUILD_ZSTANDARD */
+/* #ifdef BUILD_ZSTANDARD */
+/* /\** Filter function for Zstandard. *\/ */
+/* size_t H5Z_filter_zstandard(unsigned int flags, size_t cd_nelmts, */
+/*                       const unsigned int cd_values[], size_t nbytes, */
+/*                       size_t *buf_size, void **buf); */
+/* #endif /\* BUILD_ZSTANDARD *\/ */
 
 /**
  * Initialize Community Codec Repository library.
@@ -147,86 +136,86 @@ size_t H5Z_filter_zstandard(unsigned int flags, size_t cd_nelmts,
 int
 nc_initialize_ccr()
 {
-    const H5Z_class2_t H5Z_BZIP2[1] = {{
-            H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-            (H5Z_filter_t)H5Z_FILTER_BZIP2,         /* Filter id number             */
-            1,              /* encoder_present flag (set to true) */
-            1,              /* decoder_present flag (set to true) */
-            "bzip2",                  /* Filter name for debugging    */
-            NULL,                       /* The "can apply" callback     */
-            NULL,                       /* The "set local" callback     */
-            (H5Z_func_t)H5Z_filter_bzip2,         /* The actual filter function   */
-        }};
-#ifdef BUILD_LZ4
-    const H5Z_class2_t H5Z_LZ4[1] = {{
-            H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-            (H5Z_filter_t)LZ4_ID,         /* Filter id number             */
-            1,              /* encoder_present flag (set to true) */
-            1,              /* decoder_present flag (set to true) */
-            "lz4",                  /* Filter name for debugging    */
-            NULL,                       /* The "can apply" callback     */
-            NULL,                       /* The "set local" callback     */
-            (H5Z_func_t)H5Z_filter_lz4,         /* The actual filter function   */
-        }};
-#endif /* BUILD_LZ4 */
-#ifdef BUILD_BITGROOM
-    htri_t /* O [flg] Data meet criteria to apply filter */
-      ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets filter criteria */
-      (hid_t dcpl, /* I [id] Dataset creation property list ID */
-       hid_t type, /* I [id] Dataset type ID */
-       hid_t space); /* I [id] Dataset space ID */
+/*     const H5Z_class2_t H5Z_BZIP2[1] = {{ */
+/*             H5Z_CLASS_T_VERS,       /\* H5Z_class_t version *\/ */
+/*             (H5Z_filter_t)H5Z_FILTER_BZIP2,         /\* Filter id number             *\/ */
+/*             1,              /\* encoder_present flag (set to true) *\/ */
+/*             1,              /\* decoder_present flag (set to true) *\/ */
+/*             "bzip2",                  /\* Filter name for debugging    *\/ */
+/*             NULL,                       /\* The "can apply" callback     *\/ */
+/*             NULL,                       /\* The "set local" callback     *\/ */
+/*             (H5Z_func_t)H5Z_filter_bzip2,         /\* The actual filter function   *\/ */
+/*         }}; */
+/* #ifdef BUILD_LZ4 */
+/*     const H5Z_class2_t H5Z_LZ4[1] = {{ */
+/*             H5Z_CLASS_T_VERS,       /\* H5Z_class_t version *\/ */
+/*             (H5Z_filter_t)LZ4_ID,         /\* Filter id number             *\/ */
+/*             1,              /\* encoder_present flag (set to true) *\/ */
+/*             1,              /\* decoder_present flag (set to true) *\/ */
+/*             "lz4",                  /\* Filter name for debugging    *\/ */
+/*             NULL,                       /\* The "can apply" callback     *\/ */
+/*             NULL,                       /\* The "set local" callback     *\/ */
+/*             (H5Z_func_t)H5Z_filter_lz4,         /\* The actual filter function   *\/ */
+/*         }}; */
+/* #endif /\* BUILD_LZ4 *\/ */
+/* #ifdef BUILD_BITGROOM */
+/*     htri_t /\* O [flg] Data meet criteria to apply filter *\/ */
+/*       ccr_can_apply_bitgroom /\* [fnc] Callback to determine if current variable meets filter criteria *\/ */
+/*       (hid_t dcpl, /\* I [id] Dataset creation property list ID *\/ */
+/*        hid_t type, /\* I [id] Dataset type ID *\/ */
+/*        hid_t space); /\* I [id] Dataset space ID *\/ */
     
-    htri_t /* O [flg] Filter parameters successfully modified for this variable */
-      ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filter parameters */
-      (hid_t dcpl, /* I [id] Dataset creation property list ID */
-       hid_t type, /* I [id] Dataset type ID */
-       hid_t space); /* I [id] Dataset space ID */
+/*     htri_t /\* O [flg] Filter parameters successfully modified for this variable *\/ */
+/*       ccr_set_local_bitgroom /\* [fnc] Callback to determine and set per-variable filter parameters *\/ */
+/*       (hid_t dcpl, /\* I [id] Dataset creation property list ID *\/ */
+/*        hid_t type, /\* I [id] Dataset type ID *\/ */
+/*        hid_t space); /\* I [id] Dataset space ID *\/ */
 
-    const H5Z_class2_t H5Z_BITGROOM[1] = {{
-            H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-            (H5Z_filter_t)BITGROOM_ID,         /* Filter id number             */
-            1,              /* encoder_present flag (set to true) */
-            1,              /* decoder_present flag (set to true) */
-            "BitGroom",                  /* Filter name for debugging    */
-	    (H5Z_can_apply_func_t)ccr_can_apply_bitgroom, /* [fnc] Callback to determine if current variable meets filter criteria */
-	    (H5Z_set_local_func_t)ccr_set_local_bitgroom, /* [fnc] Callback to determine and set per-variable filter parameters */
-            (H5Z_func_t)H5Z_filter_bitgroom,         /* The actual filter function   */
-        }};
-#endif /* BUILD_BITGROOM */
-#ifdef BUILD_ZSTANDARD
-    const H5Z_class2_t H5Z_ZSTANDARD[1] = {{
-            H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-            (H5Z_filter_t)H5Z_FILTER_ZSTANDARD,         /* Filter id number             */
-            1,              /* encoder_present flag (set to true) */
-            1,              /* decoder_present flag (set to true) */
-            "Zstandard",                  /* Filter name for debugging    */
-            NULL,                       /* The "can apply" callback     */
-            NULL,                       /* The "set local" callback     */
-            (H5Z_func_t)H5Z_filter_zstandard,         /* The actual filter function   */
-        }};
-#endif /* BUILD_ZSTANDARD */
+/*     const H5Z_class2_t H5Z_BITGROOM[1] = {{ */
+/*             H5Z_CLASS_T_VERS,       /\* H5Z_class_t version *\/ */
+/*             (H5Z_filter_t)BITGROOM_ID,         /\* Filter id number             *\/ */
+/*             1,              /\* encoder_present flag (set to true) *\/ */
+/*             1,              /\* decoder_present flag (set to true) *\/ */
+/*             "BitGroom",                  /\* Filter name for debugging    *\/ */
+/* 	    (H5Z_can_apply_func_t)ccr_can_apply_bitgroom, /\* [fnc] Callback to determine if current variable meets filter criteria *\/ */
+/* 	    (H5Z_set_local_func_t)ccr_set_local_bitgroom, /\* [fnc] Callback to determine and set per-variable filter parameters *\/ */
+/*             (H5Z_func_t)H5Z_filter_bitgroom,         /\* The actual filter function   *\/ */
+/*         }}; */
+/* #endif /\* BUILD_BITGROOM *\/ */
+/* #ifdef BUILD_ZSTANDARD */
+/*     const H5Z_class2_t H5Z_ZSTANDARD[1] = {{ */
+/*             H5Z_CLASS_T_VERS,       /\* H5Z_class_t version *\/ */
+/*             (H5Z_filter_t)H5Z_FILTER_ZSTANDARD,         /\* Filter id number             *\/ */
+/*             1,              /\* encoder_present flag (set to true) *\/ */
+/*             1,              /\* decoder_present flag (set to true) *\/ */
+/*             "Zstandard",                  /\* Filter name for debugging    *\/ */
+/*             NULL,                       /\* The "can apply" callback     *\/ */
+/*             NULL,                       /\* The "set local" callback     *\/ */
+/*             (H5Z_func_t)H5Z_filter_zstandard,         /\* The actual filter function   *\/ */
+/*         }}; */
+/* #endif /\* BUILD_ZSTANDARD *\/ */
 
     /* char plugin_path[MAX_LEN + 1]; */
     /* if (H5PLget(0, plugin_path, MAX_LEN) < 0) ERR; */
     /* printf("plugin_path %s\n", plugin_path); */
 
-    if (H5Zregister(H5Z_BZIP2) < 0)
-        return NC_EFILTER;
+/*     if (H5Zregister(H5Z_BZIP2) < 0) */
+/*         return NC_EFILTER; */
 
-#ifdef BUILD_LZ4
-    if (H5Zregister(H5Z_LZ4) < 0)
-        return NC_EFILTER;
-#endif /* BUILD_LZ4 */
+/* #ifdef BUILD_LZ4 */
+/*     if (H5Zregister(H5Z_LZ4) < 0) */
+/*         return NC_EFILTER; */
+/* #endif /\* BUILD_LZ4 *\/ */
 
-#ifdef BUILD_BITGROOM
-    if (H5Zregister(H5Z_BITGROOM) < 0)
-        return NC_EFILTER;
-#endif /* BUILD_BITGROOM */
+/* #ifdef BUILD_BITGROOM */
+/*     if (H5Zregister(H5Z_BITGROOM) < 0) */
+/*         return NC_EFILTER; */
+/* #endif /\* BUILD_BITGROOM *\/ */
 
-#ifdef BUILD_ZSTANDARD
-    if (H5Zregister(H5Z_ZSTANDARD) < 0)
-        return NC_EFILTER;
-#endif /* BUILD_ZSTANDARD */
+/* #ifdef BUILD_ZSTANDARD */
+/*     if (H5Zregister(H5Z_ZSTANDARD) < 0) */
+/*         return NC_EFILTER; */
+/* #endif /\* BUILD_ZSTANDARD *\/ */
 
     return 0;
 }
