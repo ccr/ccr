@@ -20,7 +20,6 @@
 #define X_NAME "X"
 #define Y_NAME "Y"
 #define NDIM2 2
-#define NUM_ELEMENTS 6
 #define MAX_NAME_LEN 50
 #define ELEMENTS_NAME "Elements"
 #define VAR_NAME "Wacky_Woolies"

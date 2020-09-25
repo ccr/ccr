@@ -73,6 +73,7 @@
  * precision-preserving quantization with compression, evaluated in 
  * the netCDF Operators (NCO, v4.4.8+), Geosci. Model Dev., 9, 
  * 3199-3211, doi:10.5194/gmd-9-3199-2016.
+ * http://www.geosci-model-dev.net/9/3199/2016
  * For more info see http://nco.sf.net/nco.html#bg.
  *
  * In C:
