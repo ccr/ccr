@@ -7,13 +7,6 @@
 
 module ccr
 
-  !> Interface to initialization function.
-  interface
-     function nc_initialize_ccr() bind(c)
-       use iso_c_binding
-     end function nc_initialize_ccr
-  end interface
-
   !> Interface to C function to set BZIP2 compression.
   interface
      function nc_def_var_bzip2(ncid, varid, level) bind(c)
@@ -83,15 +76,6 @@ module ccr
   end interface
 
 contains
-  !> Initialize the CCR filters.
-  function nf90_initialize_ccr() result(status)
-    use iso_c_binding
-    implicit none
-    integer :: status
-    integer(C_INT) :: cstatus
-    status = nc_initialize_ccr()
-  end function nf90_initialize_ccr
-
   !> Set BZIP2 compression for a variable.
   !!
   !! @param ncid File or group ID.

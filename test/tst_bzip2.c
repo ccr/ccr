@@ -48,8 +48,6 @@ main()
             for (y = 0; y < NY; y++)
                 data_out[x][y] = x * NY + y;
 
-        if (nc_initialize_ccr()) ERR;
-
         /* Create file. */
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
