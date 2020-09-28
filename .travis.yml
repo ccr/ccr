@@ -42,11 +42,11 @@ script:
   - export FCFLAGS=-I/usr/include
   - export CPPFLAGS=-I${MY_DIR}/include
   - export LDFLAGS=-L${MY_DIR}/lib
-  - export HDF5_PLUGIN_PATH=`pwd`/hdf5_plugins/BZIP2/src
+  - export HDF5_PLUGIN_PATH=${MY_DIR}/plugin
   - echo $HDF5_PLUGIN_PATH
   - autoreconf -i
-  - ./configure --disable-lz4
-#  - make -j distcheck
+  - ./configure --disable-lz4 --with-hdf5-plugin-path=$HDF5_PLUGIN_PATH --prefix=$MY_DIR
+  - make -j install
   - make -j check
 
 
