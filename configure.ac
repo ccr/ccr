@@ -33,6 +33,10 @@ AC_PROG_INSTALL
 # Check to see if any macros must be set to enable large (>2GB) files.
 AC_SYS_LARGEFILE
 
+if test "x$enable_shared" = xno; then
+   AC_MSG_ERROR([Only shared library builds allowed.])
+fi
+
 # Does the user want to enable Fortran library?
 AC_MSG_CHECKING([whether Fortran library should be built])
 AC_ARG_ENABLE([fortran],

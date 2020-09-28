@@ -76,9 +76,6 @@ program ftst_ccr_zstandard
      end do
   end do
 
-  ! Initialize the CCR.
-  call check( nf90_initialize_ccr() )
-
   ! Create the file.
   call check( nf90_create(FILE_NAME, NF90_NETCDF4, ncid) )
 

@@ -100,18 +100,6 @@
 #include <H5DSpublic.h>
 
 /**
- * Initialize Community Codec Repository library.
- *
- * @return 0 for success, error code otherwise.
- * @author Ed Hartnett
- */
-int
-nc_initialize_ccr()
-{
-    return 0;
-}
-
-/**
  * Turn on bzip2 compression for a variable.
  *
  * @param ncid File ID.
