@@ -16,7 +16,7 @@ AC_CONFIG_MACRO_DIR([m4])
 LT_PREREQ([2.4])
 LT_INIT()
 
-# If the env. variable HDF5_PLUGIN_DIR is set, or if
+# If the env. variable HDF5_PLUGIN_PATH is set, or if
 # --with-hdf5-plugin-dir=<directory>, use it as the plugin
 # directory. This is necessary at the top level to provide the help
 # message and --with option. If used, the option will be passed to the
@@ -25,10 +25,10 @@ LT_INIT()
 AC_MSG_CHECKING([where to put HDF5 plugins])
 AC_ARG_WITH([hdf5-plugin-dir],
             [AS_HELP_STRING([--with-hdf5-plugin-dir=<directory>],
-                            [specify HDF5 plugin directory (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_DIR, if set)])],
-            [HDF5_PLUGIN_DIR=$with_hdf5_plugin_dir])
-HDF5_PLUGIN_DIR=${HDF5_PLUGIN_DIR-.}
-AC_MSG_RESULT($HDF5_PLUGIN_DIR)
+                            [specify HDF5 plugin directory (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_PATH, if set)])],
+            [HDF5_PLUGIN_PATH=$with_hdf5_plugin_path])
+HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
+AC_MSG_RESULT($HDF5_PLUGIN_PATH)
 
 # Does the user want BZIP2?
 AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])

@@ -60,5 +60,7 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        ./configure --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst
-        make install check
+        ./configure --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin
+        make install
+        ls /home/runner/plugin
+        make check
