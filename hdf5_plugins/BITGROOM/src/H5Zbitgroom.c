@@ -62,12 +62,11 @@
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
 #define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
-#define CCR_FLT_PRM_NBR 6 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:BITGROOM_FLT_PRM_NBR */
+#define CCR_FLT_PRM_NBR 5 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:BITGROOM_FLT_PRM_NBR */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
-#define CCR_FLT_PRM_PSN_DATA_CLASS 2 /* [nbr] Ordinal position of data_class in parameter list (cd_params array) */
-#define CCR_FLT_PRM_PSN_HAS_MSS_VAL 3 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
-#define CCR_FLT_PRM_PSN_MSS_VAL 4 /* [nbr] Ordinal position of missing value in parameter list (cd_params array) NB: Missing value (_FillValue) uses two cd_params slots so it can be single or double-precision. Single-precision values are read as first 4-bytes starting at cd_params[4] (and cd_params[5] is ignored), while double-precision values are read as first 8-bytes starting at cd_params[4] and ending with cd_params[5]. */
+#define CCR_FLT_PRM_PSN_HAS_MSS_VAL 2 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
+#define CCR_FLT_PRM_PSN_MSS_VAL 3 /* [nbr] Ordinal position of missing value in parameter list (cd_params array) NB: Missing value (_FillValue) uses two cd_params slots so it can be single or double-precision. Single-precision values are read as first 4-bytes starting at cd_params[4] (and cd_params[5] is ignored), while double-precision values are read as first 8-bytes starting at cd_params[4] and ending with cd_params[5]. */
 
 /* Compatibility tokens and typedefs retain source-code compatibility between NCO and filter
    These tokens mimic netCDF/NCO code but do not rely on or interfere with either */
@@ -172,7 +171,8 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
   if(flags & H5Z_FLAG_REVERSE){
 
     /* Currently supported quantization methods (BitGrooming) store results in IEEE754 format 
-       These quantized buffers are full of legal IEEE754 numbers that need no decompression */
+       These quantized buffers are full of legal IEEE754 numbers that need no "dequantization"
+       In other words, the input values in bfr_inout are also the output values */
     return bfr_sz_in;
 
   }else{ /* !flags */
@@ -180,7 +180,6 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     /* Set parameters needed by quantization library filter */
     int nsd=cd_values[CCR_FLT_PRM_PSN_NSD];
     size_t datum_size=cd_values[CCR_FLT_PRM_PSN_DATUM_SIZE];
-    H5T_class_t data_class=(H5T_class_t)cd_values[CCR_FLT_PRM_PSN_DATA_CLASS];
     int has_mss_val=cd_values[CCR_FLT_PRM_PSN_HAS_MSS_VAL]; /* [flg] Flag for missing values */
     ptr_unn mss_val; /* [val] Value of missing value */
     ptr_unn op1; /* I/O [frc] Values to quantize */
@@ -190,45 +189,40 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
     
     if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: %s reports datum size = %lu B, has_mss_val = %d\n",fnc_nm,datum_size,has_mss_val);
 
-    /* Quantization is only for floating-point data */
-    if(data_class == H5T_FLOAT){ 
-      switch(datum_size){
-	/* Cast input buffer pointer to correct numeric type */
-      case 4:
-	/* Single-precision floating-point data */
-	if(has_mss_val){
-	  mss_val.fp=(float *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
-	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
-	} /* !has_mss_val */
-	op1.fp=(float *)(*bfr_inout);
-	ccr_bgr(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
-	break;
-      case 8:
-	/* Double-precision floating-point data */
-	if(has_mss_val){
-	  mss_val.dp=(double *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
-	  if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
-	} /* !has_mss_val */
-	op1.dp=(double *)(*bfr_inout);
-	ccr_bgr(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
-	break;
-      default:
-	(void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
-	goto error;
-	break;
-      } /* !datum_size */
-
-    }else{
-      (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports data type class identifier = %d is invalid\n",CCR_FLT_NAME,fnc_nm,data_class);
+    /* Quantization is only for floating-point data (data_class == H5T_FLOAT)
+       Following block assumes all bfr_inout values are either 4-byte or 8-byte floating point */
+    switch(datum_size){
+      /* Cast input buffer pointer to correct numeric type */
+    case 4:
+      /* Single-precision floating-point data */
+      if(has_mss_val){
+	mss_val.fp=(float *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
+	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
+      } /* !has_mss_val */
+      op1.fp=(float *)(*bfr_inout);
+      ccr_bgr(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
+      break;
+    case 8:
+      /* Double-precision floating-point data */
+      if(has_mss_val){
+	mss_val.dp=(double *)(cd_values+CCR_FLT_PRM_PSN_MSS_VAL);
+	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
+      } /* !has_mss_val */
+      op1.dp=(double *)(*bfr_inout);
+      ccr_bgr(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
+      break;
+    default:
+      (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
       goto error;
-    } /* !data_class */
-
+      break;
+    } /* !datum_size */
+    
     return bfr_sz_in;
-
+    
   } /* !flags */
   
   return 1;
-
+  
  error:
   /* Quantization filters generally allocate no memory, so just return with error code */
   return 0;
@@ -262,7 +256,7 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
   herr_t rcd; /* [flg] Return code */
   
   /* Initialize filter parameters with default values */
-  unsigned int ccr_flt_prm[CCR_FLT_PRM_NBR]={CCR_FLT_NSD_DFL,0,0,0,0,0};
+  unsigned int ccr_flt_prm[CCR_FLT_PRM_NBR]={CCR_FLT_NSD_DFL,0,0,0,0};
 
   /* Initialize output variables for call to H5Pget_filter_by_id() */
   unsigned int flags=0;
@@ -297,8 +291,9 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
     return 1;
   } /* !data_class */
   
-  /* Set data class in filter parameter list */
-  ccr_flt_prm[CCR_FLT_PRM_PSN_DATA_CLASS]=(unsigned int)data_class;
+  /* Set data class in filter parameter list 
+     20200921: Remove data_class from filter parameter list as it is not needed */
+  //ccr_flt_prm[CCR_FLT_PRM_PSN_DATA_CLASS]=(unsigned int)data_class;
 
   /* Datum size for this variable */
   size_t datum_size; /* [B] Bytes per data value */
