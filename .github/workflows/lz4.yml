@@ -57,7 +57,7 @@ jobs:
         make -j
         sudo make install
         popd
-    - name: configure
+    - name: configure and build
       run: |
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
