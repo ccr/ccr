@@ -28,7 +28,7 @@ endif
 
 # Build the BitGroom tests?
 if BUILD_BITGROOM
-#TESTS += tst_h_bitgroom
+TESTS += tst_h_bitgroom
 check_PROGRAMS += tst_h_bitgroom
 tst_h_bitgroom_LDFLAGS = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
 tst_h_bitgroom_LDADD = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
