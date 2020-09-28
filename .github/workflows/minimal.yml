@@ -14,7 +14,8 @@ jobs:
     env:
       CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include"
       LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib"
-
+      HDF5_PLUGIN_PATH: "/home/runner/plugin"
+        
     steps:
     - uses: actions/checkout@v2
     - name: Installs
@@ -59,6 +60,7 @@ jobs:
     - name: configure
       run: |
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --disable-bitgroom --enable-docs
-        export DISTCHECK_CONFIGURE_FLAGS='--disable-lz4 --disable-zstd --disable-bitgroom'
+        ./configure --disable-lz4 --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin
+        make install
+        ls /home/runner/plugin
         make check
