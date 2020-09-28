@@ -79,7 +79,7 @@ jobs:
       run: |
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
-        ./configure --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin
+        ./configure --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
         make install
         ls /home/runner/plugin
         make check
