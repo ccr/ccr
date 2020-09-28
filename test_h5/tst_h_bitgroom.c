@@ -24,14 +24,12 @@ main()
     printf("\n*** Checking HDF5 variable functions some more.\n");
     printf("*** Checking HDF5 variable quantization and filters...");
     {
-#define NUM_ELEMENTS 6
 #define MAX_NAME_LEN 50
 #define ELEMENTS_NAME "Elements"
 #define VAR_NAME "Sears_Zemansky_and_Young"
 #define NDIMS 2
 #define NX 60
 #define NY 120
-#define DEFLATE_LEVEL 3
 #define SIMPLE_VAR_NAME "data"
 
         hid_t fapl_id, fcpl_id;
@@ -40,7 +38,7 @@ main()
         float data_in[NX][NY], data_out[NX][NY];
         hsize_t fdims[NDIMS], fmaxdims[NDIMS];
         hsize_t chunksize[NDIMS], dimsize[NDIMS], maxdimsize[NDIMS];
-        const unsigned cd_values[BITGROOM_FLT_PRM_NBR] = {3,0,0,0,0,0}; /* BitGroom default NSD is 3 */
+        const unsigned cd_values[BITGROOM_FLT_PRM_NBR] = {3,0,0,0,0}; /* BitGroom default NSD is 3 */
         int x, y;
 
 	htri_t /* O [flg] Data meet criteria to apply filter */

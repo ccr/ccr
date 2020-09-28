@@ -50,20 +50,26 @@ Zstandard |  MacPorts    | sudo port install zstd
 
 ## Autotools Build
 
-To build, first run the configure script. The configure script will
-try to locate all the necessary dependencies. Use the CPPFLAGS and
-LDFLAGS environment variables to specify the locations of include and
+Clone or download the CCR source code and run `autoreconf` to install
+some necessary build tools (this need be done only once).
+To build, run the `configure` script. The `configure` script will
+try to locate all the necessary dependencies. Use the `CPPFLAGS` and
+`LDFLAGS` environment variables to specify the locations of include and
 library files for the third-party libraries.
 
 Example:
 <pre>
+# Execute autoreconf once after downloading/cloning CCR:
+autoreconf -i
+# Set your environment as necessary and (re-)configure as necessary:
 export CFLAGS='-g -Wall'
 export CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include'
 export LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/lib'
-./configure  --disable-lz4 --disable-zstd 
+./configure --disable-lz4 --disable-zstd 
 </pre>
 
-Build the CCR code with make, and run tests with make check.
+Build the CCR code with `make`, install the CCR library with
+`make install`, and then run tests with `make check`.
 
 # REFERENCES
 
