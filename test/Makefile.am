@@ -25,15 +25,15 @@ endif
 # Build BitGroom tests, if needed.
 if BUILD_BITGROOM
 AM_LDFLAGS += ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
-#LDADD += ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
-#TESTS += tst_bitgroom
+TESTS += tst_bitgroom
+tst_bitgroom_LDADD = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
 endif
 
 # Build Zstandard tests, if needed.
 if BUILD_ZSTANDARD
 AM_LDFLAGS += ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
-#LDADD += ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
-#TESTS += tst_zstandard
+TESTS += tst_zstandard
+tst_zstandard_LDADD = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
 endif
 
 # Delete files created in testing.
