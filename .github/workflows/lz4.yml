@@ -1,4 +1,4 @@
-name: minimal build
+name: LZ4 build
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
       CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include"
       LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib"
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
-        
+
     steps:
     - uses: actions/checkout@v2
     - name: Installs
       run: |
-        sudo apt-get install doxygen graphviz
+        sudo apt-get install doxygen graphviz liblz4-dev
     - name: cache-hdf5
       id: cache-hdf5
       uses: actions/cache@v2
@@ -57,12 +57,11 @@ jobs:
         make -j
         sudo make install
         popd
-    - name: configure
+    - name: configure and build
       run: |
+        echo $HDF5_PLUGIN_PATH
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin
-    - name: build and test
-      run: |
+        ./configure --disable-zstd --disable-bitgroom --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin
         make install
         ls /home/runner/plugin
         make check

@@ -62,6 +62,20 @@ if test "x$enable_docs" = xyes; then
    AC_CONFIG_FILES([docs/Doxyfile])
 fi
 
+# If the env. variable HDF5_PLUGIN_PATH is set, or if
+# --with-hdf5-plugin-dir=<directory>, use it as the plugin
+# directory. This is necessary at the top level to provide the help
+# message and --with option. If used, the option will be passed to the
+# subdirs, and also handled by the configure in each filter
+# subdirectory.
+AC_MSG_CHECKING([where to put HDF5 plugins])
+AC_ARG_WITH([hdf5-plugin-dir],
+            [AS_HELP_STRING([--with-hdf5-plugin-dir=<directory>],
+                            [specify HDF5 plugin directory (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_PATH, if set)])],
+            [HDF5_PLUGIN_PATH=$with_hdf5_plugin_path])
+HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
+AC_MSG_RESULT($HDF5_PLUGIN_PATH)
+
 # Does the user want BZIP2?
 AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])
 AC_ARG_ENABLE([bzip2],
@@ -204,6 +218,8 @@ AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([Can't find or link
 AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
                                   [AC_MSG_ERROR([Can't find or link to the HDF5 high-level library.])])
 
+# Find the dynamic load library.
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [])				  
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
