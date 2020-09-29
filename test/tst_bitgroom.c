@@ -52,7 +52,7 @@ main()
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
             for (y = 0; y < NY; y++)
-                data_out[x][y] = x * NY + y;
+	      data_out[x][y] = x * NY + y;
 
         /* Create file. */
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
@@ -98,6 +98,7 @@ main()
 
         {
             float data_in[NX][NY];
+	    float data_tst[NX][NY];
 
             /* Now reopen the file and check. */
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
@@ -112,11 +113,14 @@ main()
 
             /* Check the data. Quantization alter data, so do not check for equality :) */
 	    /* fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
+	    double scale=pow(10.0,nsd_in);
             for (x = 0; x < NX; x++)
                for (y = 0; y < NY; y++)
-		 if (round(data_in[x][y]) <= data_out[x][y]-2 ||
-		     round(data_in[x][y]) >= data_out[x][y]+2 ) ERR;
-
+		 {
+		   data_tst[x][y]=rint(scale*data_out[x][y])/scale;
+		   //(void)printf("dat_rgn = %g, dat_bgr = %g, dat_tst = %g\n",data_out[x][y],data_in[x][y],data_tst[x][y]);
+		   if (fabs(data_in[x][y]-data_tst[x][y]) > 1.0) ERR;
+		 }
             /* Close the file. */
             if (nc_close(ncid)) ERR;
         }
