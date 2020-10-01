@@ -58,19 +58,28 @@ program ftst_ccr_bitgroom
   ! Allocate memory for data.
   real, dimension(:,:,:), allocatable :: pres_in
   real, dimension(:,:,:), allocatable :: temp_in
+  real, dimension(:,:,:), allocatable :: pres_tst
+  real, dimension(:,:,:), allocatable :: temp_tst
+
+  ! Program variables to constrain quantization success check
+  real :: scale
 
   print *, '*** Testing CCR Fortran library...'
 
   ! Allocate memory.
   allocate(pres_out(NLONS, NLATS, NLVLS))
   allocate(temp_out(NLONS, NLATS, NLVLS))
+  allocate(pres_tst(NLONS, NLATS, NLVLS))
+  allocate(temp_tst(NLONS, NLATS, NLVLS))
 
   i = 0
   do lvl = 1, NLVLS
      do lat = 1, NLATS
         do lon = 1, NLONS
            pres_out(lon, lat, lvl) = SAMPLE_PRESSURE + i
+           pres_tst(lon, lat, lvl) = SAMPLE_PRESSURE + i
            temp_out(lon, lat, lvl) = SAMPLE_TEMP + i
+           temp_tst(lon, lat, lvl) = SAMPLE_TEMP + i
            i = i + 1
         end do
      end do
@@ -150,15 +159,23 @@ program ftst_ccr_bitgroom
      call check( nf90_get_var(ncid, temp_varid, temp_in, start, count) )
 
      i = 0
+     scale = 10.0**nsdp
      do lvl = 1, NLVLS
         do lat = 1, NLATS
            do lon = 1, NLONS
-!              if (pres_in(lon, lat, lvl) /= SAMPLE_PRESSURE + i) stop 2
-!              if (temp_in(lon, lat, lvl) /= SAMPLE_TEMP + i) stop 2
               ! Check the data. Quantization alter data, so do not check for equality :) */
-              ! fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
-              if (pres_in(lon, lat, lvl) == SAMPLE_PRESSURE + i + 73 ) stop 2
-              if (temp_in(lon, lat, lvl) == SAMPLE_TEMP + i +  73 ) stop 2
+              pres_tst(lon,lat,lvl)=nint(scale*pres_out(lon,lat,lvl))/scale
+              if (abs(pres_in(lon,lat,lvl)-pres_tst(lon,lat,lvl)) > abs(5.0*pres_out(lon,lat,lvl)/scale)) then
+                 write (6,'(a10,f15.8,a4,f15.8,a11)') 'pres_in = ',pres_in(lon,lat,lvl),' !~ ', &
+                      pres_tst(lon,lat,lvl),' = pres_tst'
+                 stop 2
+              end if ! pres_in
+              temp_tst(lon,lat,lvl)=nint(scale*temp_out(lon,lat,lvl))/scale
+              if (abs(temp_in(lon,lat,lvl)-temp_tst(lon,lat,lvl)) > abs(5.0*temp_out(lon,lat,lvl)/scale)) then
+                 write (6,'(a10,f15.8,a4,f15.8,a11)') 'temp_in = ',temp_in(lon,lat,lvl),' !~ ', &
+                      temp_tst(lon,lat,lvl),' = temp_tst'
+                 stop 2
+              end if ! temp_in
               i = i + 1
            end do
         end do

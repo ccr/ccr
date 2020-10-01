@@ -49,7 +49,7 @@ main (void)
     unsigned int    flags;
     unsigned        filter_config;
     const unsigned int    cd_values[5] = {3,4,0,0,0}; /* BitGroom default is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
-    unsigned int    values_out[6] = {99,99,99,99,99};
+    unsigned int    values_out[5] = {99,99,99,99,99};
     float           wdata[DIM0][DIM1],          /* Write buffer */
                     rdata[DIM0][DIM1],          /* Read buffer */
                     max;
@@ -83,6 +83,8 @@ main (void)
     dcpl_id = H5Pcreate (H5P_DATASET_CREATE);
     if (dcpl_id < 0) goto done;
 
+    /* 20200929: csz change this to H5Z_FLAG_OPTIONAL, so that can_apply() can reject filter for
+       integers without causing program to exit()? */
     status = H5Pset_filter (dcpl_id, H5Z_FILTER_BITGROOM, H5Z_FLAG_MANDATORY, nelmts, cd_values);
     if (status < 0) goto done;
 
@@ -95,7 +97,7 @@ main (void)
         status = H5Zget_filter_info (H5Z_FILTER_BITGROOM, &filter_config);
         if ( (filter_config & H5Z_FILTER_CONFIG_ENCODE_ENABLED) &&
 	     (filter_config & H5Z_FILTER_CONFIG_DECODE_ENABLED) )
-	  printf ("BitGroom filter is available for encoding and decoding.\n");
+	  printf ("BitGroom filter is available for quantization and decoding.\n");
     }
     else {
         printf ("H5Zfilter_avail - not found.\n");
