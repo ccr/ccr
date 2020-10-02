@@ -384,7 +384,14 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
 {
   const char fnc_nm[]="ccr_bgr()"; /* [sng] Function name */
 
-  /* Use constants defined in math.h */
+  /* Prefer constants defined in math.h, however, ...
+     20201002 GCC environments can have hard time defining M_LN10/M_LN2 despite finding math.h */
+#ifndef M_LN10
+# define M_LN10         2.30258509299404568402  /* log_e 10 */
+#endif /* M_LN10 */
+#ifndef M_LN2
+# define M_LN2          0.69314718055994530942  /* log_e 2 */
+#endif /* M_LN2 */
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
   const double dcm_per_bit_dgt_prc=M_LN2/M_LN10; /* 0.301 [frc] Bits per decimal digit of precision */
   
