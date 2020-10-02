@@ -49,6 +49,10 @@
 #endif
 
 /* Standard header files */
+#ifdef HAVE_FEATURES_H
+/* Needed to define __USE_BSD that recent GCC compilers use in math.h to define M_LN2... */
+# include <features.h> /* __USE_BSD */
+#endif
 #ifdef HAVE_MATH_H
 /* Needed for M_LN10, M_LN2 in ccr_bgr() */
 # include <math.h> /* sin cos cos sin 3.14159 */
