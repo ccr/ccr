@@ -410,10 +410,10 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   unsigned int msk_f32_u32_zro;
   unsigned int msk_f32_u32_one;
   unsigned int msk_f32_u32_hshv;
-  unsigned long int *u64_ptr;
-  unsigned long int msk_f64_u64_zro;
-  unsigned long int msk_f64_u64_one;
-  unsigned long int msk_f64_u64_hshv;
+  unsigned long long int *u64_ptr;
+  unsigned long long int msk_f64_u64_zro;
+  unsigned long long int msk_f64_u64_one;
+  unsigned long long int msk_f64_u64_hshv;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
 
@@ -467,7 +467,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
-    u64_ptr=(unsigned long int *)op1.ui64p;
+    u64_ptr=(unsigned long long int *)op1.ui64p;
     /* Create mask */
     msk_f64_u64_zro=0ul; /* Zero all bits */
     msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
