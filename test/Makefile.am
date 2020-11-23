@@ -13,7 +13,7 @@ LDADD = ${top_builddir}/src/libccr.la
 check_PROGRAMS = tst_bzip2
 
 # Always run the bzip2 test.
-TESTS = tst_bzip2
+TESTS = run_tests.sh
 
 # Build LZ4 tests, if needed.
 if BUILD_LZ4
@@ -35,3 +35,5 @@ endif
 
 # Delete files created in testing.
 CLEANFILES = tst_*.nc
+
+EXTRA_DIST = run_tests.sh
