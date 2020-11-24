@@ -223,7 +223,11 @@ AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
                                   [AC_MSG_ERROR([Can't find or link to the HDF5 high-level library.])])
 
 # Find the dynamic load library.
-AC_SEARCH_LIBS([dlopen], [dl dld], [], [])				  
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [])
+
+# Configure the test running script.
+AC_CONFIG_FILES([test/run_tests.sh], [chmod ugo+x test/run_tests.sh])
+AC_CONFIG_FILES([test_h5/run_tests.sh], [chmod ugo+x test_h5/run_tests.sh])
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])

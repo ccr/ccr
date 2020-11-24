@@ -9,31 +9,28 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 AM_LDFLAGS = ${top_builddir}/src/libccr.la
 LDADD = ${top_builddir}/src/libccr.la
 
-# Build the tests.
+# Build the bzip2 test.
 check_PROGRAMS = tst_bzip2
-
-# Always run the bzip2 test.
-TESTS = run_tests.sh
 
 # Build LZ4 tests, if needed.
 if BUILD_LZ4
-TESTS += tst_lz4
 check_PROGRAMS += tst_lz4
 endif
 
 # Build BitGroom tests, if needed.
 if BUILD_BITGROOM
-TESTS += tst_bitgroom
 check_PROGRAMS += tst_bitgroom
 endif
 
 # Build Zstandard tests, if needed.
 if BUILD_ZSTANDARD
-TESTS += tst_zstandard
 check_PROGRAMS += tst_zstandard
 endif
+
+# Run all the appropriate tests in this script.
+TESTS = run_tests.sh
 
 # Delete files created in testing.
 CLEANFILES = tst_*.nc
 
-EXTRA_DIST = run_tests.sh
+EXTRA_DIST = run_tests.sh.in
