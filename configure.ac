@@ -88,6 +88,7 @@ AC_ARG_ENABLE([bzip2],
 test "x$enable_bzip2" = xno || enable_bzip2=yes
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
+AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
 # Does the user want LZ4?
 AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
@@ -100,6 +101,7 @@ AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 if test "x$enable_lz4" = xyes; then
    AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
 fi
+AC_SUBST([BUILD_LZ4], [$enable_lz4])
 
 # Does the user want BITGROOM?
 AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
@@ -109,6 +111,7 @@ AC_ARG_ENABLE([bitgroom],
 test "x$enable_bitgroom" = xno || enable_bitgroom=yes
 AC_MSG_RESULT($enable_bitgroom)
 AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
+AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
 
 # Does the user want Zstandard?
 AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
@@ -117,7 +120,8 @@ AC_ARG_ENABLE([zstd],
                               [Disable the build and install of Zstandard filter library.])])
 test "x$enable_zstd" = xno || enable_zstd=yes
 AC_MSG_RESULT($enable_zstd)
-AM_CONDITIONAL(BUILD_ZSTANDARD, [test "x$enable_zstd" = xyes])
+AM_CONDITIONAL(BUILD_ZSTD, [test "x$enable_zstd" = xyes])
+AC_SUBST([BUILD_ZSTD], [$enable_zstd])
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])

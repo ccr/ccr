@@ -32,7 +32,7 @@ ftst_ccr_bitgroom_SOURCES = ftst_ccr_bitgroom.F90
 endif
 
 # Build the ZSTANDARD tests?
-if BUILD_ZSTANDARD
+if BUILD_ZSTD
 TESTS += ftst_ccr_zstandard
 check_PROGRAMS += ftst_ccr_zstandard
 ftst_ccr_zstandard_SOURCES = ftst_ccr_zstandard.F90

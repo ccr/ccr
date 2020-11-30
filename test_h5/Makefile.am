@@ -13,7 +13,7 @@ tst_h_bzip2_LDADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 # Build the LZ4 tests?
 if BUILD_LZ4
 check_PROGRAMS += tst_h_lz4 tst_lz4_size
-tst_lz4_size_LDFLAGS = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
+tst_h_lz4_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 tst_lz4_size_LDADD = ${top_builddir}/hdf5_plugins/LZ4/src/libh5lz4.la
 endif
 
@@ -24,7 +24,7 @@ tst_h_bitgroom_LDADD = ${top_builddir}/hdf5_plugins/BITGROOM/src/libh5bgr.la
 endif
 
 # Build the Zstandard tests?
-if BUILD_ZSTANDARD
+if BUILD_ZSTD
 check_PROGRAMS += tst_h_zstandard tst_zstandard_size
 tst_h_zstandard_LDFLAGS = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la
 tst_h_zstandard_LDADD = ${top_builddir}/hdf5_plugins/ZSTANDARD/src/libh5zstd.la

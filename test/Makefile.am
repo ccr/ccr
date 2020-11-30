@@ -23,7 +23,7 @@ check_PROGRAMS += tst_bitgroom
 endif
 
 # Build Zstandard tests, if needed.
-if BUILD_ZSTANDARD
+if BUILD_ZSTD
 check_PROGRAMS += tst_zstandard
 endif
 
