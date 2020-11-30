@@ -231,6 +231,7 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [])
 
 # Configure the test running script.
 AC_CONFIG_FILES([test/run_tests.sh], [chmod ugo+x test/run_tests.sh])
+AC_CONFIG_FILES([ftest/run_tests.sh], [chmod ugo+x ftest/run_tests.sh])
 AC_CONFIG_FILES([test_h5/run_tests.sh], [chmod ugo+x test_h5/run_tests.sh])
 
 # Build the HDF5 plugins.
