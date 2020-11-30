@@ -9,3 +9,25 @@ if test "@BUILD_BZIP2@" = "yes"; then
     export HDF5_PLUGIN_PATH="../hdf5_plugins/BZIP2/src/.libs:$HDF5_PLUGIN_PATH"
     ./tst_bzip2
 fi
+
+# If lz4 was built, run the lz4 test.
+if test "@BUILD_LZ4@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/LZ4/src/.libs:$HDF5_PLUGIN_PATH"
+    ./tst_lz4
+fi
+
+# If bitgroom was built, run the bitgroom test.
+if test "@BUILD_BITGROOM@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/BITGROOM/src/.libs:$HDF5_PLUGIN_PATH"
+    ./tst_bitgroom
+fi
+
+# If zstandard was built, run the zstandard test.
+if test "@BUILD_ZSTD@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/ZSTANDARD/src/.libs:$HDF5_PLUGIN_PATH"
+    ./tst_zstandard
+fi
+
+
+
+
