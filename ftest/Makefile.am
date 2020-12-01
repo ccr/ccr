@@ -7,36 +7,35 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/fsrc
 
 # Link to our assembled libraries.
-#AM_LDFLAGS = ${top_builddir}/fsrc/libccrf.la ${top_builddir}/src/libccr.la -lnetcdff
 LDADD = ${top_builddir}/fsrc/libccrf.la ${top_builddir}/src/libccr.la -lnetcdff
 
 # Build our test programs.
 check_PROGRAMS = ftst_ccr_bzip2
 ftst_ccr_bzip2_SOURCES = ftst_ccr_bzip2.F90
 
-# Run our test programs.
-TESTS = ftst_ccr_bzip2
-
 # Build the LZ4 tests?
 if BUILD_LZ4
-TESTS += ftst_ccr_lz4
 check_PROGRAMS += ftst_ccr_lz4
 ftst_ccr_lz4_SOURCES = ftst_ccr_lz4.F90
 endif
 
 # Build the BitGroom tests?
 if BUILD_BITGROOM
-TESTS += ftst_ccr_bitgroom
 check_PROGRAMS += ftst_ccr_bitgroom
 ftst_ccr_bitgroom_SOURCES = ftst_ccr_bitgroom.F90
 endif
 
 # Build the ZSTANDARD tests?
-if BUILD_ZSTANDARD
-TESTS += ftst_ccr_zstandard
+if BUILD_ZSTD
 check_PROGRAMS += ftst_ccr_zstandard
 ftst_ccr_zstandard_SOURCES = ftst_ccr_zstandard.F90
 endif
 
+# Run our test programs.
+TESTS = run_tests.sh
+
 # Delete files created in testing.
 CLEANFILES = ftst_*.nc
+
+# Distrubute this file.
+EXTRA_DIST = run_tests.sh.in

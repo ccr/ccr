@@ -7,5 +7,5 @@ set -e
 # Set the plugin path to find plugin.
 export HDF5_PLUGIN_PATH="../hdf5_plugins/BZIP2/src/.libs:$HDF5_PLUGIN_PATH"
 
-# Run the example.
-./tst_bzip2
+# Run the HDF5 test.
+./tst_h_bzip2

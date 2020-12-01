@@ -88,18 +88,22 @@ AC_ARG_ENABLE([bzip2],
 test "x$enable_bzip2" = xno || enable_bzip2=yes
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
+AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
-# Does the user want LZ4?
-AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
-AC_ARG_ENABLE([lz4],
-              [AS_HELP_STRING([--disable-lz4],
-                              [Disable the build and install of lz4 filter library.])])
-test "x$enable_lz4" = xno || enable_lz4=yes
-AC_MSG_RESULT($enable_lz4)
+# Does the user want LZ4? Too bad, they can't have it yet! See
+# https://github.com/ccr/ccr/issues/20.
+dnl AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+dnl AC_ARG_ENABLE([lz4],
+dnl               [AS_HELP_STRING([--disable-lz4],
+dnl                               [Disable the build and install of lz4 filter library.])])
+dnl test "x$enable_lz4" = xno || enable_lz4=yes
+dnl AC_MSG_RESULT($enable_lz4)
+enable_lz4=no
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 if test "x$enable_lz4" = xyes; then
    AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
 fi
+AC_SUBST([BUILD_LZ4], [$enable_lz4])
 
 # Does the user want BITGROOM?
 AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
@@ -109,6 +113,7 @@ AC_ARG_ENABLE([bitgroom],
 test "x$enable_bitgroom" = xno || enable_bitgroom=yes
 AC_MSG_RESULT($enable_bitgroom)
 AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
+AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
 
 # Does the user want Zstandard?
 AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
@@ -117,7 +122,8 @@ AC_ARG_ENABLE([zstd],
                               [Disable the build and install of Zstandard filter library.])])
 test "x$enable_zstd" = xno || enable_zstd=yes
 AC_MSG_RESULT($enable_zstd)
-AM_CONDITIONAL(BUILD_ZSTANDARD, [test "x$enable_zstd" = xyes])
+AM_CONDITIONAL(BUILD_ZSTD, [test "x$enable_zstd" = xyes])
+AC_SUBST([BUILD_ZSTD], [$enable_zstd])
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
@@ -223,7 +229,12 @@ AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
                                   [AC_MSG_ERROR([Can't find or link to the HDF5 high-level library.])])
 
 # Find the dynamic load library.
-AC_SEARCH_LIBS([dlopen], [dl dld], [], [])				  
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [])
+
+# Configure the test running script.
+AC_CONFIG_FILES([test/run_tests.sh], [chmod ugo+x test/run_tests.sh])
+AC_CONFIG_FILES([ftest/run_tests.sh], [chmod ugo+x ftest/run_tests.sh])
+AC_CONFIG_FILES([test_h5/run_tests.sh], [chmod ugo+x test_h5/run_tests.sh])
 
 # Build the HDF5 plugins.
 AC_CONFIG_SUBDIRS([hdf5_plugins])
