@@ -19,16 +19,9 @@
 #define X_NAME "X"
 #define Y_NAME "Y"
 #define NDIM2 2
-#define NUM_ELEMENTS 6
-#define MAX_NAME_LEN 50
-#define ELEMENTS_NAME "Elements"
-#define VAR_NAME "Wacky_Woolies"
-#define NX 60
-#define NY 120
-#define DEFLATE_LEVEL 3
-#define SIMPLE_VAR_NAME "data"
+#define VAR_NAME "Midnight_Special"
 
-#define NFILE 2
+#define NFILE 10
 
 #define NX_BIG 1000
 #define NY_BIG 1000
@@ -44,7 +37,7 @@ create_file(char *file_name, int f, int zstd, int *data_out)
     int dimid[NDIM2];
     int varid;
     
-    if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
+    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
     if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
     if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
@@ -64,6 +57,7 @@ main()
     {
         int *data_out;
         int x, f;
+	int zstd = MIN_ZSTD;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
 
@@ -75,12 +69,13 @@ main()
 	{
 	    char file_name[STR_LEN + 1];
 	    int *data_in;
-	    int zstd = 3;
 	    
 	    if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
-	    
-	    sprintf(file_name, "%s_%s.nc", TEST, (f ? "zstandard" : "uncompressed"));
-	    nc_set_log_level(3);
+
+	    if (f)
+		sprintf(file_name, "%s_zstandard_%d.nc", TEST,  zstd);
+	    else
+		sprintf(file_name, "%s_uncompressed.nc", TEST);
 
 	    /* Create file. */
 	    if (create_file(file_name, f, zstd, data_out)) ERR;
@@ -107,6 +102,8 @@ main()
 		if (nc_close(ncid)) ERR;
 		free(data_in);
 	    }
+
+	    zstd += 1;
 	} /* next file */
         free(data_out);
     }
