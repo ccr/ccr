@@ -17,15 +17,15 @@ LT_PREREQ([2.4])
 LT_INIT()
 
 # If the env. variable HDF5_PLUGIN_PATH is set, or if
-# --with-hdf5-plugin-dir=<directory>, use it as the plugin
+# --with-hdf5-plugin-path=<directory>, use it as the plugin
 # directory. This is necessary at the top level to provide the help
 # message and --with option. If used, the option will be passed to the
 # subdirs, and also handled by the configure in each filter
 # subdirectory.
 AC_MSG_CHECKING([where to put HDF5 plugins])
-AC_ARG_WITH([hdf5-plugin-dir],
-            [AS_HELP_STRING([--with-hdf5-plugin-dir=<directory>],
-                            [specify HDF5 plugin directory (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_PATH, if set)])],
+AC_ARG_WITH([hdf5-plugin-path],
+            [AS_HELP_STRING([--with-hdf5-plugin-path=<directory>],
+                            [specify HDF5 plugin path (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_PATH, if set)])],
             [HDF5_PLUGIN_PATH=$with_hdf5_plugin_path])
 HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
 AC_MSG_RESULT($HDF5_PLUGIN_PATH)
