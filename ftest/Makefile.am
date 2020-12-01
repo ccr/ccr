@@ -37,4 +37,5 @@ TESTS = run_tests.sh
 # Delete files created in testing.
 CLEANFILES = ftst_*.nc
 
+# Distrubute this file.
 EXTRA_DIST = run_tests.sh.in
