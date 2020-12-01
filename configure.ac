@@ -6,7 +6,7 @@
 AC_PREREQ([2.59])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.1-development], [])
+AC_INIT([ccr], [1.1.0], [])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
