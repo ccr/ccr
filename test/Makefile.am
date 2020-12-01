@@ -27,6 +27,9 @@ if BUILD_ZSTD
 check_PROGRAMS += tst_zstandard
 endif
 
+# Build the performance test.
+check_PROGRAMS += tst_perf
+
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh
 

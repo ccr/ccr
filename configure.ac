@@ -88,6 +88,9 @@ AC_ARG_ENABLE([bzip2],
 test "x$enable_bzip2" = xno || enable_bzip2=yes
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
+if test "x$enable_bzip" = xyes; then
+   AC_DEFINE([BUILD_BZIP], 1, [If true, build with bzip filter.])
+fi
 AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
 # Does the user want LZ4? Too bad, they can't have it yet! See
@@ -113,6 +116,9 @@ AC_ARG_ENABLE([bitgroom],
 test "x$enable_bitgroom" = xno || enable_bitgroom=yes
 AC_MSG_RESULT($enable_bitgroom)
 AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
+if test "x$enable_bitgroom" = xyes; then
+   AC_DEFINE([BUILD_BITGROOM], 1, [If true, build with bitgroom filter.])
+fi
 AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
 
 # Does the user want Zstandard?
@@ -123,6 +129,9 @@ AC_ARG_ENABLE([zstd],
 test "x$enable_zstd" = xno || enable_zstd=yes
 AC_MSG_RESULT($enable_zstd)
 AM_CONDITIONAL(BUILD_ZSTD, [test "x$enable_zstd" = xyes])
+if test "x$enable_zstd" = xyes; then
+   AC_DEFINE([BUILD_ZSTD], 1, [If true, build with zstd filter.])
+fi
 AC_SUBST([BUILD_ZSTD], [$enable_zstd])
 
 dnl # Does the user want BLOSC?
