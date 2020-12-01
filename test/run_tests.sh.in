@@ -28,6 +28,8 @@ if test "@BUILD_ZSTD@" = "yes"; then
     ./tst_zstandard
 fi
 
+# Always run the performance test.
+./tst_perf
 
 
 

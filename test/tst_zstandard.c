@@ -130,8 +130,6 @@ main()
         for (x = 0; x < NX_BIG * NY_BIG; x++)
             data_out[x] = x * NY_BIG + x % NX_BIG;
 
-        /* if (nc_initialize_ccr()) ERR; */
-
         for (f = 0; f < NFILE; f++)
         {
             char file_name[STR_LEN + 1];
