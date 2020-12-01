@@ -79,5 +79,6 @@ jobs:
       run: |
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
-        ./configure --enable-docs --prefix=/home/runner/inst --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
-        make -j check
+        export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        make -j distcheck
