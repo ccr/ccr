@@ -53,7 +53,7 @@
 /* Tokens and typedefs */
 #define H5Z_FILTER_ZSTANDARD 32015 /* NB: Registered with HDF */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
-#define CCR_FLT_HELP "HINT: Read the description of Zstandard compression levels and their speed vs. compression-ratio tradeoffs at https://zstd.net"
+#define CCR_FLT_HELP "HINT: Read the description of Zstandard compression levels and their speed vs. compression-ratio tradeoffs at http://zstd.net"
 #define CCR_FLT_NAME "Zstandard filter for HDF5; http://www.zstd.net" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_PRM_NBR 1 /* [nbr] Number of parameters sent to filter (in cd_params array) */
 #define CCR_FLT_PRM_PSN_CMP_LVL 0 /* [nbr] Ordinal position of CMP_LVL in parameter list (cd_params array) */

@@ -388,7 +388,10 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
  * @param ncid File ID.
  * @param varid Variable ID.
  * @param level From -131072 to 22 (depends on Zstandard version). 
- * when compressing. (Zstandard default level is 3).
+ * when compressing. Regular compression levels are from 1 up to 19.
+ * Use levels >= 20, labeled `--ultra`, cautiously: they require more memory. 
+ * Negative compression levels that extend the range of speed vs. ratio preferences.
+ * The lower the level, the faster the speed (at the cost of compression).
  *
  * @return 0 for success, error code otherwise.
  * @author Charlie Zender
@@ -425,11 +428,11 @@ nc_def_var_zstandard(int ncid, int varid, int level)
  * @param varid Variable ID.
  * @param zstandardp Pointer that gets a 0 if Zstandard is not in use for this
  * var, and a 1 if it is. Ignored if NULL.
- * @param levelp Pointer that gets the level setting (from 1 to 9), if
- * bzlip2 is in use. Ignored if NULL.
+ * @param levelp Pointer that gets the level setting (from -131072 to 22), if
+ * Zstandard is in use. Ignored if NULL.
  *
  * @return 0 for success, error code otherwise.
- * @author Ed Hartnett
+ * @author Charlie Zender
  */
 int
 nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
