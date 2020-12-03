@@ -25,7 +25,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/hdf5
-        key: hdf5-${{ runner.os }}-1.10.6
+        key: hdf5-${{ runner.os }}-1.10.6-120320
 
     - name: build-hdf5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
@@ -34,9 +34,11 @@ jobs:
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.6.tar.gz
         pushd hdf5-1.10.6
-        ./configure --prefix=/Users/runner/hdf5 --disable-tools --disable-fortran --disable-cxx --enable-build-mode=clean
+        ./configure --prefix=/Users/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         make install
+        ls -l /Users/runner/hdf5/include
+        ls -l /Users/runner/hdf5/lib
         popd
     - name: cache-netcdf-c
       id: cache-netcdf-c
