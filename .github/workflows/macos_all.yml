@@ -13,7 +13,7 @@ jobs:
 
     env:
       CFLAGS: "-Wno-implicit-function-declaration"
-      HDF5_PLUGIN_PATH: "/home/runner/plugin"
+      HDF5_PLUGIN_PATH: "/Users/runner/plugin"
 
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.6.tar.gz
         pushd hdf5-1.10.6
-        ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx --enable-build-mode=clean
+        ./configure --prefix=/Users/runner/hdf5 --disable-tools --disable-fortran --disable-cxx --enable-build-mode=clean
         make
         make install
         popd
@@ -42,5 +42,5 @@ jobs:
       run: |
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
-        export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
-        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
+        ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
