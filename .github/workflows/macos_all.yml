@@ -12,8 +12,6 @@ jobs:
     runs-on: macos-latest
 
     env:
-      CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
-      LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
       CFLAGS: "-Wno-implicit-function-declaration"
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
 
