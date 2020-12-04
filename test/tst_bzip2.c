@@ -8,6 +8,7 @@
    either.
 */
 
+#include "config.h"
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>

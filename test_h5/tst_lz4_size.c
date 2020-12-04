@@ -4,6 +4,7 @@
  * This is a test for the LZ4 filter.
  */
 
+#include "config.h"
 #include "ccr_test.h"
 #include "hdf5.h"
 #include <stdio.h>
