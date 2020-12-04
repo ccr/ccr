@@ -84,5 +84,9 @@ jobs:
       run: |
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
+        export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include -I/Users/runner/netcdf-fortran/include"
+        export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib"
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
+        ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
+        make -j check
 
