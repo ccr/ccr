@@ -19,7 +19,7 @@
   to discover, load and register filters at run time.
 
  ************************************************************/
-
+#include "config.h"
 #include "hdf5.h"
 #include <stdio.h>
 #include <stdlib.h>

@@ -5,8 +5,8 @@
    Charlie Zender 9/18/20, Ed Hartnett 1/20/20
 */
 
+#include "config.h"
 #include <math.h> /* Needed for round() test */
-
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
@@ -16,18 +16,13 @@
 #define FILE_NAME "tst_bitgroom.nc"
 #define TEST "tst_bitgroom"
 #define STR_LEN 255
-#define MAX_LEN 1024
 #define X_NAME "X"
 #define Y_NAME "Y"
 #define NDIM2 2
-#define MAX_NAME_LEN 50
-#define ELEMENTS_NAME "Elements"
-#define VAR_NAME "Wacky_Woolies"
+#define VAR_NAME "Bad_Moon_Rising"
 #define NDIMS 2
 #define NX 60
 #define NY 120
-#define DEFLATE_LEVEL 3
-#define SIMPLE_VAR_NAME "data"
 
 #define NFILE 2
 
@@ -58,10 +53,8 @@ main()
         if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
         /* Create dims. */
-        if (nc_def_dim(ncid, X_NAME, NX, &dimid[0]))
-	  ;
-        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[0]))
-	  ;
+        if (nc_def_dim(ncid, X_NAME, NX, &dimid[0])) ERR;
+	if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
 
         /* Create the variable. */
         if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
