@@ -16,18 +16,11 @@
 #define FILE_NAME "tst_bitgroom.nc"
 #define TEST "tst_bitgroom"
 #define STR_LEN 255
-#define MAX_LEN 1024
 #define X_NAME "X"
 #define Y_NAME "Y"
 #define NDIM2 2
-#define MAX_NAME_LEN 50
-#define ELEMENTS_NAME "Elements"
-#define VAR_NAME "Wacky_Woolies"
+#define VAR_NAME "Bad_Moon_Rising"
 #define NDIMS 2
-#define NX 60
-#define NY 120
-#define DEFLATE_LEVEL 3
-#define SIMPLE_VAR_NAME "data"
 
 #define NFILE 2
 
