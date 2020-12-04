@@ -54,7 +54,7 @@ main()
 
         /* Create dims. */
         if (nc_def_dim(ncid, X_NAME, NX, &dimid[0])) ERR;
-        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[0])) ERR;
+        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
 
         /* Create the variable. */
         if ((ret = nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)))
