@@ -42,7 +42,6 @@ main()
         int data_out[NX][NY];
         int x, y;
         int level_in, bzip2;
-	int ret;
 
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
@@ -57,8 +56,7 @@ main()
         if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
 
         /* Create the variable. */
-        if ((ret = nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)))
-	    NCERR(ret);
+        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
 
         /* These won't work. */
         if (nc_def_var_bzip2(ncid, varid, -9) != NC_EINVAL) ERR;
