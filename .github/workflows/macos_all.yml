@@ -90,6 +90,6 @@ jobs:
         ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
         make -j all
         cd test
-        make check
+        make tst_bzip2  tst_bitgroom tst_zstandard tst_perf
         bash -x ./run_tests.sh
 
