@@ -92,5 +92,6 @@ jobs:
         make -j all
         cd test
         make tst_bzip2  tst_bitgroom tst_zstandard tst_perf
-
+        ls -l
+        bash -x ./run_tests.sh
 
