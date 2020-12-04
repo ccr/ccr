@@ -89,6 +89,6 @@ jobs:
         export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib"
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
         ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
-        make -j check
+        make -j distcheck
 
 
