@@ -251,6 +251,27 @@ AC_CONFIG_SUBDIRS([hdf5_plugins])
 # Generate the config.h file.
 AC_CONFIG_HEADERS([config.h])
 
+# Populate ccr-config
+# Flags for nc-config script; by design $prefix, $includir, $libdir,
+# etc.  are left as shell variables in the script so as to facilitate
+# relocation
+if test "x$with_netcdf_c_lib" = x ; then
+   NC_LIBS="-lnetcdf"
+else
+   NC_LIBS="$with_netcdf_c_lib"
+fi
+if test "x$enable_shared" != xyes; then
+   NC_LIBS="$LDFLAGS $NC_LIBS $LIBS"
+fi
+CCR_LIBS="-lccr"
+CCR_FLIBS="-lccrf"
+
+AC_SUBST(NC_LIBS,[$NC_LIBS])
+AC_SUBST(CCR_LIBS,[$CCR_LIBS])
+AC_SUBST(CCR_FLIBS,[$CCR_FLIBS])
+AC_SUBST(BUILD_FORTRAN,[$enable_fortran])
+AC_CONFIG_FILES([ccr-config], [chmod 755 ccr-config])
+
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
 	src/Makefile

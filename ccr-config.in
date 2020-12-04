@@ -1,0 +1,202 @@
+#! /bin/sh
+#
+# This forms the basis for the ccr-config utility, which provides
+# the configuration of the CCR installation. This code was modified
+# from the netCDF nc-config software originally by Arlindo DaSilva,
+# Ed Hartnett, Ward Fisher, and Dennis Heimbigner
+# Author: Charlie Zender
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+cc="@CC@"
+cflags="-I${includedir} @CPPFLAGS@"
+libs="-L${libdir} @CCR_LIBS@"
+libsprivate="@LIBS@"
+
+has_bitgroom="@BUILD_BITGROOM@"
+has_bzip2="@BUILD_BZIP2@"
+has_lz4="@BUILD_LZ4@"
+has_zstd="@BUILD_ZSTD@"
+version="@PACKAGE_NAME@ @PACKAGE_VERSION@"
+
+has_fortran="@BUILD_FORTRAN@"
+has_f90="no"
+has_f03="no"
+
+if test "x$has_fortran" = xyes; then
+  fc="@FC@"
+  fflags="-I${includedir} @FFLAGS@"
+  flibs="-L${libdir} @CCR_FLIBS@ @CCR_LIBS@"
+  has_f90="no"
+  has_f03="no"
+fi
+
+usage()
+{
+    cat <<EOF
+Usage: ccr-config [OPTION]
+
+Available values for OPTION include:
+
+  --all           display all options
+  --cc            C compiler
+  --cflags        pre-processor and compiler flags
+  --has-bitgroom  whether Bitgroom filter is installed
+  --has-bzip2     whether Bzip2 filter is installed
+  --has-fortran   whether Fortran API is installed
+  --has-lz4       whether LZ4 filter is installed
+  --has-zstd      whether Zstandard filter is installed
+  --help          display this help message and exit
+  --includedir    Include directory
+  --libdir        Library directory
+  --libs          library linking information for CCR
+  --prefix        Install prefix
+  --version       Library version
+
+EOF
+if test "x$has_fortran" = xyes; then
+    cat <<EOF
+  --fc            Fortran compiler
+  --fflags        flags needed to compile a Fortran program
+  --flibs         libraries needed to link a Fortran program
+  --has-f90       whether Fortran 90 API is installed
+  --has-f03       whether Fortran 03 API is installed (implies F90).
+EOF
+fi
+    exit $1
+}
+
+all()
+{
+        echo
+        echo "This $version has been built with the following features: "
+        echo
+        echo "  --cc            -> $cc"
+        echo "  --cflags        -> $cflags"
+        echo "  --libs          -> $libs"
+        echo
+
+        echo "  --has-fortran   -> $has_fortran"
+if test "x$has_fortran" = xyes; then
+        echo "  --fc            -> $fc"
+        echo "  --fflags        -> $fflags"
+        echo "  --flibs         -> $flibs"
+        echo "  --has-f90       -> $has_f90"
+        echo "  --has-f03       -> $has_f03"
+        echo
+fi
+        echo "  --has-bitgroom  -> $has_bitgroom"
+        echo "  --has-bzip2     -> $has_bzip2"
+        echo "  --has-lz4       -> $has_lz4"
+        echo "  --has-zstd      -> $has_zstd"
+        echo
+        echo "  --prefix        -> $prefix"
+        echo "  --includedir    -> $includedir"
+        echo "  --libdir        -> $libdir"
+        echo "  --version       -> $version"
+        echo
+}
+
+if test $# -eq 0; then
+    usage 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    # this deals with options in the style
+    # --option=value and extracts the value part
+    # [not currently used]
+    -*=*) value=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) value= ;;
+    esac
+
+    case "$1" in
+
+    --help)
+        usage 0
+        ;;
+
+    --all)
+        all
+        ;;
+
+    --cc)
+        echo $cc
+        ;;
+
+    --cflags)
+        echo $cflags
+        ;;
+
+    --has-bitgroom)
+        echo $has_bitgroom
+        ;;
+
+    --has-bzip2)
+        echo $has_bzip2
+        ;;
+
+    --has-lz4)
+        echo $has_lz4
+        ;;
+
+    --has-zstd)
+        echo $has_zstd
+        ;;
+
+    --libs)
+        echo $libs
+        ;;
+
+    --prefix)
+        echo "${prefix}"
+        ;;
+
+    --includedir)
+        echo "${includedir}"
+        ;;
+
+    --libdir)
+        echo "${libdir}"
+        ;;
+
+    --version)
+        echo $version
+        ;;
+
+    --has-fortran)
+        echo $has_fortran
+        ;;
+
+    --fc)
+        echo $fc
+        ;;
+
+    --fflags)
+        echo $fflags
+        ;;
+
+    --flibs)
+        echo $flibs
+        ;;
+
+    --has-f90)
+        echo $has_f90
+        ;;
+
+    --has-f03)
+        echo $has_f03
+        ;;
+
+    *)
+        echo "unknown option: $1"
+        usage 1
+        ;;
+    esac
+    shift
+done
+
+exit 0
