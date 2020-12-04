@@ -20,6 +20,7 @@
 
  ************************************************************/
 
+#include "config.h"
 #include "hdf5.h"
 #include <stdio.h>
 #include <stdlib.h>
