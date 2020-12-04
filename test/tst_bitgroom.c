@@ -21,6 +21,8 @@
 #define NDIM2 2
 #define VAR_NAME "Bad_Moon_Rising"
 #define NDIMS 2
+#define NX 60
+#define NY 120
 
 #define NFILE 2
 
