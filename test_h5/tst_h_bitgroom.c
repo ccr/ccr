@@ -6,6 +6,7 @@
  * Charlie Zender 9/19/20
  */
 
+#include "config.h"
 #include "ccr_test.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>

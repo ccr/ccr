@@ -7,6 +7,7 @@
  * 12/30/19
 */
 
+#include "config.h"
 #include "ccr_test.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>

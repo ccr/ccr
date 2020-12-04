@@ -5,8 +5,8 @@
    Charlie Zender 9/18/20, Ed Hartnett 1/20/20
 */
 
+#include "config.h"
 #include <math.h> /* Needed for round() test */
-
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
