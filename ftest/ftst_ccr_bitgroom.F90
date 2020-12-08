@@ -125,6 +125,10 @@ program ftst_ccr_bitgroom
                               count = count) )
   end do
 
+  ! Free resources.
+  deallocate(pres_out)
+  deallocate(temp_out)
+
   ! Close the file.
   call check( nf90_close(ncid) )
 
@@ -182,6 +186,10 @@ program ftst_ccr_bitgroom
      end do
      ! next record
   end do
+
+  ! Free resources.
+  deallocate(pres_in)
+  deallocate(temp_in)
 
   ! Close the file.
   call check( nf90_close(ncid) )
