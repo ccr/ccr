@@ -82,4 +82,4 @@ jobs:
         export CFLAGS='-g -Wall -fsanitize=address -fno-omit-frame-pointer'
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom"
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
-        make -j distcheck
+        make -j check
