@@ -45,10 +45,10 @@ main (void)
     char            filter_name[80];
     hsize_t         dims[2] = {DIM0, DIM1},
                     chunk[2] = {CHUNK0, CHUNK1};
-    size_t          nelmts = 5;                /* number of elements in cd_values */
+    size_t          nelmts = 5; /* number of elements in cd_values */ /* NB: Must equal H5Zbitgroom.c: CCR_FLT_PRM_NBR */
     unsigned int    flags;
     unsigned        filter_config;
-    const unsigned int    cd_values[5] = {3,4,0,0,0}; /* BitGroom default is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
+    const unsigned int    cd_values[5] = {3,4,0,0,0}; /* BitGroom argument ordering is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
     unsigned int    values_out[5] = {99,99,99,99,99};
     float           wdata[DIM0][DIM1],          /* Write buffer */
                     rdata[DIM0][DIM1],          /* Read buffer */
@@ -120,7 +120,8 @@ main (void)
      * Write the data to the dataset.
      */
     printf ("....Writing BitGroom-quantized data ................\n");
-    status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, wdata[0]);
+    //    status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, wdata[0]);
+    status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)wdata);
     if (status < 0) printf ("failed to write data.\n");
 
     /*
