@@ -186,6 +186,8 @@ program ftst_ccr_bitgroom
   ! Close the file.
   call check( nf90_close(ncid) )
 
+  deallocate(pres_in)
+  deallocate(temp_in)
   deallocate(pres_out)
   deallocate(temp_out)
   deallocate(pres_tst)
