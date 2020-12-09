@@ -295,14 +295,14 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
 int
 nc_def_var_bitgroom(int ncid, int varid, int nsd)
 {
-  /* NB: Internally, the filter requires six elements for cd_value
-     However, only the first element, NSD, is required, as the other
-     arguments can be and are derived from the dcpl (data_class, datum_size),
+  /* NB: Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements for cd_value
+     However, the user needs to provide only the first element, NSD, since the other
+     elements can be and are derived from the dcpl (data_class, datum_size),
      and extra queries of the variable (has_mss_val, mss_val).
-     Hence, we expose and require only the minimal number (1) of 
-     filter parameters to the netCDF mechanism.
+     Hence, the netCDF API exposes to the user and requires setting only the 
+     minimal number (1) of filter parameters.
      Everything else should be automagical (knock on wood). */ 
-  unsigned int cd_value = nsd;
+  unsigned int cd_value[BITGROOM_FLT_PRM_NBR];
   int ret;
   
   /* NSD must be between 1 and 15 */
@@ -314,9 +314,12 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
       printf ("BitGroom filter not available.\n");
       return NC_EFILTER;
     }
-  
+
+  /* User-provided NSD is first element of filter parameter array */
+  cd_value[0] = nsd;
+
   /* Set up the BitGroom filter for this var. */
-  if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, BITGROOM_FLT_PRM_NBR, &cd_value)))
+  if ((ret = nc_def_var_filter(ncid, varid, BITGROOM_ID, BITGROOM_FLT_PRM_NBR, cd_value)))
     return ret;
 
   return 0;
