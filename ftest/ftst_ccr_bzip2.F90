@@ -119,10 +119,6 @@ program ftst_ccr_bzip2
   ! Close the file.
   call check( nf90_close(ncid) )
 
-  ! Free resources.
-  deallocate(pres_out)
-  deallocate(temp_out)
-
   ! Allocate memory.
   allocate(pres_in(NLONS, NLATS, NLVLS))
   allocate(temp_in(NLONS, NLATS, NLVLS))
@@ -165,10 +161,6 @@ program ftst_ccr_bzip2
      end do
      ! next record
   end do
-
-  ! Free resources.
-  deallocate(pres_in)
-  deallocate(temp_in)
 
   ! Close the file.
   call check( nf90_close(ncid) )
