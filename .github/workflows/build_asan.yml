@@ -80,6 +80,7 @@ jobs:
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export CFLAGS='-g -Wall -fsanitize=address -fno-omit-frame-pointer'
+        export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom"
-        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom
         make -j check
