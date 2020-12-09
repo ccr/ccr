@@ -85,5 +85,5 @@ jobs:
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom
         make -j
         cd ftest
-        make ftst_ccr_bzip2 ftst_ccr_lz4 ftst_ccr_bitgroom ftst_ccr_zstandard
+        make ftst_ccr_bzip2 ftst_ccr_bitgroom ftst_ccr_zstandard
         bash -x ./run_tests.sh
