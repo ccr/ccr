@@ -87,3 +87,6 @@ jobs:
         cd ftest
         make ftst_ccr_bzip2 ftst_ccr_zstandard
         bash -x ./run_tests.sh
+        cd ..
+        make check
+        
