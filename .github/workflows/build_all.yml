@@ -77,6 +77,7 @@ jobs:
         popd
     - name: configure and build
       run: |
+        set -x
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
