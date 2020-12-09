@@ -81,12 +81,6 @@ jobs:
         autoreconf -i
         export CFLAGS='-g -Wall -fsanitize=address -fno-omit-frame-pointer'
         export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
-        export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom"
-        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bitgroom
-        make -j
-        cd ftest
-        make ftst_ccr_bzip2 ftst_ccr_zstandard
-        bash -x ./run_tests.sh
-        cd ..
-        make check
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran 
+        make -j check
         
