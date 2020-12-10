@@ -1,4 +1,4 @@
-/*! \file ccr_meta.h
+/*! @file
  *
  * Meta information for libccr which can be used by other packages which
  * depend on libccr.
@@ -16,7 +16,10 @@
 #define CCR_VERSION_NOTE  "@CCR_VERSION_NOTE@" /*!< CCR note. May be blank. */
 #define CCR_VERSION       "@CCR_VERSION@" /*!< CCR version string. */
 
-#define NC_HAS_LZ4      @NC_HAS_LZ4@ /*!< LZ4 support. */
-#define CCR_HAS_MULTIFILTERS   @CCR_HAS_MULTIFILTERS@
+#define CCR_HAS_BZIP2          @CCR_HAS_BZIP2@ /*!< BZIP2 support. */
+#define CCR_HAS_ZSTD           @CCR_HAS_ZSTD@ /*!< ZSTD support. */
+#define CCR_HAS_LZ4            @CCR_HAS_LZ4@ /*!< LZ4 support. */
+#define CCR_HAS_BITGROOM       @CCR_HAS_BITGROOM@ /*!< BITGROOM support. */
+#define CCR_HAS_MULTIFILTERS   @CCR_HAS_MULTIFILTERS@ /*!< Multiple filter support. */
 
 #endif

@@ -18,9 +18,13 @@ LDFLAGS:		@LDFLAGS@
 Shared Library:		@enable_shared@
 Static Library:		@enable_static@
 Extra libraries:	@LIBS@
+HDF5_PLUGIN_PATH:	@HDF5_PLUGIN_PATH@
 
 # Features
 --------
 
+BZIP2 Support:		@HAS_BZIP2@
 LZ4 Support:		@HAS_LZ4@
+BITGROOM Support:	@HAS_BITGROOM@
+ZSTD Support:		@HAS_ZSTD@
 Multi-Filter Support:	@HAS_MULTIFILTERS@

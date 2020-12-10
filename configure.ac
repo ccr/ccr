@@ -318,6 +318,7 @@ AC_SUBST([enable_static])
 AC_SUBST([CFLAGS])
 AC_SUBST([CPPFLAGS])
 AC_SUBST([LDFLAGS])
+AC_SUBST([HDF5_PLUGIN_PATH])
 
 # Does netcdf-c support multiple filters (version 4.8.0 or later).
 AC_MSG_CHECKING([if netCDF handles multiple filters])
@@ -351,6 +352,12 @@ AC_DEFUN([AX_SET_META],[
 # Settings for libccr.settings and ccr_meta.h.
 AC_SUBST(HAS_LZ4,[$enable_lz4])
 AX_SET_META([CCR_HAS_LZ4],[$enable_lz4],[yes])
+AC_SUBST(HAS_ZSTD,[$enable_zstd])
+AX_SET_META([CCR_HAS_ZSTD],[$enable_zstd],[yes])
+AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
+AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
+AC_SUBST(HAS_BZIP2,[$enable_bzip2])
+AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 
 AX_SET_META([CCR_HAS_MULTIFILTERS],[$have_multifilters],[yes])
 
