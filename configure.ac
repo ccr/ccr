@@ -209,7 +209,7 @@ AC_SEARCH_LIBS([nc_create], [netcdf], [],
                             [AC_MSG_ERROR([Can't find or link to the netCDF C library, set CPPFLAGS/LDFLAGS.])])
 AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
-# Do we have netCDF-4?
+# Do we have netCDF-4? If not, we're done.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 [[#if !NC_HAS_NC4
 # error
@@ -217,38 +217,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 ])], [have_netcdf4=yes], [have_netcdf4=no])
 AC_MSG_CHECKING([whether netCDF provides netCDF/HDF5])
 AC_MSG_RESULT([${have_netcdf4}])
-
-# Do we have a parallel build of netCDF-4? (Really we should be
-# checking NC_HAS_PARALLEL4, but that was only recently introduced, so
-# we will go with NC_HAS_PARALLEL.)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_PARALLEL
-# error
-#endif]
-])], [have_netcdf_par=yes], [have_netcdf_par=no])
-AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
-AC_MSG_RESULT([${have_netcdf_par}])
-
-# Do we have szip?
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_SZIP_WRITE
-# error
-#endif]
-])], [have_szip_write=yes], [have_szip_write=no])
-AC_MSG_CHECKING([whether netCDF provides szip write capability])
-AC_MSG_RESULT([${have_szip_write}])
-
-# Do we have parallel filter support? Parallel filters are required
-# for iotype NETCDF4P to use compression.
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_PAR_FILTERS
-# error
-#endif]
-])], [have_par_filters=yes], [have_par_filters=no])
-AC_MSG_CHECKING([whether netCDF provides parallel filter support])
-AC_MSG_RESULT([${have_par_filters}])
-if test "x$have_par_filters" = xyes ; then
-   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netCDF-C supports filters with parallel I/O])
+if test "x$have_netcdf4" = xno; then
+   AC_MSG_ERROR([NetCDF-4 is required])
 fi
 
 # Is this version 4.7.2, which does not work?
@@ -263,6 +233,55 @@ AC_MSG_RESULT([${have_472}])
 if test "x$have_472" = xyes; then
    AC_MSG_ERROR([cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
 fi
+
+# Do we have a parallel build of netCDF-4? (Really we should be
+# checking NC_HAS_PARALLEL4, but that was only recently introduced, so
+# we will go with NC_HAS_PARALLEL.)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PARALLEL
+# error
+#endif]
+])], [have_netcdf_par=yes], [have_netcdf_par=no])
+AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf_par}])
+AC_SUBST(HAS_NETCDF_PAR,[$have_netcdf_par])
+AM_CONDITIONAL(HAVE_NETCDF_PAR, [test "x$have_netcdf_par" = xyes])
+
+# Do we have szip?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_SZIP_WRITE
+# error
+#endif]
+])], [have_szip_write=yes], [have_szip_write=no])
+AC_MSG_CHECKING([whether netCDF provides szip write capability])
+AC_MSG_RESULT([${have_szip_write}])
+
+# Do we have parallel filter support?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PAR_FILTERS
+# error
+#endif]
+])], [have_par_filters=yes], [have_par_filters=no])
+AC_MSG_CHECKING([whether netCDF provides parallel filter support])
+AC_MSG_RESULT([${have_par_filters}])
+if test "x$have_par_filters" = xyes ; then
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netCDF-C supports filters with parallel I/O])
+fi
+AC_SUBST(HAS_PAR_FILTERS,[$have_par_filters])
+
+# Does netcdf-c support multiple filters (version 4.8.0 or later).
+AC_MSG_CHECKING([if netCDF handles multiple filters])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[
+#include <netcdf_meta.h>
+#if !defined(NC_HAS_MULTIFILTERS) || NC_HAS_MUITIFILTERS == 0
+      choke me
+#endif]])], [have_multifilters=yes], [have_multifilters=no])
+if test "x$have_multifilters" = xyes; then
+   AC_DEFINE([HAVE_MULTIFILTERS], [1], [if true, netCDF-C supports multiple filters])
+fi
+AM_CONDITIONAL(HAVE_MULTIFILTERS, [test "x$have_multifilters" = xyes])
+AC_SUBST(HAS_MULTIFILTERS,[$have_multifilters])
+AC_MSG_RESULT([$have_multifilters])
 
 # Check for netCDF Fortran library.
 if test "x$enable_fortran" = xyes; then
@@ -320,20 +339,6 @@ AC_SUBST([CPPFLAGS])
 AC_SUBST([LDFLAGS])
 AC_SUBST([HDF5_PLUGIN_PATH])
 
-# Does netcdf-c support multiple filters (version 4.8.0 or later).
-AC_MSG_CHECKING([if netCDF handles multiple filters])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[
-#include <netcdf_meta.h>
-#if !defined(NC_HAS_MULTIFILTERS) || NC_HAS_MUITIFILTERS == 0
-      choke me
-#endif]])], [have_multifilters=yes], [have_multifilters=no])
-if test "x$have_multifilters" = xyes; then
-   AC_DEFINE([ENABLE_MULTIFILTERS], [1], [Enable use of multiple filters])
-fi
-AM_CONDITIONAL(HAVE_MULTIFILTERS, [test "x$have_multifilters" = xyes])
-AC_SUBST(HAS_MULTIFILTERS,[$have_multifilters])
-AC_MSG_RESULT([$have_multifilters])
-
 # Args:
 # 1. ccr_meta.h variable
 # 2. conditional variable that is yes or no.
@@ -359,6 +364,8 @@ AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 
+AX_SET_META([CCR_HAS_NETCDF_PAR],[$have_netcdf_par],[yes])
+AX_SET_META([CCR_HAS_PAR_FILTERS],[$have_par_filters],[yes])
 AX_SET_META([CCR_HAS_MULTIFILTERS],[$have_multifilters],[yes])
 
 # THis is the text summary and header file of how CCR was built.

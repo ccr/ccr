@@ -27,4 +27,6 @@ BZIP2 Support:		@HAS_BZIP2@
 LZ4 Support:		@HAS_LZ4@
 BITGROOM Support:	@HAS_BITGROOM@
 ZSTD Support:		@HAS_ZSTD@
+Parallel I/O Support:	@HAS_NETCDF_PAR@
+Parallel I/O Filters:	@HAS_PAR_FILTERS@
 Multi-Filter Support:	@HAS_MULTIFILTERS@

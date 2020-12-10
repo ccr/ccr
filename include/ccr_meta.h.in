@@ -20,6 +20,8 @@
 #define CCR_HAS_ZSTD           @CCR_HAS_ZSTD@ /*!< ZSTD support. */
 #define CCR_HAS_LZ4            @CCR_HAS_LZ4@ /*!< LZ4 support. */
 #define CCR_HAS_BITGROOM       @CCR_HAS_BITGROOM@ /*!< BITGROOM support. */
+#define CCR_HAS_NETCDF_PAR     @CCR_HAS_NETCDF_PAR@ /*!< Parallel I/O support. */
+#define CCR_HAS_PAR_FILTERS    @CCR_HAS_PAR_FILTERS@ /*!< Parallel I/O filter support. */
 #define CCR_HAS_MULTIFILTERS   @CCR_HAS_MULTIFILTERS@ /*!< Multiple filter support. */
 
 #endif
