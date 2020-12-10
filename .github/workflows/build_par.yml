@@ -95,5 +95,10 @@ jobs:
       run: |
         set -x
         echo $HDF5_PLUGIN_PATH
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
         autoreconf -i
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        make -j check
+        
 
