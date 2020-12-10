@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# This .in file is processed at build time into a shell that runs some
+# parallel I/O tests for CCR.
+
+# Ed Hartnett 12/10/20
+
+set -e
+
+echo
+echo "Testing CCR with parallel I/O..."
+@MPIEXEC@ -n 4 ./tst_par
+echo
+

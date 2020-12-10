@@ -33,7 +33,15 @@ check_PROGRAMS += tst_perf
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh
 
+# Parallel I/O tests?
+if BUILD_PARALLEL
+check_PROGRAMS += tst_par
+TESTS += run_par_tests.sh
+endif
+
 # Delete files created in testing.
 CLEANFILES = tst_*.nc
 
-EXTRA_DIST = run_tests.sh.in
+EXTRA_DIST = run_tests.sh.in run_par_tests.sh.in
+
+DISTCLEAN = run_tests.sh run_par_tests.sh

@@ -105,7 +105,7 @@ jobs:
         export CC=/home/runner/mpich/bin/mpicc
         export FC=/home/runner/mpich/bin/mpifort
         autoreconf -i
-        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --enable-parallel-tests
         make -j check
         
 

@@ -208,6 +208,7 @@ AC_ARG_ENABLE([parallel-tests],
                               with parallel I/O support.])])
 test "x$enable_parallel_tests" = xyes || enable_parallel_tests=no
 AC_MSG_RESULT($enable_parallel_tests)
+AM_CONDITIONAL(BUILD_PARALLEL, [test "x$enable_parallel_tests" = xyes])
 
 # Did the user specify an MPI launcher other than mpiexec?
 AC_MSG_CHECKING([whether a user specified program to run mpi programs])
@@ -321,8 +322,9 @@ AC_SEARCH_LIBS([H5DSis_scale], [hdf5_hldll hdf5_hl], [],
 # Find the dynamic load library.
 AC_SEARCH_LIBS([dlopen], [dl dld], [], [])
 
-# Configure the test running script.
+# Configure the test running scripts.
 AC_CONFIG_FILES([test/run_tests.sh], [chmod ugo+x test/run_tests.sh])
+AC_CONFIG_FILES([test/run_par_tests.sh], [chmod ugo+x test/run_par_tests.sh])
 AC_CONFIG_FILES([ftest/run_tests.sh], [chmod ugo+x ftest/run_tests.sh])
 AC_CONFIG_FILES([test_h5/run_tests.sh], [chmod ugo+x test_h5/run_tests.sh])
 
