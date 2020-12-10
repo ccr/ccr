@@ -21,6 +21,12 @@ jobs:
     - name: Installs
       run: |
         sudo apt-get install doxygen graphviz liblz4-dev libzstd-dev
+    - name: cache-mpich
+      id: cache-mpich
+      uses: actions/cache@v2
+      with:
+        path: ~/mpich
+        key: mpich-${{ runner.os }}-3.3.2
     - name: build-mpich
       if: steps.cache-mpich.outputs.cache-hit != 'true'
       run: |
