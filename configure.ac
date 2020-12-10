@@ -200,6 +200,24 @@ dnl test "x$enable_lzf" = xno || enable_lzf=yes
 dnl AC_MSG_RESULT($enable_lzf)
 AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
 
+# Does the user want to run extra parallel tests when parallel netCDF-4 is built?
+AC_MSG_CHECKING([whether parallel IO tests should be run])
+AC_ARG_ENABLE([parallel-tests],
+              [AS_HELP_STRING([--enable-parallel-tests],
+                              [Run extra parallel IO tests. Requires netCDF
+                              with parallel I/O support.])])
+test "x$enable_parallel_tests" = xyes || enable_parallel_tests=no
+AC_MSG_RESULT($enable_parallel_tests)
+
+# Did the user specify an MPI launcher other than mpiexec?
+AC_MSG_CHECKING([whether a user specified program to run mpi programs])
+AC_ARG_WITH([mpiexec],
+              [AS_HELP_STRING([--with-mpiexec=<command>],
+                              [Specify command to launch MPI parallel tests.])],
+            [MPIEXEC=$with_mpiexec], [MPIEXEC=mpiexec])
+AC_MSG_RESULT([$MPIEXEC])
+AC_SUBST([MPIEXEC], [$MPIEXEC])
+
 # We need the math library
 AC_CHECK_LIB([m], [floor], [],
 [AC_MSG_ERROR([Can't find or link to the math library.])])
@@ -246,6 +264,11 @@ AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
 AC_MSG_RESULT([${have_netcdf_par}])
 AC_SUBST(HAS_NETCDF_PAR,[$have_netcdf_par])
 AM_CONDITIONAL(HAVE_NETCDF_PAR, [test "x$have_netcdf_par" = xyes])
+
+# If user asked for parallel tests, and parallel is not available, error.
+if test "x$enable_parallel_tests" = xyes -a "x$have_netcdf_par" != xyes; then
+   AC_MSG_ERROR([parallel tests requested, but netcdf-c does not provide parallel I/O.])
+fi
 
 # Do we have szip?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
