@@ -319,6 +319,38 @@ AC_SUBST([CFLAGS])
 AC_SUBST([CPPFLAGS])
 AC_SUBST([LDFLAGS])
 
+# Does netcdf-c support multiple filters (version 4.8.0 or later).
+AC_MSG_CHECKING([if netCDF handles multiple filters])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[
+#include <netcdf_meta.h>
+#if !defined(NC_HAS_MULTIFILTERS) || NC_HAS_MUITIFILTERS == 0
+      choke me
+#endif]])], [have_multifilters=yes], [have_multifilters=no])
+if test "x$have_multifilters" = xyes; then
+   AC_DEFINE([ENABLE_MULTIFILTERS], [1], [Enable use of multiple filters])
+fi
+AM_CONDITIONAL(HAVE_MULTIFILTERS, [test "x$have_multifilters" = xyes])
+AC_SUBST(HAS_MULTIFILTERS,[$have_multifilters])
+AC_MSG_RESULT([$have_multifilters])
+
+# Args:
+# 1. ccr_meta.h variable
+# 2. conditional variable that is yes or no.
+# 3. default condition
+#
+# example: AX_SET_META([CCR_HAS_NC2],[$ccr_build_v2],[]) # Because it checks for no.
+#          AX_SET_META([CCR_HAS_HDF4],[$enable_hdf4],[yes])
+AC_DEFUN([AX_SET_META],[
+  if [ test "x$2" = x$3 ]; then
+     AC_SUBST([$1]) $1=1
+  else
+     AC_SUBST([$1]) $1=0
+  fi
+])
+
+# Settings for libccr.settings and ccr_meta.h.
+AX_SET_META([CCR_HAS_MULTIFILTERS],[$have_multifilters],[yes])
+
 # THis is the text summary and header file of how CCR was built.
 AC_CONFIG_FILES([libccr.settings
                  include/ccr_meta.h
