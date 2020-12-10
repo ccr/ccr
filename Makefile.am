@@ -21,4 +21,10 @@ endif
 SUBDIRS = hdf5_plugins include src $(FSRC) $(FTEST) test_h5 test	\
 $(DOCS)
 
-EXTRA_DIST = LICENSE README.md
+# install libccr.settings in lib directory.
+settingsdir = $(libdir)
+settings_DATA = libccr.settings
+
+DISTCLEANFILES = libccr.settings
+
+EXTRA_DIST = LICENSE README.md libccr.settings.in

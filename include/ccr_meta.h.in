@@ -1,0 +1,24 @@
+/*! \file ccr_meta.h
+ *
+ * Meta information for libccr which can be used by other packages which
+ * depend on libccr.
+ *
+ * @author Ed Hartnett
+ * @date 12/10/2020
+ */
+
+#ifndef CCR_META_H
+#define CCR_META_H
+
+#define CCR_VERSION_MAJOR @CCR_VERSION_MAJOR@ /*!< CCR major version. */
+#define CCR_VERSION_MINOR @CCR_VERSION_MINOR@ /*!< CCR minor version. */
+#define CCR_VERSION_PATCH @CCR_VERSION_PATCH@ /*!< CCR patch version. */
+#define CCR_VERSION_NOTE  "@CCR_VERSION_NOTE@" /*!< CCR note. May be blank. */
+#define CCR_VERSION       "@CCR_VERSION@" /*!< CCR version string. */
+
+/* #define NC_HAS_SZIP      @NC_HAS_SZIP@ /\*!< szip support (HDF5 only) *\/ */
+/* #define NC_HAS_PARALLEL4 @NC_HAS_PARALLEL4@ /\*!< parallel IO support via HDF5 *\/ */
+/* #define NC_HAS_PAR_FILTERS @NC_HAS_PAR_FILTERS@ /\* Parallel I/O with filter support. *\/ */
+/* #define NC_HAS_MULTIFILTERS   @NC_HAS_MULTIFILTERS@ */
+
+#endif

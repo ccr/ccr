@@ -6,7 +6,7 @@
 AC_PREREQ([2.59])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.1.0], [])
+AC_INIT([ccr], [1.0.0-development], [])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -16,6 +16,45 @@ AC_CONFIG_MACRO_DIR([m4])
 # Set up libtool.
 LT_PREREQ([2.4])
 LT_INIT()
+
+# Components of the version.
+AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=1
+AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=0
+AC_SUBST([CCR_VERSION_PATCH]) CCR_VERSION_PATCH=0
+AC_SUBST([CCR_VERSION_NOTE]) CCR_VERSION_NOTE="-development"
+AC_SUBST([CCR_VERSION]) CCR_VERSION=$VERSION
+
+# Configuration Date
+if test "x$SOURCE_DATE_EPOCH" != "x" ; then
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date -u -d "${SOURCE_DATE_EPOCH}"`"
+else
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date`"
+fi
+
+# Prefer an empty CFLAGS variable instead of the default -g -O2. See:
+# http://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.69/html_node/C-Compiler.html#C-Compiler
+: ${CFLAGS=""}
+
+## Compiler with version information. This consists of the full path
+## name of the compiler and the reported version number.
+AC_SUBST([CC_VERSION])
+## Strip anything that looks like a flag off of $CC
+CC_NOFLAGS=`echo $CC | sed 's/ -.*//'`
+
+if `echo $CC_NOFLAGS | grep ^/ >/dev/null 2>&1`; then
+  CC_VERSION="$CC"
+else
+  CC_VERSION="$CC";
+  for x in `echo $PATH | sed -e 's/:/ /g'`; do
+    if test -x $x/$CC_NOFLAGS; then
+      CC_VERSION="$x/$CC"
+      break
+    fi
+  done
+fi
+if test -n "$cc_version_info"; then
+  CC_VERSION="$CC_VERSION ( $cc_version_info)"
+fi
 
 # Find the C compiler.
 AC_PROG_CC
@@ -272,6 +311,19 @@ AC_SUBST(CCR_FLIBS,[$CCR_FLIBS])
 AC_SUBST(BUILD_FORTRAN,[$enable_fortran])
 AC_CONFIG_FILES([ccr-config], [chmod 755 ccr-config])
 
+# Create output variables from various shell variables, for use in
+# generating libccr.settings.
+AC_SUBST([enable_shared])
+AC_SUBST([enable_static])
+AC_SUBST([CFLAGS])
+AC_SUBST([CPPFLAGS])
+AC_SUBST([LDFLAGS])
+
+# THis is the text summary and header file of how CCR was built.
+AC_CONFIG_FILES([libccr.settings
+                 include/ccr_meta.h
+		 ])
+		 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile
 	src/Makefile
@@ -283,3 +335,5 @@ AC_CONFIG_FILES([Makefile
 	docs/Makefile
         ])
 AC_OUTPUT()
+
+cat libccr.settings
