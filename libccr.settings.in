@@ -22,4 +22,5 @@ Extra libraries:	@LIBS@
 # Features
 --------
 
+LZ4 Support:		@HAS_LZ4@
 Multi-Filter Support:	@HAS_MULTIFILTERS@

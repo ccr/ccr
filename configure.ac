@@ -349,6 +349,9 @@ AC_DEFUN([AX_SET_META],[
 ])
 
 # Settings for libccr.settings and ccr_meta.h.
+AC_SUBST(HAS_LZ4,[$enable_lz4])
+AX_SET_META([CCR_HAS_LZ4],[$enable_lz4],[yes])
+
 AX_SET_META([CCR_HAS_MULTIFILTERS],[$have_multifilters],[yes])
 
 # THis is the text summary and header file of how CCR was built.

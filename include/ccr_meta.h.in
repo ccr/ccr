@@ -16,6 +16,7 @@
 #define CCR_VERSION_NOTE  "@CCR_VERSION_NOTE@" /*!< CCR note. May be blank. */
 #define CCR_VERSION       "@CCR_VERSION@" /*!< CCR version string. */
 
+#define NC_HAS_LZ4      @NC_HAS_LZ4@ /*!< LZ4 support. */
 #define CCR_HAS_MULTIFILTERS   @CCR_HAS_MULTIFILTERS@
 
 #endif
