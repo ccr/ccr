@@ -4,9 +4,12 @@
   Ed Hartnett, 12/10/2020
 */
 
-#include <nc_tests.h>
-#include "err_macros.h"
+#include "config.h"
+#include <netcdf.h>
+#include <netcdf_par.h>
+#include <ccr_test.h>
 #include <mpi.h>
+#include <stdio.h>
 
 #define FILE "tst_par_zlib.nc"
 #define NDIMS 3
@@ -64,7 +67,6 @@ main(int argc, char **argv)
     /* Setting deflate only will work for HDF5-1.10.2 and later
      * versions. */
     res = nc_def_var_deflate(ncid, 0, 0, 1, 1);
-    if (res != NC_EINVAL) ERR;
 
     /* Write metadata to file. */
     if ((res = nc_enddef(ncid))) ERR;
