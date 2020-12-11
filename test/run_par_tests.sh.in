@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# This .in file is processed at build time into a shell that runs some
+# parallel I/O tests for CCR.
+
+# Ed Hartnett 12/10/20
+
+set -e
+
+# If bzip2 was built, find plugin.
+if test "@BUILD_BZIP2@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/BZIP2/src/.libs:$HDF5_PLUGIN_PATH"
+fi
+
+# If lz4 was built, find plugin.
+if test "@BUILD_LZ4@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/LZ4/src/.libs:$HDF5_PLUGIN_PATH"
+fi
+
+# If bitgroom was built, find plugin.
+if test "@BUILD_BITGROOM@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/BITGROOM/src/.libs:$HDF5_PLUGIN_PATH"
+fi
+
+# If zstandard was built, find plugin.
+if test "@BUILD_ZSTD@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/ZSTANDARD/src/.libs:$HDF5_PLUGIN_PATH"
+fi
+
+echo
+echo "Testing CCR with parallel I/O..."
+@MPIEXEC@ -n 4 ./tst_par
+echo
+
