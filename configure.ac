@@ -297,7 +297,7 @@ AC_SUBST(HAS_PAR_FILTERS,[$have_par_filters])
 AC_MSG_CHECKING([if netCDF handles multiple filters])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[
 #include <netcdf_meta.h>
-#if !defined(NC_HAS_MULTIFILTERS) || NC_HAS_MUITIFILTERS == 0
+#if !defined(NC_HAS_MULTIFILTERS) || NC_HAS_MULTIFILTERS == 0
       choke me
 #endif]])], [have_multifilters=yes], [have_multifilters=no])
 if test "x$have_multifilters" = xyes; then
