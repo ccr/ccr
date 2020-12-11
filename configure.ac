@@ -408,4 +408,5 @@ AC_CONFIG_FILES([Makefile
         ])
 AC_OUTPUT()
 
+# Print build summary.
 cat libccr.settings
