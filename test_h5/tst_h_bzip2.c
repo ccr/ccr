@@ -55,7 +55,7 @@ main()
               NULL,                       /* The "set local" callback     */
               (H5Z_func_t)H5Z_filter_bzip2,         /* The actual filter function   */
           }};
-      char plugin_path[MAX_LEN + 1];
+      /* char plugin_path[MAX_LEN + 1]; */
 
       /* Create some data to write. */
       for (x = 0; x < NX; x++)
