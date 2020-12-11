@@ -11,7 +11,7 @@
 #include <mpi.h>
 #include <stdio.h>
 
-#define FILE "tst_par_zlib.nc"
+#define TEST "tst_par"
 #define NDIMS 3
 #define DIMSIZE 24
 #define QTR_DATA (DIMSIZE * DIMSIZE / 4)
@@ -44,7 +44,7 @@ main(int argc, char **argv)
 
 #ifdef BUILD_ZSTD
     if (mpi_rank == 0)
-	printf("*** testing simple write with zlib...");
+	printf("*** testing simple write with zstd...");
     {
 	/* Create phony data. We're going to write a 24x24 array of ints,
 	   in 4 sets of 144. */
@@ -54,7 +54,7 @@ main(int argc, char **argv)
 	/* Create a parallel netcdf-4 file. */
 	/*nc_set_log_level(3);*/
 	/* sprintf(file_name, "%s/%s", TEMP_LARGE, FILE); */
-	sprintf(file_name, "%s", FILE);
+	sprintf(file_name, "%s_zstd.nc", TEST);
 	if ((res = nc_create_par(file_name, NC_NETCDF4, comm, info, &ncid))) ERR;
 
 	/* Create three dimensions. */
