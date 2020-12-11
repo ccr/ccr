@@ -32,10 +32,10 @@
 #define NX_BIG 1000
 #define NY_BIG 1000
 /* Restore these larger values to run the big file tests. */
-/* #define NX_REALLY_BIG 10000 */
-/* #define NY_REALLY_BIG 5000 */
-#define NX_REALLY_BIG 100
-#define NY_REALLY_BIG 50
+#define NX_REALLY_BIG 1000
+#define NY_REALLY_BIG 5000
+/* #define NX_REALLY_BIG 100 */
+/* #define NY_REALLY_BIG 50 */
 #define NUM_REC 5
 
 #define MIN_ZSTD 0
@@ -123,7 +123,8 @@ main()
     printf("*** Checking Zstandard performance on large float data set...");
     {
         float *data_out;
-        int x, f;
+        size_t x;
+	int f;
 	int zstd = MIN_ZSTD;
 	/* float a = 5.0; */
     
@@ -196,6 +197,116 @@ main()
 	    }
 
 	    zstd += 1;
+	    free(data_in);
+	} /* next file */
+        free(data_out);
+    }
+    SUMMARIZE_ERR;
+#define NFILE3 3
+    printf("*** Comparing Zstandard to zlib on large float data set...");
+    {
+        float *data_out;
+        int x, f;
+	int zstd = 3;
+	int zlib = 3;
+    
+        if (!(data_out = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(int)))) ERR;
+
+	for (f = 0; f < NFILE3; f++)
+	{
+	    char file_name[STR_LEN + 1];
+	    float *data_in;
+	    int ncid;
+	    int dimid[NDIM3];
+	    int varid;
+	    size_t start[NDIM3] = {0, 0, 0};
+	    size_t count[NDIM3] = {1, NX_REALLY_BIG, NY_REALLY_BIG};
+	    
+	    if (!(data_in = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(float)))) ERR;
+
+	    switch (f)
+	    {
+		case 0:
+		    sprintf(file_name, "%s_uncompressed_really_big.nc", TEST);
+		    break;
+		case 1:
+		    sprintf(file_name, "%s_zstandard_really_big_%d.nc", TEST,  zstd);
+		    break;
+		case 2:
+		    sprintf(file_name, "%s_zlib_really_big_%d.nc", TEST,  zlib);
+		    break;
+	    }
+
+	    /* Create file. */
+	    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
+	    if (nc_def_dim(ncid, EARTHQUAKES_AND_LIGHTNING, NC_UNLIMITED, &dimid[0])) ERR;
+	    if (nc_def_dim(ncid, VOICE_OF_RAGE, NX_REALLY_BIG, &dimid[1])) ERR;
+	    if (nc_def_dim(ncid, VOICE_OF_RUIN, NY_REALLY_BIG, &dimid[2])) ERR;
+	    if (nc_def_var(ncid, VAR_NAME_2, NC_FLOAT, NDIM3, dimid, &varid)) ERR;
+
+	    
+	    switch (f)
+	    {
+		case 0:
+		    break;
+		case 1:
+		    if (nc_def_var_zstandard(ncid, varid, zstd)) ERR;
+		    break;
+		case 2:
+		    if (nc_def_var_deflate(ncid, varid, 0, 1, zlib)) ERR;
+		    break;
+	    }
+
+	    /* Write data records. */
+	    for (start[0] = 0; start[0] < NUM_REC; start[0]++)
+	    {
+		/* Create a new record to write. */
+		for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
+		{
+		    data_out[x] = start[0] * 100 + x + 1.;
+		}
+		
+		if (nc_put_vara_float(ncid, varid, start, count, data_out)) ERR;
+	    }
+	    
+	    if (nc_close(ncid)) ERR;
+	    
+	    /* Check file. */
+	    {
+	    	int ncid;
+	    	int varid = 0;
+		int deflate, shuffle;
+	    	int level_in, zstandard, zlib_in;
+		
+	    	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR;
+	    	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
+	    	if (nc_inq_var_deflate(ncid, varid, &shuffle, &deflate, &zlib_in)) ERR;
+
+		switch (f)
+		{
+		case 0:
+		    if (deflate) ERR;
+	    	    if (zstandard) ERR;
+		    break;
+		case 1:
+		    if (deflate) ERR;
+	    	    if (!zstandard || level_in != zstd) ERR;
+		    break;
+		case 2:
+		    if (!deflate) ERR;
+	    	    if (zstandard) ERR;
+		    break;
+		}
+
+		for (start[0] = 0; start[0] < NUM_REC; start[0]++)
+		{
+		    if (nc_get_vara_float(ncid, varid, start, count, data_in)) ERR;
+		    for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
+			if (data_in[x] != start[0] * 100 + x + 1.) ERR;
+		}
+	    	if (nc_close(ncid)) ERR;
+	    }
+
 	    free(data_in);
 	} /* next file */
         free(data_out);
