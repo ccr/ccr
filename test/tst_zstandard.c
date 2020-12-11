@@ -119,7 +119,7 @@ main()
         int varid;
         int *data_out;
         int *data_in;
-        int x, y, f;
+        int x, f;
         int level_in, zstandard;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
