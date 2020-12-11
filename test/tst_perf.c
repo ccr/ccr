@@ -27,7 +27,7 @@
 #define VOICE_OF_RUIN "VOICE_OF_RUIN"
 #define EARTHQUAKES_AND_LIGHTNING "EARTHQUAKES_AND_LIGHTNING"
 
-#define NFILE 10
+#define NFILE 1
 
 #define NX_BIG 1000
 #define NY_BIG 1000
@@ -125,7 +125,7 @@ main()
         float *data_out;
         int x, f;
 	int zstd = MIN_ZSTD;
-	float a = 5.0;
+	/* float a = 5.0; */
     
         if (!(data_out = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(int)))) ERR;
 
@@ -160,34 +160,40 @@ main()
 	    {
 		/* Create a new record to write. */
 		for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
-		    data_out[x] = ((float)rand()/(float)(RAND_MAX)) * a;
+		{
+		    /* data_out[x] = ((float)rand()/(float)(RAND_MAX)) * a; */
+		    data_out[x] = start[0] * 100 + x + 1.;
+		}
 		
 		if (nc_put_vara_float(ncid, varid, start, count, data_out)) ERR;
 	    }
 	    
 	    if (nc_close(ncid)) ERR;
 	    
-	    /* /\* Check file. *\/ */
-	    /* { */
-	    /* 	int ncid; */
-	    /* 	int varid = 0; */
-	    /* 	int level_in, zstandard; */
+	    /* Check file. */
+	    {
+	    	int ncid;
+	    	int varid = 0;
+	    	int level_in, zstandard;
 		
-	    /* 	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR; */
-	    /* 	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR; */
-	    /* 	if (f) */
-	    /* 	{ */
-	    /* 	    if (!zstandard || level_in != zstd) ERR; */
-	    /* 	} */
-	    /* 	else */
-	    /* 	{ */
-	    /* 	    if (zstandard) ERR; */
-	    /* 	} */
-	    /* 	if (nc_get_var(ncid, varid, data_in)) ERR; */
-	    /* 	for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++) */
-	    /* 	    if (data_in[x] != data_out[x]) ERR; */
-	    /* 	if (nc_close(ncid)) ERR; */
-	    /* } */
+	    	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR;
+	    	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
+	    	if (f)
+	    	{
+	    	    if (!zstandard || level_in != zstd) ERR;
+	    	}
+	    	else
+	    	{
+	    	    if (zstandard) ERR;
+	    	}
+		for (start[0] = 0; start[0] < NUM_REC; start[0]++)
+		{
+		    if (nc_get_vara_float(ncid, varid, start, count, data_in)) ERR;
+		    for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
+			if (data_in[x] != start[0] * 100 + x + 1.) ERR;
+		}
+	    	if (nc_close(ncid)) ERR;
+	    }
 
 	    zstd += 1;
 	    free(data_in);
