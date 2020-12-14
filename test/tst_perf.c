@@ -12,6 +12,9 @@
 #include <H5DSpublic.h>
 #include <netcdf.h>
 #include <stdlib.h>
+#include <time.h>
+#include <sys/time.h> /* Extra high precision time info. */
+#include <sys/stat.h> /* To get file sizes. */
 
 #define FILE_NAME "tst_perf.nc"
 #define TEST "tst_perf"
@@ -27,6 +30,7 @@
 #define VOICE_OF_RUIN "VOICE_OF_RUIN"
 #define EARTHQUAKES_AND_LIGHTNING "EARTHQUAKES_AND_LIGHTNING"
 
+#define MILLION 1000000
 #define NFILE 10
 
 #define NX_BIG 1000
@@ -40,6 +44,34 @@
 
 #define MIN_ZSTD 0
 #define MAX_ZSTD 9
+
+/** Subtract the `struct timeval' values X and Y, storing the result in
+   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
+   function from the GNU documentation. */
+int
+nc4_timeval_subtract (result, x, y)
+   struct timeval *result, *x, *y;
+{
+   /* Perform the carry for the later subtraction by updating Y. */
+   if (x->tv_usec < y->tv_usec) {
+      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
+      y->tv_usec -= MILLION * nsec;
+      y->tv_sec += nsec;
+   }
+   if (x->tv_usec - y->tv_usec > MILLION) {
+      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
+      y->tv_usec += MILLION * nsec;
+      y->tv_sec -= nsec;
+   }
+
+   /* Compute the time remaining to wait.
+      `tv_usec' is certainly positive. */
+   result->tv_sec = x->tv_sec - y->tv_sec;
+   result->tv_usec = x->tv_usec - y->tv_usec;
+
+   /* Return 1 if result is negative. */
+   return x->tv_sec < y->tv_sec;
+}
 
 /* Create the test file. */
 int
@@ -63,6 +95,10 @@ create_file(char *file_name, int f, int zstd, int *data_out)
 int
 main()
 {
+    struct stat st;
+    struct timeval start_time, end_time, diff_time;
+    int meta_write_us;
+    
     printf("\n*** Checking Performance of filters.\n");
 #ifdef BUILD_ZSTD    
     printf("*** Checking Zstandard performance on small data set...");
@@ -90,6 +126,7 @@ main()
 		sprintf(file_name, "%s_uncompressed.nc", TEST);
 
 	    /* Create file. */
+	    if (gettimeofday(&start_time, NULL)) ERR;
 	    if (create_file(file_name, f, zstd, data_out)) ERR;
 	    
 	    /* Check file. */
@@ -112,6 +149,10 @@ main()
 		for (x = 0; x < NX_BIG * NY_BIG; x++)
 		    if (data_in[x] != data_out[x]) ERR;
 		if (nc_close(ncid)) ERR;
+		if (gettimeofday(&end_time, NULL)) ERR;
+		if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+		meta_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
+		
 		free(data_in);
 	    }
 
@@ -121,6 +162,7 @@ main()
     }
     SUMMARIZE_ERR;
     printf("*** Checking Zstandard performance on large float data set...");
+    printf("\ncompression, level, write time (us), file size\n");
     {
         float *data_out;
         size_t x;
@@ -148,6 +190,7 @@ main()
 		sprintf(file_name, "%s_uncompressed_really_big.nc", TEST);
 
 	    /* Create file. */
+	    if (gettimeofday(&start_time, NULL)) ERR;
 	    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
 	    if (nc_def_dim(ncid, EARTHQUAKES_AND_LIGHTNING, NC_UNLIMITED, &dimid[0])) ERR;
 	    if (nc_def_dim(ncid, VOICE_OF_RAGE, NX_REALLY_BIG, &dimid[1])) ERR;
@@ -170,6 +213,11 @@ main()
 	    }
 	    
 	    if (nc_close(ncid)) ERR;
+	    if (gettimeofday(&end_time, NULL)) ERR;
+	    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	    meta_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
+	    stat(file_name, &st);
+	    printf("%s, %d, %d, %ld\n", (f ? "zstd" : "none"), zstd, meta_write_us, st.st_size);
 	    
 	    /* Check file. */
 	    {
