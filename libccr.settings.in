@@ -30,3 +30,4 @@ ZSTD Support:		@HAS_ZSTD@
 Parallel I/O Support:	@HAS_NETCDF_PAR@
 Parallel I/O Filters:	@HAS_PAR_FILTERS@
 Multi-Filter Support:	@HAS_MULTIFILTERS@
+Benchmarks:  		@HAS_BENCHMARKS@

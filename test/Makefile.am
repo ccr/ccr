@@ -30,6 +30,11 @@ endif
 # Build the performance test.
 check_PROGRAMS += tst_perf
 
+# Build benchmark program if desired.
+if BUILD_BENCHMARKS
+check_PROGRAMS += tst_benchmark
+endif
+
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh
 
