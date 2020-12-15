@@ -33,7 +33,7 @@
 #define NCOL_SIZE 48602
 
 #define NUM_2D_VAR 353
-#define NUM_3D_VAR 1
+#define NUM_3D_VAR 65
 
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
@@ -47,6 +47,8 @@ int nc4_timeval_subtract(struct timeval *result, struct timeval *x,
 int
 main()
 {
+    int ret;
+    
     printf("\n*** Checking Performance of filters.\n");
 #ifdef BUILD_ZSTD    
     printf("*** Checking Zstandard vs. zlib performance on large climate data set...");
@@ -64,12 +66,13 @@ main()
 	    char compression[MAX_COMPRESSION_STR + 1];
 	    char file_name[STR_LEN + 1];
 	    int ncid_in;
-	    int varid_2d_in[NUM_2D_VAR];
 	    int ncid;
+	    int varid_2d_in[NUM_2D_VAR];
 	    int varid_2d[NUM_2D_VAR];
-	    int dimid[NDIM3];
-	    size_t start[NDIM2] = {0, 0};
-	    size_t count[NDIM2] = {1, NCOL_SIZE};
+	    int varid_3d_in[NUM_3D_VAR];
+	    int varid_3d[NUM_3D_VAR];
+	    int dimid_2d[NDIM2];
+	    int dimid_3d[NDIM3];
 	    char var_name_2d[NUM_2D_VAR][STR_LEN] = {"AEROD_v", "AODABS", "AODABSBC", "AODBC",
 						  "AODDUST", "AODDUST1", "AODDUST3", "AODDUST4",
 						  "AODMODE1", "AODMODE2", "AODMODE3", "AODMODE4",
@@ -159,6 +162,23 @@ main()
 						  "soa_a3SFWET", "soa_a3_SRF", "soa_a3_sfgaex1", "soa_c1DDF",
 						  "soa_c1SFWET", "soa_c2DDF", "soa_c2SFWET", "soa_c3DDF",
 						  "soa_c3SFWET" };
+	    char var_name_3d[NUM_3D_VAR][STR_LEN] = {"ANRAIN", "ANSNOW", "AQRAIN", "AQSNOW",
+						     "AREI", "AREL", "AWNC", "AWNI",
+						     "CCN3", "CLDICE", "CLDLIQ", "CLOUD",
+						     "CLOUDFRAC_CLUBB", "CONCLD", "DCQ", "DTCOND",
+						     "EXTINCT", "FICE", "FREQI", "FREQL",
+						     "FREQR", "FREQS", "ICIMR", "ICWMR",
+						     "IWC", "LINOZ_DO3", "LINOZ_O3CLIM", "LINOZ_O3COL",
+						     "LINOZ_SSO3", "Mass_bc", "Mass_dst", "Mass_mom",
+						     "Mass_ncl", "Mass_pom", "Mass_so4", "Mass_soa",
+						     "NUMICE", "NUMLIQ", "NUMRAI", "NUMSNO",
+						     "O3", "OMEGA", "OMEGAT", "Q",
+						     "QRL", "QRS", "RAINQM", "RELHUM",
+						     "SNOWQM", "SO2", "T", "U",
+						     "UU", "V", "VQ", "VT",
+						     "VU", "VV", "WSUB", "Z3",
+						     "aero_water", "extinct_lw_bnd7", "extinct_lw_inp", "extinct_sw_inp",
+						     "hstobie_linoz"};
 	    struct timeval start_time, end_time, diff_time;
 	    int meta_write_us = 0;
 	    int meta_read_us = 0;
@@ -187,15 +207,17 @@ main()
 	
 	    /* Create output file. */
 	    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
-	    if (nc_def_dim(ncid, "time", NC_UNLIMITED, &dimid[0])) ERR;
-	    if (nc_def_dim(ncid, "ncol", NCOL_SIZE, &dimid[1])) ERR;
-	    if (nc_def_dim(ncid, "lev", LEV_SIZE, &dimid[2])) ERR;
+	    if (nc_def_dim(ncid, "time", NC_UNLIMITED, &dimid_2d[0])) ERR;
+	    if (nc_def_dim(ncid, "ncol", NCOL_SIZE, &dimid_2d[1])) ERR;
+	    dimid_3d[0] = dimid_2d[0];
+	    if (nc_def_dim(ncid, "lev", LEV_SIZE, &dimid_3d[1])) ERR;
+	    dimid_3d[2] = dimid_2d[1];
 
 	    /* Define all 2D vars and set compression. */
 	    for (v = 0; v < NUM_2D_VAR; v++)
 	    {
 		/* printf("v %d %s\n", v, var_name_2d[v]); */
-		if (nc_def_var(ncid, var_name_2d[v], NC_FLOAT, NDIM2, dimid, &varid_2d[v])) ERR;
+		if (nc_def_var(ncid, var_name_2d[v], NC_FLOAT, NDIM2, dimid_2d, &varid_2d[v])) ERR;
 
 		switch (f)
 		{
@@ -210,14 +232,41 @@ main()
 		    break;
 		}
 
-		/* Get the varid_2d for this var in the input file. */
+		/* Get the varid for this var in the input file. */
 		if (nc_inq_varid(ncid_in, var_name_2d[v], &varid_2d_in[v])) ERR;
+	    } /* next var */
+
+	    /* Define all 3D vars and set compression. */
+	    for (v = 0; v < NUM_3D_VAR; v++)
+	    {
+		/* printf("v %d %s\n", v, var_name_3d[v]); */
+		if ((ret = nc_def_var(ncid, var_name_3d[v], NC_FLOAT, NDIM3, dimid_3d, &varid_3d[v])))
+		    NCERR(ret);
+
+		switch (f)
+		{
+		case 0:
+		    /* no compression */
+		    break;
+		case 1:
+		    if (nc_def_var_zstandard(ncid, varid_3d[v], level)) ERR;
+		    break;
+		case 2:
+		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;
+		    break;
+		}
+
+		/* Get the varid for this var in the input file. */
+		if (nc_inq_varid(ncid_in, var_name_3d[v], &varid_3d_in[v])) ERR;
 	    } /* next var */
 
 	    /* Copy data from input file to output file. The first
 	     * nc_put will turn off define mode in the file. */
 	    for (v = 0; v < NUM_2D_VAR; v++)
 	    {
+		size_t start[NDIM2] = {0, 0};
+		size_t count[NDIM2] = {1, NCOL_SIZE};
+		
 		/* printf("v %d %s\n", v, var_name_2d[v]); */
 
 		/* Start timer. */
@@ -243,6 +292,41 @@ main()
 		meta_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 	    } /* next var */
 	    
+	    /* Copy 3D data from input file to output file. */
+	    for (v = 0; v < NUM_3D_VAR; v++)
+	    {
+		size_t start[NDIM3] = {0, 0, 0};
+		size_t count[NDIM3] = {1, 1, NCOL_SIZE};
+		/* printf("v %d %s\n", v, var_name_3d[v]); */
+
+		/* Read/write data for each level. */
+		for (start[1] = 0; start[1] < LEV_SIZE; start[1]++)
+		{
+		    /* Start timer. */
+		    if (gettimeofday(&start_time, NULL)) ERR;
+
+		    /* Read input data. */
+		    if (nc_get_vara_float(ncid_in, varid_3d_in[v], start, count, data_2d_in)) ERR;
+
+		    /* Stop timer. */
+		    if (gettimeofday(&end_time, NULL)) ERR;
+		    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+		    meta_read_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
+
+		    /* Start timer. */
+		    if (gettimeofday(&start_time, NULL)) ERR;
+
+		    /* Write data. */
+		    if ((ret = nc_put_vara_float(ncid, varid_3d[v], start, count, data_2d_in)))
+			NCERR(ret);
+
+		    /* Stop timer. */
+		    if (gettimeofday(&end_time, NULL)) ERR;
+		    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+		    meta_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
+		} /* next lev */
+	    } /* next var */
+	    
 	    /* Start timer. Add the nc_close time to the write time,
 	     * because buffers can be flushed in nc_close. */
 	    if (gettimeofday(&start_time, NULL)) ERR;
@@ -264,12 +348,11 @@ main()
 		/* Reopen the output file. */
 		if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR;
 		
-		/* Re-read data from input and output files, to
+		/* Re-read data from input and output files 2D vars, to
 		 * compare. Time how long it takes to re-read the data. */
 		for (v = 0; v < NUM_2D_VAR; v++)
 		{
 		    int d;
-		    int ret;
 		    
 		    /* printf("v %d %s\n", v, var_name_2d[v]); */
 		    
@@ -296,6 +379,44 @@ main()
 		    }
 
 		} /* next var */
+
+		/* Re-read data from input and output files 3D vars, to
+		 * compare. Time how long it takes to re-read the data. */
+		for (v = 0; v < NUM_3D_VAR; v++)
+		{
+		    size_t start[NDIM3] = {0, 0, 0};
+		    size_t count[NDIM3] = {1, 1, NCOL_SIZE};
+		    int d;
+		    int ret;
+		    
+		    /* printf("v %d %s\n", v, var_name_3d[v]); */
+		    
+		    /* Check data for each level. */
+		    for (start[1] = 0; start[1] < LEV_SIZE; start[1]++)
+		    {
+			/* Read input data. */
+			if ((ret = nc_get_vara_float(ncid_in, varid_3d_in[v], start, count, data_2d_in)))
+			    NCERR(ret);
+			
+			/* Start timer. */
+			if (gettimeofday(&start_time, NULL)) ERR;
+			
+			/* Read data from output file. */
+			if ((ret = nc_get_vara_float(ncid, varid_3d[v], start, count, data_2d)))
+			    NCERR(ret);
+			
+			/* Stop timer. */
+			if (gettimeofday(&end_time, NULL)) ERR;
+			if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+			meta_reread_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
+			
+			/* Check data values. */
+			for (d = 0; d < NCOL_SIZE; d++)
+			{
+			    /* if (data_2d_in[d] != data_2d[d]) ERR; */
+			}
+		    } /* next level */
+		} /* next var */
 		
 		/* Close re-opened output file. */
 		if (nc_close(ncid)) ERR;
@@ -306,7 +427,7 @@ main()
 	    if (nc_close(ncid_in)) ERR;
 
 	    stat(file_name, &st);
-	    printf("%s, %d, %.3f %.3f, %.3f %.2f\n", (f ? compression : "none"), level, (float)meta_read_us/MILLION,
+	    printf("%s, %d, %.3f, %.3f, %.3f, %.2f\n", (f ? compression : "none"), level, (float)meta_read_us/MILLION,
 		   (float)meta_write_us/MILLION, (float)meta_reread_us/MILLION, (float)st.st_size/MILLION);
 
 	} /* next file */
