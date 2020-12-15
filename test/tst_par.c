@@ -18,6 +18,11 @@
 #define NUM_PROC 4
 #define NUM_SLABS 10
 
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
+
 int
 main(int argc, char **argv)
 {

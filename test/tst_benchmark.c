@@ -1,8 +1,9 @@
 /* This is part of the CCR package. Copyright 2020.
 
-   Test performance.
+   Test performance by reading an existing climate data file, and
+   rewriting some of the data in netCDF/HDF5 with filters.
 
-   Ed Hartnett 12/14/20
+   Ed Hartnett 12/15/20
 */
 
 #include "config.h"
@@ -17,8 +18,8 @@
 #include <sys/time.h> /* Extra high precision time info. */
 #include <sys/stat.h> /* To get file sizes. */
 
-#define INPUT_FILE "gfs.t00z.atmf024.nc"
-#define TEST "tst_benchmark"
+#define INPUT_FILE "eamv1_ne30np4l72.nc"
+#define TEST "tst_eamv1_benchmark"
 #define STR_LEN 255
 
 #define NDIM4 4
@@ -33,38 +34,18 @@
 
 #define HGTSFC "hgtsfc"
 
-/** Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-int
-nc4_timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
-      y->tv_usec -= MILLION * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > MILLION) {
-      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
-      y->tv_usec += MILLION * nsec;
-      y->tv_sec -= nsec;
-   }
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
 
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
+/* Prototype from tst_utils.c. */
+int nc4_timeval_subtract(struct timeval *result, struct timeval *x,
+                         struct timeval *y);
 
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
-    
 int
 main()
 {
-    
     printf("\n*** Checking Performance of filters.\n");
 #ifdef BUILD_ZSTD    
     printf("*** Checking Zstandard vs. zlib performance on large GFS data set...");
@@ -106,44 +87,44 @@ main()
 	    /* Determine output filename. */
 	    sprintf(file_name, "%s_%s_gfs_%d.nc", TEST, compression, level);
 
-	    /* Open input file. */
-	    if (nc_open(INPUT_FILE, NC_NOWRITE, &ncid_in)) ERR;
-	    if (nc_inq_varid(ncid_in, HGTSFC, &varid_in)) ERR;
+	    /* /\* Open input file. *\/ */
+	    /* if (nc_open(INPUT_FILE, NC_NOWRITE, &ncid_in)) ERR; */
+	    /* if (nc_inq_varid(ncid_in, HGTSFC, &varid_in)) ERR; */
 	
-	    /* Read input data. */
-	    if (nc_get_var_float(ncid_in, varid_in, data)) ERR;
+	    /* /\* Read input data. *\/ */
+	    /* if (nc_get_var_float(ncid_in, varid_in, data)) ERR; */
 
-	    /* Close input file. */
-	    if (nc_close(ncid_in)) ERR;
+	    /* /\* Close input file. *\/ */
+	    /* if (nc_close(ncid_in)) ERR; */
 
-	    /* Create output file. */
-	    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
-	    if (nc_def_dim(ncid, "time", NC_UNLIMITED, &dimid[0])) ERR;
-	    if (nc_def_dim(ncid, "pfull", PFULL_SIZE, &dimid[1])) ERR;
-	    if (nc_def_dim(ncid, "grid_xt", GRID_XT_SIZE, &dimid[2])) ERR;
-	    if (nc_def_dim(ncid, "grid_yt", GRID_YT_SIZE, &dimid[3])) ERR;
-	    if (nc_def_var(ncid, HGTSFC, NC_FLOAT, NDIM4, dimid, &varid)) ERR;
+	    /* /\* Create output file. *\/ */
+	    /* if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR; */
+	    /* if (nc_def_dim(ncid, "time", NC_UNLIMITED, &dimid[0])) ERR; */
+	    /* if (nc_def_dim(ncid, "pfull", PFULL_SIZE, &dimid[1])) ERR; */
+	    /* if (nc_def_dim(ncid, "grid_xt", GRID_XT_SIZE, &dimid[2])) ERR; */
+	    /* if (nc_def_dim(ncid, "grid_yt", GRID_YT_SIZE, &dimid[3])) ERR; */
+	    /* if (nc_def_var(ncid, HGTSFC, NC_FLOAT, NDIM4, dimid, &varid)) ERR; */
 
-	    switch (f)
-	    {
-	    case 0:
-		/* no compression */
-		break;
-	    case 1:
-		if (nc_def_var_zstandard(ncid, varid, level)) ERR;
-		break;
-	    case 2:
-		if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
-		break;
-	    }
+	    /* switch (f) */
+	    /* { */
+	    /* case 0: */
+	    /* 	/\* no compression *\/ */
+	    /* 	break; */
+	    /* case 1: */
+	    /* 	if (nc_def_var_zstandard(ncid, varid, level)) ERR; */
+	    /* 	break; */
+	    /* case 2: */
+	    /* 	if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR; */
+	    /* 	break; */
+	    /* } */
 
 	    /* Start timer. */
 	    if (gettimeofday(&start_time, NULL)) ERR;
 	
-	    /* Write data. */
-	    if (nc_put_var_float(ncid, varid, data)) ERR;
+	    /* /\* Write data. *\/ */
+	    /* if (nc_put_var_float(ncid, varid, data)) ERR; */
 
-	    if (nc_close(ncid)) ERR;
+	    /* if (nc_close(ncid)) ERR; */
 	    if (gettimeofday(&end_time, NULL)) ERR;
 	    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	    meta_write_us = (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;

@@ -11,6 +11,11 @@
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
+
 #define FILE_NAME "tst_h_bitgroom.h5"
 #define STR_LEN 255
 #define MAX_LEN 1024

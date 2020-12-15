@@ -29,6 +29,7 @@ endif
 
 # Build the performance test.
 check_PROGRAMS += tst_perf
+tst_perf_SOURCES = tst_perf.c tst_utils.c
 
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh
@@ -42,6 +43,7 @@ endif
 # Build benchmark program if desired.
 if BUILD_BENCHMARKS
 check_PROGRAMS += tst_benchmark
+tst_benchmark_SOURCES = tst_benchmark.c tst_utils.c
 TESTS += run_benchmarks.sh
 endif
 
