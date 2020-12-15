@@ -21,6 +21,8 @@
    The dataset itself is also available through ESGF and through
    https://e3sm.org/data/get-e3sm-data/released-e3sm-data/v1-1-deg-data-cmip6/
 
+   This program requires the BITGROOM and the ZSTD filters.
+
    Ed Hartnett 12/15/20
 */
 
@@ -38,14 +40,16 @@
 
 #define INPUT_FILE "eamv1_ne30np4l72.nc"
 #define TEST "tst_eamv1_benchmark"
+#define COMPRESSION_LEVEL 1
+#define NSD 5
 #define STR_LEN 255
 
 #define NDIM2 2
 #define NDIM3 3
 
 #define MILLION 1000000
-#define NFILE3 3
-#define MAX_COMPRESSION_STR 4
+#define NFILE3 6
+#define MAX_COMPRESSION_STR 13
 
 #define LEV_SIZE 72
 #define NCOL_SIZE 48602
@@ -68,9 +72,10 @@ main()
     int ret;
     
     printf("\n*** Checking Performance of filters.\n");
-#ifdef BUILD_ZSTD    
+#ifdef BUILD_ZSTD
+#ifdef BUILD_BITGROOM    
     printf("*** Checking Zstandard vs. zlib performance on large climate data set...");
-    printf("\ncompression, level, read time (s), write time (s), re-read time (s), file size (MB)\n");
+    printf("\ncompression, level, nsd, read time (s), write time (s), re-read time (s), file size (MB)\n");
     {
         float *data_2d_in;
 	int f;
@@ -80,7 +85,8 @@ main()
 	/* Write three files, one uncompressed, one with zlib, and one with zstd. */
 	for (f = 0; f < NFILE3; f++)
 	{
-	    int level = 1;
+	    int level;
+	    int nsd;
 	    char compression[MAX_COMPRESSION_STR + 1];
 	    char file_name[STR_LEN + 1];
 	    int ncid_in;
@@ -208,17 +214,38 @@ main()
 	    {
 	    case 0:
 		strcpy(compression, "none");
+		level = 0;
+		nsd = 0;
 		break;
 	    case 1:
 		strcpy(compression, "zstd");
+		level = COMPRESSION_LEVEL;
+		nsd = 0;
 		break;
 	    case 2:
 		strcpy(compression, "zlib");
+		level = COMPRESSION_LEVEL;
+		nsd = 0;
+		break;
+	    case 3:
+		strcpy(compression, "bitgroom");
+		level = 0;
+		nsd = NSD;
+		break;
+	    case 4:
+		strcpy(compression, "bitgroom_zstd");
+		level = COMPRESSION_LEVEL;
+		nsd = NSD;
+		break;
+	    case 5:
+		strcpy(compression, "bitgroom_zlib");
+		level = COMPRESSION_LEVEL;
+		nsd = NSD;
 		break;
 	    }
 
 	    /* Determine output filename. */
-	    sprintf(file_name, "%s_%s_gfs_%d.nc", TEST, compression, level);
+	    sprintf(file_name, "%s_%s_gfs_level_%d_nsd_%d.nc", TEST, compression, level, nsd);
 
 	    /* Open input file. */
 	    if (nc_open(INPUT_FILE, NC_NOWRITE, &ncid_in)) ERR;
@@ -248,6 +275,17 @@ main()
 		case 2:
 		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;
 		    break;
+		case 3:
+		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
+		    break;
+		case 4:
+		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
+		    if (nc_def_var_zstandard(ncid, varid_2d[v], level)) ERR;
+		    break;
+		case 5:
+		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
+		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;		    
+		    break;
 		}
 
 		/* Get the varid for this var in the input file. */
@@ -271,6 +309,17 @@ main()
 		    break;
 		case 2:
 		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;
+		    break;
+		case 3:
+		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
+		    break;
+		case 4:
+		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
+		    if (nc_def_var_zstandard(ncid, varid_3d[v], level)) ERR;
+		    break;
+		case 5:
+		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
+		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;		    
 		    break;
 		}
 
@@ -445,13 +494,15 @@ main()
 	    if (nc_close(ncid_in)) ERR;
 
 	    stat(file_name, &st);
-	    printf("%s, %d, %.3f, %.3f, %.3f, %.2f\n", (f ? compression : "none"), level, (float)meta_read_us/MILLION,
-		   (float)meta_write_us/MILLION, (float)meta_reread_us/MILLION, (float)st.st_size/MILLION);
+	    printf("%s, %d, %d, %.3f, %.3f, %.3f, %.2f\n", (f ? compression : "none"), level, nsd,
+		   (float)meta_read_us/MILLION, (float)meta_write_us/MILLION,
+		   (float)meta_reread_us/MILLION, (float)st.st_size/MILLION);
 
 	} /* next file */
 	free(data_2d_in);
     }
     SUMMARIZE_ERR;
+#endif /* BUILD_BITGROOM */
 #endif /* BUILD_ZSTD */
     FINAL_RESULTS;
 }
