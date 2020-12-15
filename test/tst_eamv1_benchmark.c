@@ -1,7 +1,25 @@
 /* This is part of the CCR package. Copyright 2020.
 
    Test performance by reading an existing climate data file, and
-   rewriting some of the data in netCDF/HDF5 with filters.
+   rewriting some of the data in netCDF/HDF5 with filters. All 2D
+   (time, ncol) and 3D (time, lve, ncol) float fields are copied.
+
+   This requires a sample data file:
+   20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc. 
+
+   It is the January monthly mean output from the first year of the
+   Pre-Industrial control simulation of EAMv1, the atmospheric
+   component of E3SMv1 (i.e., analogous to CAM in CESM). That
+   simulation is fully documented in:
+
+   Golaz, J.-C., P. M. Caldwell, L. P. Van Roekel, M. R. Petersen,
+   Q. Tang, J. D. Wolfe, and 75 co-authors (including CSZ) (2019), The
+   DOE E3SM coupled model version 1: Overview and evaluation at
+   standard resolution, J. Adv. Model. Earth Syst., 11(7), 2089-2129,
+   https://doi.org/10.1029/2018MS001603.
+
+   The dataset itself is also available through ESGF and through
+   https://e3sm.org/data/get-e3sm-data/released-e3sm-data/v1-1-deg-data-cmip6/
 
    Ed Hartnett 12/15/20
 */
