@@ -41,7 +41,7 @@
 #define INPUT_FILE "eamv1_ne30np4l72.nc"
 #define TEST "tst_eamv1_benchmark"
 #define COMPRESSION_LEVEL 1
-#define NSD 5
+#define NSD 3
 #define STR_LEN 255
 
 #define NDIM2 2
