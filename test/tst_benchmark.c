@@ -33,6 +33,7 @@
 #define NCOL_SIZE 48602
 
 #define NUM_2D_VAR 353
+#define NUM_3D_VAR 1
 
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
@@ -51,10 +52,10 @@ main()
     printf("*** Checking Zstandard vs. zlib performance on large climate data set...");
     printf("\ncompression, level, read time (s), write time (s), re-read time (s), file size (MB)\n");
     {
-        float *data_2d;
+        float *data_2d_in;
 	int f;
 	    
-        if (!(data_2d = malloc(NCOL_SIZE * sizeof(float)))) ERR;
+        if (!(data_2d_in = malloc(NCOL_SIZE * sizeof(float)))) ERR;
 	
 	/* Write three files, one uncompressed, one with zlib, and one with zstd. */
 	for (f = 0; f < NFILE3; f++)
@@ -63,13 +64,13 @@ main()
 	    char compression[MAX_COMPRESSION_STR + 1];
 	    char file_name[STR_LEN + 1];
 	    int ncid_in;
-	    int varid_in[NUM_2D_VAR];
+	    int varid_2d_in[NUM_2D_VAR];
 	    int ncid;
-	    int varid[NUM_2D_VAR];
+	    int varid_2d[NUM_2D_VAR];
 	    int dimid[NDIM3];
 	    size_t start[NDIM2] = {0, 0};
 	    size_t count[NDIM2] = {1, NCOL_SIZE};
-	    char var_name[NUM_2D_VAR][STR_LEN] = {"AEROD_v", "AODABS", "AODABSBC", "AODBC",
+	    char var_name_2d[NUM_2D_VAR][STR_LEN] = {"AEROD_v", "AODABS", "AODABSBC", "AODBC",
 						  "AODDUST", "AODDUST1", "AODDUST3", "AODDUST4",
 						  "AODMODE1", "AODMODE2", "AODMODE3", "AODMODE4",
 						  "AODNIR", "AODPOM", "AODSO4", "AODSOA",
@@ -190,11 +191,11 @@ main()
 	    if (nc_def_dim(ncid, "ncol", NCOL_SIZE, &dimid[1])) ERR;
 	    if (nc_def_dim(ncid, "lev", LEV_SIZE, &dimid[2])) ERR;
 
-	    /* Define all vars and set compression. */
+	    /* Define all 2D vars and set compression. */
 	    for (v = 0; v < NUM_2D_VAR; v++)
 	    {
-		/* printf("v %d %s\n", v, var_name[v]); */
-		if (nc_def_var(ncid, var_name[v], NC_FLOAT, NDIM2, dimid, &varid[v])) ERR;
+		/* printf("v %d %s\n", v, var_name_2d[v]); */
+		if (nc_def_var(ncid, var_name_2d[v], NC_FLOAT, NDIM2, dimid, &varid_2d[v])) ERR;
 
 		switch (f)
 		{
@@ -202,28 +203,28 @@ main()
 		    /* no compression */
 		    break;
 		case 1:
-		    if (nc_def_var_zstandard(ncid, varid[v], level)) ERR;
+		    if (nc_def_var_zstandard(ncid, varid_2d[v], level)) ERR;
 		    break;
 		case 2:
-		    if (nc_def_var_deflate(ncid, varid[v], 0, 1, level)) ERR;
+		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;
 		    break;
 		}
 
-		/* Get the varid for this var in the input file. */
-		if (nc_inq_varid(ncid_in, var_name[v], &varid_in[v])) ERR;
+		/* Get the varid_2d for this var in the input file. */
+		if (nc_inq_varid(ncid_in, var_name_2d[v], &varid_2d_in[v])) ERR;
 	    } /* next var */
 
 	    /* Copy data from input file to output file. The first
 	     * nc_put will turn off define mode in the file. */
 	    for (v = 0; v < NUM_2D_VAR; v++)
 	    {
-		/* printf("v %d %s\n", v, var_name[v]); */
+		/* printf("v %d %s\n", v, var_name_2d[v]); */
 
 		/* Start timer. */
 		if (gettimeofday(&start_time, NULL)) ERR;
 
 		/* Read input data. */
-		if (nc_get_var_float(ncid_in, varid_in[v], data_2d)) ERR;
+		if (nc_get_var_float(ncid_in, varid_2d_in[v], data_2d_in)) ERR;
 
 		/* Stop timer. */
 		if (gettimeofday(&end_time, NULL)) ERR;
@@ -234,7 +235,7 @@ main()
 		if (gettimeofday(&start_time, NULL)) ERR;
 
 		/* Write data. */
-		if (nc_put_vara_float(ncid, varid[v], start, count, data_2d)) ERR;
+		if (nc_put_vara_float(ncid, varid_2d[v], start, count, data_2d_in)) ERR;
 
 		/* Stop timer. */
 		if (gettimeofday(&end_time, NULL)) ERR;
@@ -256,9 +257,9 @@ main()
 
 	    /* Check the output file. */
 	    {
-		float *data_2d_in;
+		float *data_2d;
 
-		if (!(data_2d_in = malloc(NCOL_SIZE * sizeof(float)))) ERR;
+		if (!(data_2d = malloc(NCOL_SIZE * sizeof(float)))) ERR;
 		
 		/* Reopen the output file. */
 		if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR;
@@ -270,17 +271,17 @@ main()
 		    int d;
 		    int ret;
 		    
-		    /* printf("v %d %s\n", v, var_name[v]); */
+		    /* printf("v %d %s\n", v, var_name_2d[v]); */
 		    
 		    /* Read input data. */
-		    if ((ret = nc_get_var_float(ncid_in, varid_in[v], data_2d)))
+		    if ((ret = nc_get_var_float(ncid_in, varid_2d_in[v], data_2d_in)))
 			NCERR(ret);
 		    
 		    /* Start timer. */
 		    if (gettimeofday(&start_time, NULL)) ERR;
 		    
 		    /* Read data from output file. */
-		    if ((ret = nc_get_var_float(ncid, varid[v], data_2d_in)))
+		    if ((ret = nc_get_var_float(ncid, varid_2d[v], data_2d)))
 			NCERR(ret);
 		    
 		    /* Stop timer. */
@@ -291,14 +292,14 @@ main()
 		    /* Check data values. */
 		    for (d = 0; d < NCOL_SIZE; d++)
 		    {
-			/* if (data_2d[d] != data_2d_in[d]) ERR; */
+			/* if (data_2d_in[d] != data_2d[d]) ERR; */
 		    }
 
 		} /* next var */
 		
 		/* Close re-opened output file. */
 		if (nc_close(ncid)) ERR;
-		free(data_2d_in);
+		free(data_2d);
 	    }
 	    
 	    /* Close input file. */
@@ -309,7 +310,7 @@ main()
 		   (float)meta_write_us/MILLION, (float)meta_reread_us/MILLION, (float)st.st_size/MILLION);
 
 	} /* next file */
-	free(data_2d);
+	free(data_2d_in);
     }
     SUMMARIZE_ERR;
 #endif /* BUILD_ZSTD */
