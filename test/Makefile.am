@@ -29,6 +29,7 @@ endif
 
 # Build the performance test.
 check_PROGRAMS += tst_perf
+tst_perf_SOURCES = tst_perf.c tst_utils.c
 
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh
@@ -39,9 +40,16 @@ check_PROGRAMS += tst_par
 TESTS += run_par_tests.sh
 endif
 
+# Build benchmark program if desired.
+if BUILD_BENCHMARKS
+check_PROGRAMS += tst_benchmark
+tst_benchmark_SOURCES = tst_benchmark.c tst_utils.c
+TESTS += run_benchmarks.sh
+endif
+
 # Delete files created in testing.
 CLEANFILES = tst_*.nc
 
-EXTRA_DIST = run_tests.sh.in run_par_tests.sh.in
+EXTRA_DIST = run_tests.sh.in run_par_tests.sh.in run_benchmarks.sh.in
 
-DISTCLEAN = run_tests.sh run_par_tests.sh
+DISTCLEAN = run_tests.sh run_par_tests.sh run_benchmarks.sh

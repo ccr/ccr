@@ -85,6 +85,17 @@ test "x$enable_fortran" = xyes || enable_fortran=no
 AC_MSG_RESULT([$enable_fortran])
 AM_CONDITIONAL(BUILD_FORTRAN, [test "x$enable_fortran" = xyes])
 
+# Does the user want to run benchmarks?
+AC_MSG_CHECKING([whether benchmarks should be run])
+AC_ARG_ENABLE([benchmarks],
+              [AS_HELP_STRING([--enable-benchmarks],
+                              [Run benchmarks. This will cause sample data files from the Unidata ftp
+                              site to be fetched. The benchmarks are a bunch of extra tests, which
+                              are timed. We use these tests to measure performance. This is slow.])])
+test "x$enable_benchmarks" = xyes || enable_benchmarks=no
+AC_MSG_RESULT($enable_benchmarks)
+AM_CONDITIONAL(BUILD_BENCHMARKS, [test x$enable_benchmarks = xyes])
+
 # Does the user want to build documentation?
 AC_MSG_CHECKING([whether documentation should be build (requires doxygen)])
 AC_ARG_ENABLE([docs],
@@ -325,6 +336,7 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [])
 # Configure the test running scripts.
 AC_CONFIG_FILES([test/run_tests.sh], [chmod ugo+x test/run_tests.sh])
 AC_CONFIG_FILES([test/run_par_tests.sh], [chmod ugo+x test/run_par_tests.sh])
+AC_CONFIG_FILES([test/run_benchmarks.sh], [chmod ugo+x test/run_benchmarks.sh])
 AC_CONFIG_FILES([ftest/run_tests.sh], [chmod ugo+x ftest/run_tests.sh])
 AC_CONFIG_FILES([test_h5/run_tests.sh], [chmod ugo+x test_h5/run_tests.sh])
 
@@ -388,6 +400,8 @@ AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
 AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
+AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
+AX_SET_META([CCR_HAS_BENCHMARKS],[$enable_benchmarks],[yes])
 
 AX_SET_META([CCR_HAS_NETCDF_PAR],[$have_netcdf_par],[yes])
 AX_SET_META([CCR_HAS_PAR_FILTERS],[$have_par_filters],[yes])

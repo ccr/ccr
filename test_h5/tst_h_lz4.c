@@ -16,6 +16,11 @@
 #define STR_LEN 255
 #define MAX_LEN 1024
 
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
+
 size_t H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts,
                       const unsigned int cd_values[], size_t nbytes,
                       size_t *buf_size, void **buf);

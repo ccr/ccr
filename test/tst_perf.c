@@ -31,7 +31,6 @@
 #define VOICE_OF_RUIN "VOICE_OF_RUIN"
 #define EARTHQUAKES_AND_LIGHTNING "EARTHQUAKES_AND_LIGHTNING"
 
-#define MILLION 1000000
 #define NFILE 18 /* This must be an even number. */
 #define MAX_COMPRESSION_STR 4
 
@@ -48,34 +47,15 @@
 #define MAX_ZSTD 9
 #define MIN_ZLIB 1
 
-/** Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-int
-nc4_timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
-      y->tv_usec -= MILLION * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > MILLION) {
-      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
-      y->tv_usec += MILLION * nsec;
-      y->tv_sec -= nsec;
-   }
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
 
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
+/* Prototype from tst_utils.c. */
+int nc4_timeval_subtract(struct timeval *result, struct timeval *x,
+                         struct timeval *y);
 
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
-    
 int
 main()
 {

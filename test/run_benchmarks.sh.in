@@ -1,0 +1,16 @@
+# This script runs the benchmarks in the CCR project.
+#
+# Ed Hartnett 12/14/20
+set -x
+set -e
+
+# If zstandard was built, add it to plugin path.
+if test "@BUILD_ZSTD@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/ZSTANDARD/src/.libs:$HDF5_PLUGIN_PATH"
+fi
+
+./tst_benchmark
+
+
+
+
