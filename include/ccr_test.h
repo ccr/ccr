@@ -16,7 +16,7 @@
 #define MILLION 1000000
 
 /* This macro prints an error message with line number and name of
- * test program. */
+ * test program, and a netCDF error message. */
 #define NCERR(e) do {							\
         fflush(stdout); /* Make sure our stdout is synced with stderr. */ \
         err++;                                                          \
