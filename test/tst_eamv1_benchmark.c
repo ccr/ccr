@@ -41,14 +41,14 @@
 #define INPUT_FILE "eamv1_ne30np4l72.nc"
 #define TEST "tst_eamv1_benchmark"
 #define COMPRESSION_LEVEL 1
-#define NSD 5
+#define NSD 3
 #define STR_LEN 255
 
 #define NDIM2 2
 #define NDIM3 3
 
 #define MILLION 1000000
-#define NFILE3 6
+#define NFILE3 5
 #define MAX_COMPRESSION_STR 13
 
 #define LEV_SIZE 72
@@ -228,16 +228,11 @@ main()
 		nsd = 0;
 		break;
 	    case 3:
-		strcpy(compression, "bitgroom");
-		level = 0;
-		nsd = NSD;
-		break;
-	    case 4:
 		strcpy(compression, "bitgroom_zstd");
 		level = COMPRESSION_LEVEL;
 		nsd = NSD;
 		break;
-	    case 5:
+	    case 4:
 		strcpy(compression, "bitgroom_zlib");
 		level = COMPRESSION_LEVEL;
 		nsd = NSD;
@@ -277,12 +272,9 @@ main()
 		    break;
 		case 3:
 		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
-		    break;
-		case 4:
-		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
 		    if (nc_def_var_zstandard(ncid, varid_2d[v], level)) ERR;
 		    break;
-		case 5:
+		case 4:
 		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
 		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;		    
 		    break;
@@ -312,12 +304,9 @@ main()
 		    break;
 		case 3:
 		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
-		    break;
-		case 4:
-		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
 		    if (nc_def_var_zstandard(ncid, varid_3d[v], level)) ERR;
 		    break;
-		case 5:
+		case 4:
 		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
 		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;		    
 		    break;
