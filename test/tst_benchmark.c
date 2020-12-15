@@ -17,36 +17,21 @@
 #include <sys/time.h> /* Extra high precision time info. */
 #include <sys/stat.h> /* To get file sizes. */
 
-#define FILE_NAME "tst_benchmark.nc"
+#define INPUT_FILE "gfs.t00z.atmf024.nc"
 #define TEST "tst_benchmark"
 #define STR_LEN 255
-#define MAX_LEN 1024
-#define X_NAME "X"
-#define Y_NAME "Y"
-#define NDIM2 2
-#define NDIM3 3
-#define VAR_NAME "Midnight_Special"
-#define VAR_NAME_2 "Bad_Moon_Rising"
-#define VOICE_OF_RAGE "VOICE_OF_RAGE"
-#define VOICE_OF_RUIN "VOICE_OF_RUIN"
-#define EARTHQUAKES_AND_LIGHTNING "EARTHQUAKES_AND_LIGHTNING"
+
+#define NDIM4 4
 
 #define MILLION 1000000
-#define NFILE 18 /* This must be an even number. */
+#define NFILE3 3
 #define MAX_COMPRESSION_STR 4
 
-#define NX_BIG 1000
-#define NY_BIG 1000
-/* Restore these larger values to run the big file tests. */
-#define NX_REALLY_BIG 1000
-#define NY_REALLY_BIG 5000
-/* #define NX_REALLY_BIG 100 */
-/* #define NY_REALLY_BIG 50 */
-#define NUM_REC 5
+#define GRID_XT_SIZE 3072
+#define GRID_YT_SIZE 1536
+#define PFULL_SIZE 127
 
-#define MIN_ZSTD 0
-#define MAX_ZSTD 9
-#define MIN_ZLIB 1
+#define HGTSFC "hgtsfc"
 
 /** Subtract the `struct timeval' values X and Y, storing the result in
    RESULT.  Return 1 if the difference is negative, otherwise 0.  This
@@ -79,131 +64,98 @@ nc4_timeval_subtract (result, x, y)
 int
 main()
 {
-    struct stat st;
     
     printf("\n*** Checking Performance of filters.\n");
 #ifdef BUILD_ZSTD    
-    printf("*** Checking Zstandard vs. zlib performance on large float data set...");
+    printf("*** Checking Zstandard vs. zlib performance on large GFS data set...");
     printf("\ncompression, level, write time (s), file size (MB)\n");
     {
-        float *data_out;
-        size_t x;
+        float *data;
 	int f;
-	int level = MIN_ZSTD;
-	char compression[MAX_COMPRESSION_STR + 1];
-	float a = 5.0;
-    
-        if (!(data_out = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(int)))) ERR;
-
-	/* We will write NFILE compressed file, and 1 uncompressed
-	 * file. Half the compressed files will be zstd, half zlib. */
-	for (f = 0; f < NFILE + 1; f++)
+	    
+        if (!(data = malloc(PFULL_SIZE * GRID_XT_SIZE * GRID_YT_SIZE * sizeof(int)))) ERR;
+	
+	/* Write three files, one uncompressed, one with zlib, and one with zstd. */
+	for (f = 0; f < NFILE3; f++)
 	{
+	    int level = 1;
+	    char compression[MAX_COMPRESSION_STR + 1];
 	    char file_name[STR_LEN + 1];
-	    float *data_in;
+	    int ncid_in;
+	    int varid_in;
 	    int ncid;
-	    int dimid[NDIM3];
 	    int varid;
-	    size_t start[NDIM3] = {0, 0, 0};
-	    size_t count[NDIM3] = {1, NX_REALLY_BIG, NY_REALLY_BIG};
+	    int dimid[NDIM4];
 	    struct timeval start_time, end_time, diff_time;
 	    int meta_write_us;
-	    int increment = 1;
-	    
-	    if (!(data_in = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(float)))) ERR;
+	    struct stat st;
 
-	    if (f)
-		strcpy(compression, (f < NFILE / 2 + 1) ? "zstd" : "zlib");
+	    switch (f)
+	    {
+	    case 0:
+		strcpy(compression, "none");
+		break;
+	    case 1:
+		strcpy(compression, "zstd");
+		break;
+	    case 2:
+		strcpy(compression, "zlib");
+		break;
+	    }
 
-	    if (f)
-		sprintf(file_name, "%s_%s_really_big_%d.nc", TEST, compression, level);
-	    else
-		sprintf(file_name, "%s_uncompressed_really_big.nc", TEST);
+	    /* Determine output filename. */
+	    sprintf(file_name, "%s_%s_gfs_%d.nc", TEST, compression, level);
 
-	    /* Create file. */
-	    if (gettimeofday(&start_time, NULL)) ERR;
+	    /* Open input file. */
+	    if (nc_open(INPUT_FILE, NC_NOWRITE, &ncid_in)) ERR;
+	    if (nc_inq_varid(ncid_in, HGTSFC, &varid_in)) ERR;
+	
+	    /* Read input data. */
+	    if (nc_get_var_float(ncid_in, varid_in, data)) ERR;
 
+	    /* Close input file. */
+	    if (nc_close(ncid_in)) ERR;
+
+	    /* Create output file. */
 	    if (nc_create(file_name, NC_CLOBBER|NC_NETCDF4, &ncid)) ERR;
-	    if (nc_def_dim(ncid, EARTHQUAKES_AND_LIGHTNING, NC_UNLIMITED, &dimid[0])) ERR;
-	    if (nc_def_dim(ncid, VOICE_OF_RAGE, NX_REALLY_BIG, &dimid[1])) ERR;
-	    if (nc_def_dim(ncid, VOICE_OF_RUIN, NY_REALLY_BIG, &dimid[2])) ERR;
-	    if (nc_def_var(ncid, VAR_NAME_2, NC_FLOAT, NDIM3, dimid, &varid)) ERR;
-	    if (f)
+	    if (nc_def_dim(ncid, "time", NC_UNLIMITED, &dimid[0])) ERR;
+	    if (nc_def_dim(ncid, "pfull", PFULL_SIZE, &dimid[1])) ERR;
+	    if (nc_def_dim(ncid, "grid_xt", GRID_XT_SIZE, &dimid[2])) ERR;
+	    if (nc_def_dim(ncid, "grid_yt", GRID_YT_SIZE, &dimid[3])) ERR;
+	    if (nc_def_var(ncid, HGTSFC, NC_FLOAT, NDIM4, dimid, &varid)) ERR;
+
+	    switch (f)
 	    {
-		if (f == NFILE / 2 + 1)
-		    level = MIN_ZLIB;
-		if (f < NFILE / 2 + 1)
-		{
-		    if (nc_def_var_zstandard(ncid, varid, level)) ERR;
-		    increment = 2;
-		}
-		else
-		{
-		    if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
-		    increment = 1;
-		}
+	    case 0:
+		/* no compression */
+		break;
+	    case 1:
+		if (nc_def_var_zstandard(ncid, varid, level)) ERR;
+		break;
+	    case 2:
+		if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
+		break;
 	    }
 
-	    /* Write data records. */
-	    for (start[0] = 0; start[0] < NUM_REC; start[0]++)
-	    {
-		/* Create a new record to write. */
-		for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
-		{
-		    data_out[x] = ((float)rand()/(float)(RAND_MAX)) * a;
-		    /* data_out[x] = x + 1.; */
-		}
-		
-		if (nc_put_vara_float(ncid, varid, start, count, data_out)) ERR;
-	    }
-	    
+	    /* Start timer. */
+	    if (gettimeofday(&start_time, NULL)) ERR;
+	
+	    /* Write data. */
+	    if (nc_put_var_float(ncid, varid, data)) ERR;
+
 	    if (nc_close(ncid)) ERR;
 	    if (gettimeofday(&end_time, NULL)) ERR;
 	    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	    meta_write_us = (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 	    stat(file_name, &st);
 	    printf("%s, %d, %.2f, %.2f\n", (f ? compression : "none"), level, (float)meta_write_us/MILLION,
-		   (float)st.st_size/MILLION);
-	    
-	    /* /\* Check file. *\/ */
-	    /* { */
-	    /* 	int ncid; */
-	    /* 	int varid = 0; */
-	    /* 	int level_in, zstandard; */
-		
-	    /* 	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR; */
-	    /* 	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR; */
-	    /* 	if (f) */
-	    /* 	{ */
-	    /* 	    if (f < NFILE / 2 + 1) */
-	    /* 	    { */
-	    /* 		if (!zstandard) ERR; */
-	    /* 	    } */
-	    /* 	    else */
-	    /* 	    { */
-	    /* 	    } */
-	    /* 	} */
-	    /* 	else */
-	    /* 	{ */
-	    /* 	    if (zstandard) ERR; */
-	    /* 	} */
-	    /* 	for (start[0] = 0; start[0] < NUM_REC; start[0]++) */
-	    /* 	{ */
-	    /* 	    if (nc_get_vara_float(ncid, varid, start, count, data_in)) ERR; */
-	    /* 	    for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++) */
-	    /* 		if (data_in[x] != x + 1.) */
-	    /* 		{ */
-	    /* 		    printf("data_out[%ld] %g data_in[%ld] %g\n", x, data_out[x], x, data_in[x]); */
-	    /* 		    ERR; */
-	    /* 		} */
-	    /* 	} */
-	    /* 	if (nc_close(ncid)) ERR; */
-	    /* } */
+	    	   (float)st.st_size/MILLION);
 
-	    level += increment;
-	    free(data_in);
+
+	    /* level += increment; */
+	    /* free(data_out); */
 	} /* next file */
-        free(data_out);
+	free(data);
     }
     SUMMARIZE_ERR;
 #endif /* BUILD_ZSTD */
