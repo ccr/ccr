@@ -21,7 +21,7 @@
    The dataset itself is also available through ESGF and through
    https://e3sm.org/data/get-e3sm-data/released-e3sm-data/v1-1-deg-data-cmip6/
 
-   This program requires the BITGROOM and the ZSTD filters.
+   This program requires the BITGROOM, BZIP2, and the ZSTD filters.
 
    Ed Hartnett 12/15/20
 */
@@ -48,8 +48,8 @@
 #define NDIM3 3
 
 #define MILLION 1000000
-#define NFILE3 5
-#define MAX_COMPRESSION_STR 13
+#define NFILE3 7
+#define MAX_COMPRESSION_STR 64
 
 #define LEV_SIZE 72
 #define NCOL_SIZE 48602
@@ -69,11 +69,11 @@ int nc4_timeval_subtract(struct timeval *result, struct timeval *x,
 int
 main()
 {
-    int ret;
-    
     printf("\n*** Checking Performance of filters.\n");
 #ifdef BUILD_ZSTD
 #ifdef BUILD_BITGROOM    
+#ifdef BUILD_BZIP2    
+    
     printf("*** Checking Zstandard vs. zlib performance on large climate data set...");
     printf("\ncompression, level, nsd, read time (s), write time (s), re-read time (s), file size (MB)\n");
     {
@@ -228,12 +228,22 @@ main()
 		nsd = 0;
 		break;
 	    case 3:
+		strcpy(compression, "bzip2");
+		level = COMPRESSION_LEVEL;
+		nsd = 0;
+		break;
+	    case 4:
 		strcpy(compression, "bitgroom_zstd");
 		level = COMPRESSION_LEVEL;
 		nsd = NSD;
 		break;
-	    case 4:
+	    case 5:
 		strcpy(compression, "bitgroom_zlib");
+		level = COMPRESSION_LEVEL;
+		nsd = NSD;
+		break;
+	    case 6:
+		strcpy(compression, "bitgroom_bzip2");
 		level = COMPRESSION_LEVEL;
 		nsd = NSD;
 		break;
@@ -271,12 +281,19 @@ main()
 		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;
 		    break;
 		case 3:
-		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
-		    if (nc_def_var_zstandard(ncid, varid_2d[v], level)) ERR;
+		    if (nc_def_var_bzip2(ncid, varid_2d[v], level)) ERR;
 		    break;
 		case 4:
 		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
+		    if (nc_def_var_zstandard(ncid, varid_2d[v], level)) ERR;
+		    break;
+		case 5:
+		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
 		    if (nc_def_var_deflate(ncid, varid_2d[v], 0, 1, level)) ERR;		    
+		    break;
+		case 6:
+		    if (nc_def_var_bitgroom(ncid, varid_2d[v], nsd)) ERR;
+		    if (nc_def_var_bzip2(ncid, varid_2d[v], level)) ERR;
 		    break;
 		}
 
@@ -287,6 +304,8 @@ main()
 	    /* Define all 3D vars and set compression. */
 	    for (v = 0; v < NUM_3D_VAR; v++)
 	    {
+		int ret;
+		
 		/* printf("v %d %s\n", v, var_name_3d[v]); */
 		if ((ret = nc_def_var(ncid, var_name_3d[v], NC_FLOAT, NDIM3, dimid_3d, &varid_3d[v])))
 		    NCERR(ret);
@@ -303,12 +322,19 @@ main()
 		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;
 		    break;
 		case 3:
-		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
-		    if (nc_def_var_zstandard(ncid, varid_3d[v], level)) ERR;
+		    if (nc_def_var_bzip2(ncid, varid_3d[v], level)) ERR;
 		    break;
 		case 4:
 		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
+		    if (nc_def_var_zstandard(ncid, varid_3d[v], level)) ERR;
+		    break;
+		case 5:
+		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
 		    if (nc_def_var_deflate(ncid, varid_3d[v], 0, 1, level)) ERR;		    
+		    break;
+		case 6:
+		    if (nc_def_var_bitgroom(ncid, varid_3d[v], nsd)) ERR;
+		    if (nc_def_var_bzip2(ncid, varid_3d[v], level)) ERR;
 		    break;
 		}
 
@@ -358,6 +384,8 @@ main()
 		/* Read/write data for each level. */
 		for (start[1] = 0; start[1] < LEV_SIZE; start[1]++)
 		{
+		    int ret;
+		    
 		    /* Start timer. */
 		    if (gettimeofday(&start_time, NULL)) ERR;
 
@@ -398,6 +426,7 @@ main()
 	    /* Check the output file. */
 	    {
 		float *data_2d;
+		int ret;
 
 		if (!(data_2d = malloc(NCOL_SIZE * sizeof(float)))) ERR;
 		
@@ -491,6 +520,7 @@ main()
 	free(data_2d_in);
     }
     SUMMARIZE_ERR;
+#endif /* BUILD_BZIP2 */
 #endif /* BUILD_BITGROOM */
 #endif /* BUILD_ZSTD */
     FINAL_RESULTS;
