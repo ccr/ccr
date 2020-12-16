@@ -42,8 +42,8 @@ endif
 
 # Build benchmark program if desired.
 if BUILD_BENCHMARKS
-check_PROGRAMS += tst_benchmark
-tst_benchmark_SOURCES = tst_benchmark.c tst_utils.c
+check_PROGRAMS += tst_eamv1_benchmark
+tst_eamv1_benchmark_SOURCES = tst_eamv1_benchmark.c tst_utils.c
 TESTS += run_benchmarks.sh
 endif
 

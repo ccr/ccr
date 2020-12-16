@@ -139,7 +139,7 @@ test "x$enable_bzip2" = xno || enable_bzip2=yes
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
 if test "x$enable_bzip2" = xyes; then
-   AC_DEFINE([BUILD_BZIP], 1, [If true, build with bzip filter.])
+   AC_DEFINE([BUILD_BZIP2], 1, [If true, build with bzip2 filter.])
 fi
 AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
