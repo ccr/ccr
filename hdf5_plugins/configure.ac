@@ -99,9 +99,9 @@ AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
 if test "x$enable_bzip2" = xyes; then
    AC_CONFIG_SUBDIRS([BZIP2])
 fi
-if test "x$enable_lz4" = xyes; then
-   AC_CONFIG_SUBDIRS([LZ4])
-fi
+dnl if test "x$enable_lz4" = xyes; then
+dnl    AC_CONFIG_SUBDIRS([LZ4])
+dnl fi
 if test "x$enable_bitgroom" = xyes; then
    AC_CONFIG_SUBDIRS([BITGROOM])
 fi
