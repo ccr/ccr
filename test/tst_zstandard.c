@@ -176,5 +176,68 @@ main()
         free(data_in);
     }
     SUMMARIZE_ERR;
+#ifdef BUILD_BITGROOM
+#ifdef HAVE_MULTIFILTERS
+    printf("*** Checking Zstandard size of compression with bitgroom...");
+    {
+        int ncid;
+        int dimid[NDIM2];
+        int varid;
+        int *data_out;
+        int *data_in;
+        int x, f;
+        int level_in, zstandard;
+
+        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
+        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
+
+        /* Create some data to write. */
+        for (x = 0; x < NX_BIG * NY_BIG; x++)
+            data_out[x] = x * NY_BIG + x % NX_BIG;
+
+        for (f = 0; f < NFILE; f++)
+        {
+            char file_name[STR_LEN + 1];
+
+            sprintf(file_name, "%s_%s.nc", TEST, (f ? "bitgroom_zstandard" : "uncompressed"));
+            nc_set_log_level(3);
+
+            /* Create file. */
+            if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
+	      ;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
+	      ;
+            if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+            if (f)
+                if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
+            if (nc_put_var(ncid, varid, data_out)) ERR;
+            if (nc_close(ncid)) ERR;
+
+            /* Check file. */
+            {
+                if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
+                if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
+                if (f)
+                {
+                    if (!zstandard || level_in != 3) ERR;
+                }
+                else
+                {
+                    if (zstandard) ERR;
+                }
+                if (nc_get_var(ncid, varid, data_in)) ERR;
+                for (x = 0; x < NX_BIG * NY_BIG; x++)
+                    if (data_in[x] != data_out[x]) ERR;
+                if (nc_close(ncid)) ERR;
+            }
+        } /* next file */
+
+        free(data_out);
+        free(data_in);
+    }
+    SUMMARIZE_ERR;
+#endif /* HAVE_MULTIFILTERS */
+#endif /* BUILD_BITGROOM */
     FINAL_RESULTS;
 }
