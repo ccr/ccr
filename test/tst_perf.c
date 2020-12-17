@@ -31,7 +31,9 @@
 #define VOICE_OF_RUIN "VOICE_OF_RUIN"
 #define EARTHQUAKES_AND_LIGHTNING "EARTHQUAKES_AND_LIGHTNING"
 
-#define NFILE 18 /* This must be an even number. */
+/* This must be an even number. Set to 18 to test all 9 zlib
+ * levels. Set to 2 to speed CI testing. */
+#define NFILE 2
 #define MAX_COMPRESSION_STR 4
 
 #define NX_BIG 1000
