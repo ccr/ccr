@@ -1,0 +1,71 @@
+name: multifilter with netCDF master
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
+      LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
+      HDF5_PLUGIN_PATH: "/home/runner/plugin"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Installs
+      run: |
+        sudo apt-get install doxygen graphviz liblz4-dev libzstd-dev
+    - name: cache-hdf5
+      id: cache-hdf5
+      uses: actions/cache@v2
+      with:
+        path: ~/hdf5
+        key: hdf5-${{ runner.os }}-1.10.7
+
+    - name: build-hdf5
+      if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.gz &> /dev/null
+        tar -xzf hdf5-1.10.7.tar.gz
+        pushd hdf5-1.10.7
+        ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
+        make
+        sudo make install
+        popd
+
+    - name: build-netcdf-c
+      run: |
+        set -x
+        git clone https://github.com/Unidata/netcdf-c.git
+        pushd netcdf-c
+        autoreconf -i
+        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
+        make -j
+        sudo make install
+        popd
+
+    - name: build-netcdf-fortran
+      run: |
+        set -x
+        git clone https://github.com/Unidata/netcdf-fortran.git
+        pushd netcdf-fortran
+        autoreconf -i
+        ./configure --prefix=/home/runner/netcdf-fortran
+        make -j
+        sudo make install
+        popd
+    - name: configure and build
+      run: |
+        set -x
+        echo $HDF5_PLUGIN_PATH
+        autoreconf -i
+        export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
+        make -j distcheck
