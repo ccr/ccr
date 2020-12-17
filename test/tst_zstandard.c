@@ -143,10 +143,8 @@ main()
 
             /* Create file. */
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
-            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
-	      ;
-            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
-	      ;
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
             if (f)
                 if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
@@ -187,6 +185,7 @@ main()
         int *data_in;
         int x, f;
         int level_in, zstandard;
+	int ret;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
         if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
@@ -204,14 +203,16 @@ main()
 
             /* Create file. */
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
-            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
-	      ;
-            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
-	      ;
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
             if (f)
+	    {
+		if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
                 if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
-            if (nc_put_var(ncid, varid, data_out)) ERR;
+	    }
+            if ((ret = nc_put_var(ncid, varid, data_out)))
+		NCERR(ret);
             if (nc_close(ncid)) ERR;
 
             /* Check file. */
