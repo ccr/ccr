@@ -208,7 +208,7 @@ main()
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
             if (f)
 	    {
-		/* if (nc_def_var_bitgroom(ncid, varid, 3)) ERR; */
+		if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
                 if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
 	    }
             if ((ret = nc_put_var(ncid, varid, data_out)))
