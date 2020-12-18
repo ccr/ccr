@@ -40,8 +40,6 @@ extern "C" {
     /* Library prototypes... */
     int nc_def_var_bzip2(int ncid, int varid, int level);
     int nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp);
-    int nc_def_var_lz4(int ncid, int varid, int level);
-    int nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp);
     int nc_def_var_bitgroom(int ncid, int varid, int nsd);
     int nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp);
     int nc_def_var_zstandard(int ncid, int varid, int level);
