@@ -284,6 +284,14 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
 /**
  * Turn on BitGroom quantization for a variable.
  *
+ * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
+ * for cd_value However, the user needs to provide only the first
+ * element, NSD, since the other elements can be and are derived from
+ * the dcpl (data_class, datum_size), and extra queries of the
+ * variable (has_mss_val, mss_val). Hence, the netCDF API exposes to
+ * the user and requires setting only the minimal number (1) of filter
+ * parameters.
+
  * @param ncid File ID.
  * @param varid Variable ID.
  * @param nsd Number of significant digits to retain. Allowed single- and
@@ -295,13 +303,6 @@ nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp)
 int
 nc_def_var_bitgroom(int ncid, int varid, int nsd)
 {
-  /* NB: Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements for cd_value
-     However, the user needs to provide only the first element, NSD, since the other
-     elements can be and are derived from the dcpl (data_class, datum_size),
-     and extra queries of the variable (has_mss_val, mss_val).
-     Hence, the netCDF API exposes to the user and requires setting only the 
-     minimal number (1) of filter parameters.
-     Everything else should be automagical (knock on wood). */ 
   unsigned int cd_value[BITGROOM_FLT_PRM_NBR];
   int ret;
   
