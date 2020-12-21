@@ -267,6 +267,21 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
 /**
  * Turn on BitGroom quantization for a variable.
  *
+ * The bitgroom filter quantizes the data by setting unneeded bits
+ * alternatively to 1/0, so that they may compress well. The bitgroom
+ * filter only provides compression when used before a compression
+ * filter. The nc_def_var_bitgroom() function must be called before
+ * the function which turns on the compression filter
+ * (nc_def_var_deflate(), for example).
+ *
+ * Although the bitgroom filter does nothing when data are read, the
+ * filter must still be installed on machines that need to read
+ * bitgroomed data.
+ *
+ * The bitgroom filter only applies to variables of type NC_FLOAT or
+ * NC_DOUBLE. Attempts to set the bitgroom filter for other variable
+ * types are ignored.
+ *
  * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
  * for cd_value However, the user needs to provide only the first
  * element, NSD, since the other elements can be and are derived from
