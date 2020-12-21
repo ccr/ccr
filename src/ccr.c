@@ -38,7 +38,7 @@
  * less than the requested Number of Significant Digits (NSD), usually
  * taken as the intrinsic precision of the measured or modeled data.
  * BitGroomed data remain in IEEE-754 format, and are more accurate
- * than other quantization filters such as BitShaving and Bitsetting.
+ * than other quantization filters such as BitShaving and BitSetting.
  * Consider BitGroom as a pre-filter for subsequent lossless compression 
  * which with the simple mantissas yields better compression ratios.
  * Zender, C. S. (2016), Bit Grooming: Statistically accurate 
@@ -267,23 +267,31 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
 /**
  * Turn on BitGroom quantization for a variable.
  *
- * The bitgroom filter quantizes the data by setting unneeded bits
- * alternatively to 1/0, so that they may compress well. The bitgroom
- * filter only provides compression when used before a compression
- * filter. The nc_def_var_bitgroom() function must be called before
- * the function which turns on the compression filter
- * (nc_def_var_deflate(), for example).
+ * The BitGroom filter quantizes the data by setting unneeded bits
+ * alternately to 1/0, so that they may compress well. The BitGroom
+ * filter itself is lossy (data are irretrievably altered), and it
+ * improves the compression ratio provided by a subsequent lossless 
+ * compression filter. Call the nc_def_var_bitgroom() function before
+ * the function that turns on the lossless compression filter
+ * (nc_def_var_deflate(), for example). 
  *
- * Although the bitgroom filter does nothing when data are read, the
- * filter must still be installed on machines that need to read
- * bitgroomed data.
+ * A notable feature of BitGroom is that the data it processes remain 
+ * in IEEE754 format after quantization. Therefore the BitGroom filter 
+ * does nothing when data are read. However, the Bitgroom filter must 
+ * still be installed on machines that need to read bitgroomed data.
  *
- * The bitgroom filter only applies to variables of type NC_FLOAT or
- * NC_DOUBLE. Attempts to set the bitgroom filter for other variable
- * types are ignored.
+ * The BitGroom filter only quantizes variables of type NC_FLOAT or
+ * NC_DOUBLE. Attempts to set the BitGroom filter for other variable
+ * types are ignored. The BitGroom filter does not quantize values 
+ * equal to the value of the _FillValue attribute, if any. The only
+ * difference between the BitGroom algorithm as implemented in the
+ * CCR and in NCO is that the NCO version will not quantize the values
+ * of "coordinate-like" variables (e.g., latitude, longitude, time)
+ * as defined in the NCO manual, whereas the CCR version will quantize
+ * all floating-point variables.
  *
  * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
- * for cd_value However, the user needs to provide only the first
+ * for cd_value. However, the user needs to provide only the first
  * element, NSD, since the other elements can be and are derived from
  * the dcpl (data_class, datum_size), and extra queries of the
  * variable (has_mss_val, mss_val). Hence, the netCDF API exposes to
