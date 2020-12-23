@@ -30,7 +30,7 @@
 #define DIM1            64
 #define CHUNK0          4
 #define CHUNK1          8
-#define H5Z_FILTER_BITGROOM        37373
+#define H5Z_FILTER_BITGROOM        32022
 
 int
 main (void)

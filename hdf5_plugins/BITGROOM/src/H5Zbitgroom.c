@@ -62,7 +62,7 @@
 #include "H5PLextern.h" /* HDF5 Plugin Library: H5PLget_plugin_type(), H5PLget_plugin_info() */
 
 /* Tokens and typedefs */
-#define H5Z_FILTER_BITGROOM 37373 /* fxm: Placeholder Filter ID during development */
+#define H5Z_FILTER_BITGROOM 32022 /* NB: ID assigned by HDF Group 20201223 */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
 #define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
@@ -426,7 +426,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil-1;
+  //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
   prc_bnr_xpl_rqr=prc_bnr_ceil+1;
   if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
