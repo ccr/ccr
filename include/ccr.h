@@ -15,7 +15,7 @@
 #define LZ4_ID 32004
 
 /** The filter ID for BitGroom quantization. */
-#define BITGROOM_ID 37373
+#define BITGROOM_ID 32022
 
 /** Number of parameters used internally by filter and returned by nc_inq_var_bitgroom() */
 #define BITGROOM_FLT_PRM_NBR 5 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
