@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">ccr
-   &#160;<span id="projectnumber">1.1-development</span>
+   &#160;<span id="projectnumber">1.0.0-development</span>
    </div>
   </td>
  </tr>
@@ -67,7 +67,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ccr.c File Reference</div>  </div>
@@ -90,40 +89,82 @@ Include dependency graph for ccr.c:</div>
 </map>
 </div>
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a967ee92810807d621b42b4d799e15a8e"><td class="memItemLeft" align="right" valign="top"><a id="a967ee92810807d621b42b4d799e15a8e"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a967ee92810807d621b42b4d799e15a8e">H5Z_FILTER_BZIP2</a>&#160;&#160;&#160;307</td></tr>
-<tr class="memdesc:a967ee92810807d621b42b4d799e15a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The HDF5 ID for the BZIP2 filter. <br /></td></tr>
-<tr class="separator:a967ee92810807d621b42b4d799e15a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1e04e46e9b3dff974975ff516dc915fd"><td class="memItemLeft" align="right" valign="top"><a id="a1e04e46e9b3dff974975ff516dc915fd"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a1e04e46e9b3dff974975ff516dc915fd">H5Z_filter_bzip2</a> (unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[], size_t nbytes, size_t *buf_size, void **buf)</td></tr>
-<tr class="memdesc:a1e04e46e9b3dff974975ff516dc915fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter function for bzip2. <br /></td></tr>
-<tr class="separator:a1e04e46e9b3dff974975ff516dc915fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d225c4c929ab90a5405ccbe4b9c7cf7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a3d225c4c929ab90a5405ccbe4b9c7cf7">nc_initialize_ccr</a> ()</td></tr>
-<tr class="memdesc:a3d225c4c929ab90a5405ccbe4b9c7cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Community Codec Repository library.  <a href="ccr_8c.html#a3d225c4c929ab90a5405ccbe4b9c7cf7">More...</a><br /></td></tr>
-<tr class="separator:a3d225c4c929ab90a5405ccbe4b9c7cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88189edd7b1d51b5d46b7ad6fe0c9c69"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a88189edd7b1d51b5d46b7ad6fe0c9c69">nc_def_var_bzip2</a> (int ncid, int varid, int level)</td></tr>
 <tr class="memdesc:a88189edd7b1d51b5d46b7ad6fe0c9c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn on bzip2 compression for a variable.  <a href="ccr_8c.html#a88189edd7b1d51b5d46b7ad6fe0c9c69">More...</a><br /></td></tr>
 <tr class="separator:a88189edd7b1d51b5d46b7ad6fe0c9c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29d2a0cd22acc8b9da3b1808b642e309"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a29d2a0cd22acc8b9da3b1808b642e309">nc_inq_var_bzip2</a> (int ncid, int varid, int *bzip2p, int *levelp)</td></tr>
 <tr class="memdesc:a29d2a0cd22acc8b9da3b1808b642e309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Learn whether bzip2 compression is on for a variable, and, if so, the level setting.  <a href="ccr_8c.html#a29d2a0cd22acc8b9da3b1808b642e309">More...</a><br /></td></tr>
 <tr class="separator:a29d2a0cd22acc8b9da3b1808b642e309"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a477c9b3f7eed40be4b8d32d502711e32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a477c9b3f7eed40be4b8d32d502711e32">nc_def_var_lz4</a> (int ncid, int varid, int level)</td></tr>
-<tr class="memdesc:a477c9b3f7eed40be4b8d32d502711e32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn on lz4 compression for a variable.  <a href="ccr_8c.html#a477c9b3f7eed40be4b8d32d502711e32">More...</a><br /></td></tr>
-<tr class="separator:a477c9b3f7eed40be4b8d32d502711e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a289305ec3cc2b7c6923aac3983b8c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a1a289305ec3cc2b7c6923aac3983b8c6">nc_inq_var_lz4</a> (int ncid, int varid, int *lz4p, int *levelp)</td></tr>
-<tr class="memdesc:a1a289305ec3cc2b7c6923aac3983b8c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Learn whether lz4 compression is on for a variable, and, if so, the level setting.  <a href="ccr_8c.html#a1a289305ec3cc2b7c6923aac3983b8c6">More...</a><br /></td></tr>
-<tr class="separator:a1a289305ec3cc2b7c6923aac3983b8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf8731ef9e90d4761fc08dd2d8c862c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#abf8731ef9e90d4761fc08dd2d8c862c1">nc_def_var_bitgroom</a> (int ncid, int varid, int nsd)</td></tr>
+<tr class="memdesc:abf8731ef9e90d4761fc08dd2d8c862c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn on BitGroom quantization for a variable.  <a href="ccr_8c.html#abf8731ef9e90d4761fc08dd2d8c862c1">More...</a><br /></td></tr>
+<tr class="separator:abf8731ef9e90d4761fc08dd2d8c862c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ce8dc72290b403585c63f9f4579a201"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a7ce8dc72290b403585c63f9f4579a201">nc_inq_var_bitgroom</a> (int ncid, int varid, int *bitgroomp, int *nsdp)</td></tr>
+<tr class="memdesc:a7ce8dc72290b403585c63f9f4579a201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Learn whether BitGroom quantization is on for a variable, and, if so, the NSD setting.  <a href="ccr_8c.html#a7ce8dc72290b403585c63f9f4579a201">More...</a><br /></td></tr>
+<tr class="separator:a7ce8dc72290b403585c63f9f4579a201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2841c7012840195954194f51f9750817"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a2841c7012840195954194f51f9750817">nc_def_var_zstandard</a> (int ncid, int varid, int level)</td></tr>
+<tr class="memdesc:a2841c7012840195954194f51f9750817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn on Zstandard compression for a variable.  <a href="ccr_8c.html#a2841c7012840195954194f51f9750817">More...</a><br /></td></tr>
+<tr class="separator:a2841c7012840195954194f51f9750817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac12574bccc8cb8565a42157414fd11b5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#ac12574bccc8cb8565a42157414fd11b5">nc_inq_var_zstandard</a> (int ncid, int varid, int *zstandardp, int *levelp)</td></tr>
+<tr class="memdesc:ac12574bccc8cb8565a42157414fd11b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Learn whether Zstandard compression is on for a variable, and, if so, the level setting.  <a href="ccr_8c.html#ac12574bccc8cb8565a42157414fd11b5">More...</a><br /></td></tr>
+<tr class="separator:ac12574bccc8cb8565a42157414fd11b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This is the code file for the Community Codex Repository library for netCDF.</p>
 <dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>12/30/19 </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="abf8731ef9e90d4761fc08dd2d8c862c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf8731ef9e90d4761fc08dd2d8c862c1">&#9670;&nbsp;</a></span>nc_def_var_bitgroom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int nc_def_var_bitgroom </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>varid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nsd</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Turn on BitGroom quantization for a variable. </p>
+<p>The BitGroom filter quantizes the data by setting unneeded bits alternately to 1/0, so that they may compress well. The BitGroom filter itself is lossy (data are irretrievably altered), and it improves the compression ratio provided by a subsequent lossless compression filter. Call the <a class="el" href="ccr_8c.html#abf8731ef9e90d4761fc08dd2d8c862c1" title="Turn on BitGroom quantization for a variable.">nc_def_var_bitgroom()</a> function before the function that turns on the lossless compression filter (nc_def_var_deflate(), for example).</p>
+<p>A notable feature of BitGroom is that the data it processes remain in IEEE754 format after quantization. Therefore the BitGroom filter does nothing when data are read. However, the Bitgroom filter must still be installed on machines that need to read bitgroomed data.</p>
+<p>The BitGroom filter only quantizes variables of type NC_FLOAT or NC_DOUBLE. Attempts to set the BitGroom filter for other variable types are ignored. The BitGroom filter does not quantize values equal to the value of the _FillValue attribute, if any. The only difference between the BitGroom algorithm as implemented in the CCR and in NCO is that the NCO version will not quantize the values of "coordinate-like" variables (e.g., latitude, longitude, time) as defined in the NCO manual, whereas the CCR version will quantize all floating-point variables.</p>
+<dl class="section note"><dt>Note</dt><dd>Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements for cd_value. However, the user needs to provide only the first element, NSD, since the other elements can be and are derived from the dcpl (data_class, datum_size), and extra queries of the variable (has_mss_val, mss_val). Hence, the netCDF API exposes to the user and requires setting only the minimal number (1) of filter parameters.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>File ID. </td></tr>
+    <tr><td class="paramname">varid</td><td>Variable ID. </td></tr>
+    <tr><td class="paramname">nsd</td><td>Number of significant digits to retain. Allowed single- and double-precision NSDs are 1-7 and 1-15, respectively. (Default is 3).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Charlie Zender </dd></dl>
+
+</div>
+</div>
 <a id="a88189edd7b1d51b5d46b7ad6fe0c9c69"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88189edd7b1d51b5d46b7ad6fe0c9c69">&#9670;&nbsp;</a></span>nc_def_var_bzip2()</h2>
 
@@ -170,14 +211,14 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
 
 </div>
 </div>
-<a id="a477c9b3f7eed40be4b8d32d502711e32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a477c9b3f7eed40be4b8d32d502711e32">&#9670;&nbsp;</a></span>nc_def_var_lz4()</h2>
+<a id="a2841c7012840195954194f51f9750817"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2841c7012840195954194f51f9750817">&#9670;&nbsp;</a></span>nc_def_var_zstandard()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int nc_def_var_lz4 </td>
+          <td class="memname">int nc_def_var_zstandard </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>ncid</em>, </td>
@@ -202,38 +243,70 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
       </table>
 </div><div class="memdoc">
 
-<p>Turn on lz4 compression for a variable. </p>
+<p>Turn on Zstandard compression for a variable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ncid</td><td>File ID. </td></tr>
     <tr><td class="paramname">varid</td><td>Variable ID. </td></tr>
-    <tr><td class="paramname">level</td><td>From 1 to 9. Set the block size to 100k, 200k ... 900k when compressing. (lz4 default level is 9).</td></tr>
+    <tr><td class="paramname">level</td><td>From -131072 to 22 (depends on Zstandard version). when compressing. Regular compression levels are from 1 up to 19. Use levels &gt;= 20, labeled <code>--ultra</code>, cautiously: they require more memory. Negative compression levels that extend the range of speed vs. ratio preferences. The lower the level, the faster the speed (at the cost of compression).</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Charlie Zender </dd></dl>
 
 </div>
 </div>
-<a id="a3d225c4c929ab90a5405ccbe4b9c7cf7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d225c4c929ab90a5405ccbe4b9c7cf7">&#9670;&nbsp;</a></span>nc_initialize_ccr()</h2>
+<a id="a7ce8dc72290b403585c63f9f4579a201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ce8dc72290b403585c63f9f4579a201">&#9670;&nbsp;</a></span>nc_inq_var_bitgroom()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int nc_initialize_ccr </td>
+          <td class="memname">int nc_inq_var_bitgroom </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>varid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>bitgroomp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>nsdp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialize Community Codec Repository library. </p>
+<p>Learn whether BitGroom quantization is on for a variable, and, if so, the NSD setting. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>File ID. </td></tr>
+    <tr><td class="paramname">varid</td><td>Variable ID. </td></tr>
+    <tr><td class="paramname">bitgroomp</td><td>Pointer that gets a 0 if BitGroom is not in use for this var, and a 1 if it is. Ignored if NULL. </td></tr>
+    <tr><td class="paramname">nsdp</td><td>Pointer that gets the NSD setting (from 1 to 15), if BitGroom is in use. Ignored if NULL.</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Charlie Zender </dd></dl>
 
 </div>
 </div>
@@ -281,7 +354,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
     <tr><td class="paramname">ncid</td><td>File ID. </td></tr>
     <tr><td class="paramname">varid</td><td>Variable ID. </td></tr>
     <tr><td class="paramname">bzip2p</td><td>Pointer that gets a 0 if bzip2 is not in use for this var, and a 1 if it is. Ignored if NULL. </td></tr>
-    <tr><td class="paramname">levelp</td><td>Pointer that gets the level setting (from 1 to 9), if bzlip2 is in use. Ignored if NULL.</td></tr>
+    <tr><td class="paramname">levelp</td><td>Pointer that gets the level setting (from 1 to 9), if bzip2 is in use. Ignored if NULL.</td></tr>
   </table>
   </dd>
 </dl>
@@ -290,14 +363,14 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
 
 </div>
 </div>
-<a id="a1a289305ec3cc2b7c6923aac3983b8c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a289305ec3cc2b7c6923aac3983b8c6">&#9670;&nbsp;</a></span>nc_inq_var_lz4()</h2>
+<a id="ac12574bccc8cb8565a42157414fd11b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac12574bccc8cb8565a42157414fd11b5">&#9670;&nbsp;</a></span>nc_inq_var_zstandard()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int nc_inq_var_lz4 </td>
+          <td class="memname">int nc_inq_var_zstandard </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>ncid</em>, </td>
@@ -312,7 +385,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>lz4p</em>, </td>
+          <td class="paramname"><em>zstandardp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -328,25 +401,25 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cc
       </table>
 </div><div class="memdoc">
 
-<p>Learn whether lz4 compression is on for a variable, and, if so, the level setting. </p>
+<p>Learn whether Zstandard compression is on for a variable, and, if so, the level setting. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ncid</td><td>File ID. </td></tr>
     <tr><td class="paramname">varid</td><td>Variable ID. </td></tr>
-    <tr><td class="paramname">lz4p</td><td>Pointer that gets a 0 if lz4 is not in use for this var, and a 1 if it is. Ignored if NULL. </td></tr>
-    <tr><td class="paramname">levelp</td><td>Pointer that gets the level setting (from 1 to 9), if bzlip2 is in use. Ignored if NULL.</td></tr>
+    <tr><td class="paramname">zstandardp</td><td>Pointer that gets a 0 if Zstandard is not in use for this var, and a 1 if it is. Ignored if NULL. </td></tr>
+    <tr><td class="paramname">levelp</td><td>Pointer that gets the level setting (from -131072 to 22), if Zstandard is in use. Ignored if NULL.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Charlie Zender </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 17 2020 14:27:16 for ccr by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 23 2020 14:11:00 for ccr by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
