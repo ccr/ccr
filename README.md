@@ -18,6 +18,16 @@ Version 1.1.0 of the CCR supports:
 
 For full documentation see https://ccr.github.io/ccr/.
 
+# Authors
+
+Charlie Zender, Edward Hartnett
+
+Filter | Author
+-------|-------
+Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
+Zstandard | Yann Collet
+BitGroom | Charlie Zender
+
 # Building CCR
 
 ## Dependencies
