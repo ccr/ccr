@@ -14,8 +14,6 @@
  * filters for netCDF/HDF5 files which are not natively supported by
  * the netCDF C library.
  *
- * @image html NetCDF_Filters.png
- *
  * BZIP2
  *
  * Bzip2 is a free and open-source file compression program that uses
@@ -74,6 +72,8 @@
  * In Fortran:
  * - nf90_def_var_zstandard()
  * - nf90_inq_var_zstandard()
+ *
+ * @image html NetCDF_Filters.png
  *
  */
 

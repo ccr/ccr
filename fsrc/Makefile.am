@@ -10,7 +10,7 @@ LIBADD = ${top_builddir}/src/libccr.la
 
 # This is a libtool library.
 lib_LTLIBRARIES = libccrf.la
-libccrf_la_LDFLAGS = -version-info 0:0:0
+libccrf_la_LDFLAGS = -version-info 1:0:0
 
 # Each convenience library depends on its source.
 libccrf_la_SOURCES = ccr.F90
