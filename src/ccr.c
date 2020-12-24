@@ -282,13 +282,13 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
  *
  * The BitGroom filter only quantizes variables of type NC_FLOAT or
  * NC_DOUBLE. Attempts to set the BitGroom filter for other variable
- * types are ignored. The BitGroom filter does not quantize values 
- * equal to the value of the _FillValue attribute, if any. The only
- * difference between the BitGroom algorithm as implemented in the
- * CCR and in NCO is that the NCO version will not quantize the values
- * of "coordinate-like" variables (e.g., latitude, longitude, time)
- * as defined in the NCO manual, whereas the CCR version will quantize
- * all floating-point variables.
+ * types through the C/Fortran API return an error. The filter does 
+ * not quantize values equal to the value of the _FillValue attribute, 
+ * if any. The main difference between the BitGroom algorithm as 
+ * implemented in the CCR and in NCO is that the NCO version will not 
+ * quantize the values of "coordinate-like" variables (e.g., latitude, 
+ * longitude, time) as defined in the NCO manual, whereas the CCR 
+ * version will quantize any floating-point variable.
  *
  * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
  * for cd_value. However, the user needs to provide only the first
@@ -311,10 +311,21 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
 {
   unsigned int cd_value[BITGROOM_FLT_PRM_NBR];
   int ret;
+  nc_type var_typ;
   
   /* NSD must be between 1 and 15 */
   if (nsd < 1 || nsd > 15)
     return NC_EINVAL;
+
+  /* BitGroom only quantizes floating-point values */
+  if ((ret = nc_inq_vartype(ncid, varid, &var_typ)))
+    return ret;
+
+  if (var_typ != NC_FLOAT && var_typ != NC_DOUBLE)
+    {
+      printf ("BitGroom filter can only be defined for floating-point variables.\n");
+      return NC_EINVAL;
+    }
   
   if (!H5Zfilter_avail(BITGROOM_ID))
     {
