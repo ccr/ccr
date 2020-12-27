@@ -6,7 +6,7 @@
 */
 
 #include "config.h"
-#include <math.h> /* Needed for round(), powf() */
+#include <math.h> /* Define fabs(), powf(), round() */
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
