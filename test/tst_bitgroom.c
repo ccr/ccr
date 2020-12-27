@@ -46,6 +46,7 @@ main()
         float data_out[NX][NY];
         int x, y;
 	int nsd_in;
+	int nsd_out=3;
 	int params[BITGROOM_FLT_PRM_NBR];
         int bitgroom;
 
@@ -74,18 +75,18 @@ main()
         if (bitgroom) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
+        if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
 
         /* Check setting. */
         if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
         nsd_in = params[0];
-        if (!bitgroom || nsd_in != 3) ERR;
+        if (!bitgroom || nsd_in != nsd_out) ERR;
         nsd_in = 0;
         bitgroom = 1;
         if (nc_inq_var_bitgroom(ncid, varid, NULL, params)) ERR;
         if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, NULL)) ERR;
         nsd_in = params[0];
-        if (!bitgroom || nsd_in != 3) ERR;
+        if (!bitgroom || nsd_in != nsd_out) ERR;
         if (nc_inq_var_bitgroom(ncid, varid, NULL, NULL)) ERR;
 
         /* Write the data. */
@@ -104,13 +105,13 @@ main()
             /* Check setting. */
             if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
 	    nsd_in=params[0];
-            if (!bitgroom || nsd_in != 3) ERR;
+            if (!bitgroom || nsd_in != nsd_out) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
 
             /* Check the data. Quantization alter data, so do not check for equality :) */
-	    double scale=pow(10.0,nsd_in);
+	    double scale=pow(10.0,nsd_out);
             for (x = 0; x < NX; x++)
                for (y = 0; y < NY; y++)
 		 {
@@ -128,13 +129,14 @@ main()
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int *data_out;
-        int *data_in;
+        float *data_out;
+        float *data_in;
         int x, f;
         int nsd_in, bitgroom;
+	int nsd_out=3;
 
-        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
-        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
+        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
+        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
 
         /* Create some data to write. */
         for (x = 0; x < NX_BIG * NY_BIG; x++)
@@ -155,7 +157,7 @@ main()
 	      ;
             if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
-                if (nc_def_var_bitgroom(ncid, varid, 3)) ERR;
+                if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
             if (nc_put_var(ncid, varid, data_out)) ERR;
             if (nc_close(ncid)) ERR;
 
@@ -165,7 +167,7 @@ main()
                 if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
                 if (f)
                 {
-                    if (!bitgroom || nsd_in != 3) ERR;
+                    if (!bitgroom || nsd_in != nsd_out) ERR;
                 }
                 else
                 {
@@ -174,8 +176,8 @@ main()
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
 		  /* Check the data. Quantization alter data, so do not check for equality :) */
-		  /* fxm: replace this with better test using round((x*10^NSD)/10^NSD) */
-		  if (data_in[x] == data_out[x]+73 ) ERR;
+		  //printf("nsd_in = %d, x = %d, dat_out = %g, dat_in = %g, dff = %g\n",nsd_in,x,data_out[x],data_in[x],fabs(data_in[x]-data_out[x]));
+		  if (fabs(data_in[x] - data_out[x]) > 0.5*fabs(powf(10.0,-nsd_in)*data_out[x])) ERR;
                 if (nc_close(ncid)) ERR;
             }
         } /* next file */
