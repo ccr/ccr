@@ -6,7 +6,7 @@
 */
 
 #include "config.h"
-#include <math.h> /* Needed for round() test */
+#include <math.h> /* Needed for round(), powf() */
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
@@ -111,7 +111,7 @@ main()
             if (nc_get_var(ncid, varid, data_in)) ERR;
 
             /* Check the data. Quantization alter data, so do not check for equality :) */
-	    double scale=pow(10.0,nsd_out);
+	    double scale=powf(10.0,nsd_out);
             for (x = 0; x < NX; x++)
                for (y = 0; y < NY; y++)
 		 {
