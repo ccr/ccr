@@ -6,6 +6,7 @@
 */
 
 #include "config.h"
+#include <math.h> /* Define fabs(), powf(), round() */
 #include "ccr.h"
 #include "ccr_test.h"
 #include <hdf5.h>
@@ -48,7 +49,7 @@ main()
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int data_out[NX][NY];
+        float data_out[NX][NY];
         int x, y;
         int level_in, zstandard;
 
@@ -65,7 +66,7 @@ main()
 	if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
 
         /* Create the variable. */
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+        if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
 
         /* These won't work. */
         if (nc_def_var_zstandard(ncid, varid, -131073) != NC_EINVAL) ERR;
@@ -95,7 +96,7 @@ main()
         if (nc_close(ncid)) ERR;
 
         {
-            int data_in[NX][NY];
+            float data_in[NX][NY];
 
             /* Now reopen the file and check. */
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
@@ -122,13 +123,13 @@ main()
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int *data_out;
-        int *data_in;
+        float *data_out;
+        float *data_in;
         int x, f;
         int level_in, zstandard;
 
-        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
-        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
+        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
+        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
 
         /* Create some data to write. */
         for (x = 0; x < NX_BIG * NY_BIG; x++)
@@ -145,7 +146,7 @@ main()
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
             if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
-            if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+            if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
                 if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
             if (nc_put_var(ncid, varid, data_out)) ERR;
@@ -181,14 +182,15 @@ main()
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int *data_out;
-        int *data_in;
+        float *data_out;
+        float *data_in;
         int x, f;
+        int nsd_out=3;
         int level_in, zstandard;
 	int ret;
 
-        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
-        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(int)))) ERR;
+        if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
+        if (!(data_in = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
 
         /* Create some data to write. */
         for (x = 0; x < NX_BIG * NY_BIG; x++)
@@ -205,10 +207,10 @@ main()
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
             if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
-            if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+            if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
 	    {
-		/* if (nc_def_var_bitgroom(ncid, varid, 3)) ERR; */
+	        if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
                 if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
 	    }
             if ((ret = nc_put_var(ncid, varid, data_out)))
@@ -218,7 +220,8 @@ main()
             /* Check file. */
             {
                 if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
-                if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
+                if ((ret = nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)))
+		    NCERR(ret);
                 if (f)
                 {
                     if (!zstandard || level_in != 3) ERR;
@@ -229,7 +232,10 @@ main()
                 }
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
-                    if (data_in[x] != data_out[x]) ERR;
+		  /* Check the data. Quantization alter data, so do not check for equality :) */
+		  //printf("nsd_out = %d, x = %d, dat_out = %g, dat_in = %g, dff = %g\n",nsd_out,x,data_out[x],data_in[x],fabs(data_in[x]-data_out[x]));
+		  if (fabs(data_in[x] - data_out[x]) > 0.5*fabs(powf(10.0,-nsd_out)*data_out[x])) ERR;
+		    
                 if (nc_close(ncid)) ERR;
             }
         } /* next file */

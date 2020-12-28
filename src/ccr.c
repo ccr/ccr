@@ -81,6 +81,7 @@
 #include "ccr.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
+#include <stdlib.h>
 
 /**
  * Turn on bzip2 compression for a variable.
@@ -282,13 +283,13 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
  *
  * The BitGroom filter only quantizes variables of type NC_FLOAT or
  * NC_DOUBLE. Attempts to set the BitGroom filter for other variable
- * types are ignored. The BitGroom filter does not quantize values 
- * equal to the value of the _FillValue attribute, if any. The only
- * difference between the BitGroom algorithm as implemented in the
- * CCR and in NCO is that the NCO version will not quantize the values
- * of "coordinate-like" variables (e.g., latitude, longitude, time)
- * as defined in the NCO manual, whereas the CCR version will quantize
- * all floating-point variables.
+ * types through the C/Fortran API return an error. The filter does 
+ * not quantize values equal to the value of the _FillValue attribute, 
+ * if any. The main difference between the BitGroom algorithm as 
+ * implemented in the CCR and in NCO is that the NCO version will not 
+ * quantize the values of "coordinate-like" variables (e.g., latitude, 
+ * longitude, time) as defined in the NCO manual, whereas the CCR 
+ * version will quantize any floating-point variable.
  *
  * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
  * for cd_value. However, the user needs to provide only the first
@@ -311,10 +312,21 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
 {
   unsigned int cd_value[BITGROOM_FLT_PRM_NBR];
   int ret;
+  nc_type var_typ;
   
   /* NSD must be between 1 and 15 */
   if (nsd < 1 || nsd > 15)
     return NC_EINVAL;
+
+  /* BitGroom only quantizes floating-point values */
+  if ((ret = nc_inq_vartype(ncid, varid, &var_typ)))
+    return ret;
+
+  if (var_typ != NC_FLOAT && var_typ != NC_DOUBLE)
+    {
+      printf ("BitGroom filter can only be defined for floating-point variables.\n");
+      return NC_EINVAL;
+    }
   
   if (!H5Zfilter_avail(BITGROOM_ID))
     {
@@ -447,42 +459,98 @@ nc_def_var_zstandard(int ncid, int varid, int level)
 int
 nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
 {
-    unsigned int level;
-    unsigned int id;
-    size_t nparams;
     int zstandard = 0; /* Is Zstandard in use? */
+    unsigned int level;
+    size_t nparams;
     int ret;
 
-    /* Get filter information. */
-    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
-    if (ret == NC_ENOFILTER)
+#ifdef HAVE_MULTIFILTERS
     {
+	size_t nfilters;
+	unsigned int *filterids;
+	int f;
+	
+	/* Get filter information. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
+	    return ret;
+	
+	/* If there are no filters, we're done. */
+	if (nfilters == 0)
+	{
+	    if (zstandardp)
+		*zstandardp = 0;
+	    return 0;
+	}
+
+	/* Allocate storage for filter IDs. */
+	if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
+	    return NC_ENOMEM;
+
+	/* Get the filter IDs. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
+	    return ret;
+    
+	/* Check each filter to see if it is Zstandard. */
+	for (f = 0; f < nfilters; f++)
+	{
+	    if (filterids[f] == ZSTANDARD_ID)
+		zstandard++;
+
+	    /* If Zstandard is in use, check parameter. */
+	    if (zstandard)
+	    {
+	    
+		if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, &level)))
+		    return ret;
+
+		/* For Zstandard, there is one parameter. */
+		if (nparams != 1)
+		    return NC_EFILTER;
+
+		/* Tell the caller, if they want to know. */
+		if (levelp)
+		    *levelp = (int)level;
+	    }
+	}
+
 	if (zstandardp)
-	    *zstandardp = 0;
-	return 0;
+	    *zstandardp = zstandard;
     }
-    else if (ret)
-	return ret;
-
-    /* Is Zstandard in use? */
-    if (id == ZSTANDARD_ID)
-        zstandard++;
-
-    /* Does caller want to know if Zstandard is in use? */
-    if (zstandardp)
-        *zstandardp = zstandard;
-
-    /* If Zstandard is in use, check parameter. */
-    if (zstandard)
+#else
     {
-        /* For Zstandard, there is one parameter. */
-        if (nparams != 1)
-            return NC_EFILTER;
-
-        /* Tell the caller, if they want to know. */
-        if (levelp)
-            *levelp = level;
+	unsigned int id;
+	
+	/* Get filter information. */
+	ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+	if (ret == NC_ENOFILTER)
+	{
+	    if (zstandardp)
+		*zstandardp = 0;
+	    return 0;
+	}
+	else if (ret)
+	    return ret;
+	
+	/* Is Zstandard in use? */
+	if (id == ZSTANDARD_ID)
+	    zstandard++;
+	
+	/* Does caller want to know if Zstandard is in use? */
+	if (zstandardp)
+	    *zstandardp = zstandard;
+	
+	/* If Zstandard is in use, check parameter. */
+	if (zstandard)
+	{
+	    /* For Zstandard, there is one parameter. */
+	    if (nparams != 1)
+		return NC_EFILTER;
+	    
+	    /* Tell the caller, if they want to know. */
+	    if (levelp)
+		*levelp = level;
+	}
     }
-
+#endif /* HAVE_MULTIFILTERS */
     return 0;
 }

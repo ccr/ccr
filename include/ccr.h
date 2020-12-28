@@ -7,6 +7,7 @@
 #define _CCR_H
 
 #include <netcdf.h>
+#include <netcdf_filter.h>
 
 /** The filter ID for BZIP2 compression. */
 #define BZIP2_ID 307
