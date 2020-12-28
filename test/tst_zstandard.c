@@ -220,7 +220,8 @@ main()
             /* Check file. */
             {
                 if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
-                if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
+                if ((ret = nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)))
+		    NCERR(ret);
                 if (f)
                 {
                     if (!zstandard || level_in != 3) ERR;

@@ -81,6 +81,7 @@
 #include "ccr.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
+#include <stdlib.h>
 
 /**
  * Turn on bzip2 compression for a variable.
@@ -458,42 +459,59 @@ nc_def_var_zstandard(int ncid, int varid, int level)
 int
 nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
 {
-    unsigned int level;
-    unsigned int id;
-    size_t nparams;
     int zstandard = 0; /* Is Zstandard in use? */
+    size_t nfilters;
+    unsigned int *filterids;
+    int f;
     int ret;
 
     /* Get filter information. */
-    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
-    if (ret == NC_ENOFILTER)
+    if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
+	return ret;
+
+    /* If there are no filters, we're done. */
+    if (nfilters == 0)
     {
 	if (zstandardp)
 	    *zstandardp = 0;
 	return 0;
     }
-    else if (ret)
+
+    /* Allocate storage for filter IDs. */
+    if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
+	return NC_ENOMEM;
+
+    /* Get the filter IDs. */
+    if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
 	return ret;
-
-    /* Is Zstandard in use? */
-    if (id == ZSTANDARD_ID)
-        zstandard++;
-
-    /* Does caller want to know if Zstandard is in use? */
-    if (zstandardp)
-        *zstandardp = zstandard;
-
-    /* If Zstandard is in use, check parameter. */
-    if (zstandard)
+    
+    /* Check each filter to see if it is Zstandard. */
+    for (f = 0; f < nfilters; f++)
     {
-        /* For Zstandard, there is one parameter. */
-        if (nparams != 1)
-            return NC_EFILTER;
+	if (filterids[f] == ZSTANDARD_ID)
+	    zstandard++;
 
-        /* Tell the caller, if they want to know. */
-        if (levelp)
-            *levelp = level;
+	/* If Zstandard is in use, check parameter. */
+	if (zstandard)
+	{
+	    size_t nparams;
+	    unsigned int param;
+	    
+	    if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, &param)))
+		return ret;
+
+	    /* For Zstandard, there is one parameter. */
+	    if (nparams != 1)
+		return NC_EFILTER;
+
+	    /* Tell the caller, if they want to know. */
+	    if (levelp)
+		*levelp = (int)param;
+	}
     }
+
+    if (zstandardp)
+	*zstandardp = zstandard;
 
     return 0;
 }
