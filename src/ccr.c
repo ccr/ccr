@@ -462,88 +462,94 @@ nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
     int zstandard = 0; /* Is Zstandard in use? */
     unsigned int level;
     size_t nparams;
-    size_t nfilters;
-    unsigned int *filterids;
-    int f;
     int ret;
 
 #ifdef HAVE_MULTIFILTERS
-    /* Get filter information. */
-    if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
-	return ret;
-
-    /* If there are no filters, we're done. */
-    if (nfilters == 0)
     {
-	if (zstandardp)
-	    *zstandardp = 0;
-	return 0;
-    }
+	size_t nfilters;
+	unsigned int *filterids;
+	int f;
+	
+	/* Get filter information. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
+	    return ret;
+	
+	/* If there are no filters, we're done. */
+	if (nfilters == 0)
+	{
+	    if (zstandardp)
+		*zstandardp = 0;
+	    return 0;
+	}
 
-    /* Allocate storage for filter IDs. */
-    if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
-	return NC_ENOMEM;
+	/* Allocate storage for filter IDs. */
+	if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
+	    return NC_ENOMEM;
 
-    /* Get the filter IDs. */
-    if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
-	return ret;
+	/* Get the filter IDs. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
+	    return ret;
     
-    /* Check each filter to see if it is Zstandard. */
-    for (f = 0; f < nfilters; f++)
-    {
-	if (filterids[f] == ZSTANDARD_ID)
-	    zstandard++;
+	/* Check each filter to see if it is Zstandard. */
+	for (f = 0; f < nfilters; f++)
+	{
+	    if (filterids[f] == ZSTANDARD_ID)
+		zstandard++;
 
+	    /* If Zstandard is in use, check parameter. */
+	    if (zstandard)
+	    {
+	    
+		if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, &level)))
+		    return ret;
+
+		/* For Zstandard, there is one parameter. */
+		if (nparams != 1)
+		    return NC_EFILTER;
+
+		/* Tell the caller, if they want to know. */
+		if (levelp)
+		    *levelp = (int)level;
+	    }
+	}
+
+	if (zstandardp)
+	    *zstandardp = zstandard;
+    }
+#else
+    {
+	unsigned int id;
+	
+	/* Get filter information. */
+	ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+	if (ret == NC_ENOFILTER)
+	{
+	    if (zstandardp)
+		*zstandardp = 0;
+	    return 0;
+	}
+	else if (ret)
+	    return ret;
+	
+	/* Is Zstandard in use? */
+	if (id == ZSTANDARD_ID)
+	    zstandard++;
+	
+	/* Does caller want to know if Zstandard is in use? */
+	if (zstandardp)
+	    *zstandardp = zstandard;
+	
 	/* If Zstandard is in use, check parameter. */
 	if (zstandard)
 	{
-	    
-	    if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, &level)))
-		return ret;
-
 	    /* For Zstandard, there is one parameter. */
 	    if (nparams != 1)
 		return NC_EFILTER;
-
+	    
 	    /* Tell the caller, if they want to know. */
 	    if (levelp)
-		*levelp = (int)level;
+		*levelp = level;
 	}
-    }
-
-    if (zstandardp)
-	*zstandardp = zstandard;
-
-#else
-    /* Get filter information. */
-    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
-    if (ret == NC_ENOFILTER)
-    {
-	if (zstandardp)
-	    *zstandardp = 0;
-	return 0;
-    }
-    else if (ret)
-	return ret;
-
-    /* Is Zstandard in use? */
-    if (id == ZSTANDARD_ID)
-        zstandard++;
-
-    /* Does caller want to know if Zstandard is in use? */
-    if (zstandardp)
-        *zstandardp = zstandard;
-
-    /* If Zstandard is in use, check parameter. */
-    if (zstandard)
-    {
-        /* For Zstandard, there is one parameter. */
-        if (nparams != 1)
-            return NC_EFILTER;
-
-        /* Tell the caller, if they want to know. */
-        if (levelp)
-            *levelp = level;
     }
 #endif /* HAVE_MULTIFILTERS */
     return 0;
