@@ -67,6 +67,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ccr.c File Reference</div>  </div>
@@ -76,19 +77,30 @@ $(function() {
 <code>#include &quot;ccr.h&quot;</code><br />
 <code>#include &lt;hdf5.h&gt;</code><br />
 <code>#include &lt;H5DSpublic.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for ccr.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="ccr_8c__incl.png" border="0" usemap="#ccr_8c" alt=""/></div>
 <map name="ccr_8c" id="ccr_8c">
-<area shape="rect" title=" " alt="" coords="143,5,194,32"/>
+<area shape="rect" title=" " alt="" coords="185,5,235,32"/>
 <area shape="rect" title=" " alt="" coords="5,80,79,107"/>
 <area shape="rect" title=" " alt="" coords="103,80,155,107"/>
 <area shape="rect" title=" " alt="" coords="179,80,241,107"/>
 <area shape="rect" title=" " alt="" coords="266,80,375,107"/>
+<area shape="rect" title=" " alt="" coords="400,80,471,107"/>
 </map>
 </div>
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:af27c3d30565421376399ef822c331a92"><td class="memItemLeft" align="right" valign="top"><a id="af27c3d30565421376399ef822c331a92"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MAX_BITGROOM_NSD_FLOAT</b>&#160;&#160;&#160;7</td></tr>
+<tr class="separator:af27c3d30565421376399ef822c331a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab36aa12fb7564e0045aa90ef5dae2ea3"><td class="memItemLeft" align="right" valign="top"><a id="ab36aa12fb7564e0045aa90ef5dae2ea3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MAX_BITGROOM_NSD_DOUBLE</b>&#160;&#160;&#160;15</td></tr>
+<tr class="separator:ab36aa12fb7564e0045aa90ef5dae2ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a88189edd7b1d51b5d46b7ad6fe0c9c69"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccr_8c.html#a88189edd7b1d51b5d46b7ad6fe0c9c69">nc_def_var_bzip2</a> (int ncid, int varid, int level)</td></tr>
@@ -150,7 +162,7 @@ Functions</h2></td></tr>
 <p>Turn on BitGroom quantization for a variable. </p>
 <p>The BitGroom filter quantizes the data by setting unneeded bits alternately to 1/0, so that they may compress well. The BitGroom filter itself is lossy (data are irretrievably altered), and it improves the compression ratio provided by a subsequent lossless compression filter. Call the <a class="el" href="ccr_8c.html#abf8731ef9e90d4761fc08dd2d8c862c1" title="Turn on BitGroom quantization for a variable.">nc_def_var_bitgroom()</a> function before the function that turns on the lossless compression filter (nc_def_var_deflate(), for example).</p>
 <p>A notable feature of BitGroom is that the data it processes remain in IEEE754 format after quantization. Therefore the BitGroom filter does nothing when data are read. However, the Bitgroom filter must still be installed on machines that need to read bitgroomed data.</p>
-<p>The BitGroom filter only quantizes variables of type NC_FLOAT or NC_DOUBLE. Attempts to set the BitGroom filter for other variable types are ignored. The BitGroom filter does not quantize values equal to the value of the _FillValue attribute, if any. The only difference between the BitGroom algorithm as implemented in the CCR and in NCO is that the NCO version will not quantize the values of "coordinate-like" variables (e.g., latitude, longitude, time) as defined in the NCO manual, whereas the CCR version will quantize all floating-point variables.</p>
+<p>The BitGroom filter only quantizes variables of type NC_FLOAT or NC_DOUBLE. Attempts to set the BitGroom filter for other variable types through the C/Fortran API return an error (NC_EINVAL). The filter does not quantize values equal to the value of the _FillValue attribute, if any. The main difference between the BitGroom algorithm as implemented in the CCR and in NCO is that the NCO version will not quantize the values of "coordinate-like" variables (e.g., latitude, longitude, time) as defined in the NCO manual, whereas the CCR version will quantize any floating-point variable.</p>
 <dl class="section note"><dt>Note</dt><dd>Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements for cd_value. However, the user needs to provide only the first element, NSD, since the other elements can be and are derived from the dcpl (data_class, datum_size), and extra queries of the variable (has_mss_val, mss_val). Hence, the netCDF API exposes to the user and requires setting only the minimal number (1) of filter parameters.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -419,7 +431,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 23 2020 14:25:10 for ccr by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 28 2020 14:00:39 for ccr by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.17
 </small></address>
