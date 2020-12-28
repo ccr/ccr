@@ -185,7 +185,7 @@ main()
         float *data_out;
         float *data_in;
         int x, f;
-        int nsd_out=3;
+        int nsd_out = 3;
         int level_in, zstandard;
 	int bitgroom, nsd_in;
 	int ret;

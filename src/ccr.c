@@ -134,42 +134,99 @@ int
 nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
 {
     unsigned int level;
-    unsigned int id;
     size_t nparams;
     int bzip2 = 0; /* Is bzip2 in use? */
     int ret;
 
-    /* Get filter information. */
-    ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
-    if (ret == NC_ENOFILTER)
+#ifdef HAVE_MULTIFILTERS
     {
-	/* No filter means no bzip2. */
+	size_t nfilters;
+	unsigned int *filterids;
+	int f;
+	
+	/* Get filter information. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
+	    return ret;
+	
+	/* If there are no filters, we're done. */
+	if (nfilters == 0)
+	{
+	    if (bzip2p)
+		*bzip2p = 0;
+	    return 0;
+	}
+
+	/* Allocate storage for filter IDs. */
+	if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
+	    return NC_ENOMEM;
+
+	/* Get the filter IDs. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
+	    return ret;
+    
+	/* Check each filter to see if it is Bzip2. */
+	for (f = 0; f < nfilters; f++)
+	{
+	    if (filterids[f] == BZIP2_ID)
+		bzip2++;
+
+	    /* If Bzip2 is in use, check parameter. */
+	    if (bzip2)
+	    {
+	    
+		if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, &level)))
+		    return ret;
+
+		/* For Bzip2, there is one parameter. */
+		if (nparams != 1)
+		    return NC_EFILTER;
+
+		/* Tell the caller, if they want to know. */
+		if (levelp)
+		    *levelp = (int)level;
+	    }
+	}
+
 	if (bzip2p)
-	    *bzip2p = 0;
-	return 0;
+	    *bzip2p = bzip2;
     }
-    else if (ret)
-        return ret;
-
-    /* Is bzip2 in use? */
-    if (id == BZIP2_ID)
-        bzip2++;
-
-    /* Does caller want to know if bzip2 is in use? */
-    if (bzip2p)
-        *bzip2p = bzip2;
-
-    /* If bzip2 is in use, check parameter. */
-    if (bzip2)
+#else
     {
-        /* For bzip2, there is one parameter. */
-        if (nparams != 1)
-            return NC_EFILTER;
+	unsigned int id;
+	
+	/* Get filter information. */
+	ret = nc_inq_var_filter(ncid, varid, &id, &nparams, &level);
+	if (ret == NC_ENOFILTER)
+	{
+	    /* No filter means no bzip2. */
+	    if (bzip2p)
+		*bzip2p = 0;
+	    return 0;
+	}
+	else if (ret)
+	    return ret;
 
-        /* Tell the caller, if they want to know. */
-        if (levelp)
-            *levelp = level;
+	/* Is bzip2 in use? */
+	if (id == BZIP2_ID)
+	    bzip2++;
+
+	/* Does caller want to know if bzip2 is in use? */
+	if (bzip2p)
+	    *bzip2p = bzip2;
+
+	/* If bzip2 is in use, check parameter. */
+	if (bzip2)
+	{
+	    /* For bzip2, there is one parameter. */
+	    if (nparams != 1)
+		return NC_EFILTER;
+
+	    /* Tell the caller, if they want to know. */
+	    if (levelp)
+		*levelp = level;
+	}
     }
+#endif
 
     return 0;
 }
@@ -283,13 +340,14 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
  *
  * The BitGroom filter only quantizes variables of type NC_FLOAT or
  * NC_DOUBLE. Attempts to set the BitGroom filter for other variable
- * types through the C/Fortran API return an error. The filter does 
- * not quantize values equal to the value of the _FillValue attribute, 
- * if any. The main difference between the BitGroom algorithm as 
- * implemented in the CCR and in NCO is that the NCO version will not 
- * quantize the values of "coordinate-like" variables (e.g., latitude, 
- * longitude, time) as defined in the NCO manual, whereas the CCR 
- * version will quantize any floating-point variable.
+ * types through the C/Fortran API return an error (NC_EINVAL). The
+ * filter does not quantize values equal to the value of the
+ * _FillValue attribute, if any. The main difference between the
+ * BitGroom algorithm as implemented in the CCR and in NCO is that the
+ * NCO version will not quantize the values of "coordinate-like"
+ * variables (e.g., latitude, longitude, time) as defined in the NCO
+ * manual, whereas the CCR version will quantize any floating-point
+ * variable.
  *
  * @note Internally, the filter requires CCR_FLT_PRM_NBR (=5) elements
  * for cd_value. However, the user needs to provide only the first
@@ -323,16 +381,16 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
     return ret;
 
   if (var_typ != NC_FLOAT && var_typ != NC_DOUBLE)
-    {
-      printf ("BitGroom filter can only be defined for floating-point variables.\n");
+  {
+      /* printf ("BitGroom filter can only be defined for floating-point variables.\n"); */
       return NC_EINVAL;
-    }
+  }
   
   if (!H5Zfilter_avail(BITGROOM_ID))
-    {
+  {
       printf ("BitGroom filter not available.\n");
       return NC_EFILTER;
-    }
+  }
 
   /* User-provided NSD is first element of filter parameter array */
   cd_value[0] = nsd;
