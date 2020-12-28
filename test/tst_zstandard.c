@@ -185,8 +185,9 @@ main()
         float *data_out;
         float *data_in;
         int x, f;
-        int nsd_out=3;
+        int nsd_out = 3;
         int level_in, zstandard;
+	int bitgroom, nsd_in;
 	int ret;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
@@ -230,11 +231,17 @@ main()
                 {
                     if (zstandard) ERR;
                 }
+                if ((ret = nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)))
+		    NCERR(ret);
+
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
+		{
 		  /* Check the data. Quantization alter data, so do not check for equality :) */
-		  //printf("nsd_out = %d, x = %d, dat_out = %g, dat_in = %g, dff = %g\n",nsd_out,x,data_out[x],data_in[x],fabs(data_in[x]-data_out[x]));
-		  if (fabs(data_in[x] - data_out[x]) > 0.5*fabs(powf(10.0,-nsd_out)*data_out[x])) ERR;
+		  /* printf("nsd_out = %d, x = %d, dat_out = %g, dat_in = %g, dff = %g\n",
+		     nsd_out,x,data_out[x],data_in[x],fabs(data_in[x]-data_out[x])); */
+		  if (fabs(data_in[x] - data_out[x]) > 0.5 * fabs(powf(10.0, -nsd_out) * data_out[x])) ERR;
+		}
 		    
                 if (nc_close(ncid)) ERR;
             }
