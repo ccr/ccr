@@ -186,5 +186,43 @@ main()
         free(data_in);
     }
     SUMMARIZE_ERR;
+#define NTYPES 9
+    printf("*** Checking BitGroom handling of non-floats...");
+    {
+        int ncid;
+        int dimid[NDIM2];
+        int varid;
+        int nsd_in, bitgroom;
+	int nsd_out=3;
+	char file_name[STR_LEN + 1];
+	int xtype[NTYPES] = {NC_CHAR, NC_SHORT, NC_INT, NC_BYTE, NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
+	int t;
+
+	for (t = 0; t < NTYPES; t++)
+	{
+	    sprintf(file_name, "%s_bitgroom_type_%d.nc", TEST, xtype[t]);
+	    nc_set_log_level(3);
+
+	    /* Create file. */
+	    if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
+	    if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+	    if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
+	    if (nc_def_var(ncid, VAR_NAME, xtype[t], NDIM2, dimid, &varid)) ERR;
+
+	    /* Bitgroom filter returns NC_EINVAL because this is not an
+	     * NC_FLOAT or NC_DOULBE. */
+	    if (nc_def_var_bitgroom(ncid, varid, nsd_out) != NC_EINVAL) ERR;
+	    if (nc_close(ncid)) ERR;
+
+	    /* Check file. */
+	    {
+		if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
+		if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
+		if (bitgroom) ERR;
+		if (nc_close(ncid)) ERR;
+	    } 
+	}
+    }
+    SUMMARIZE_ERR;
     FINAL_RESULTS;
 }
