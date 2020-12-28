@@ -575,6 +575,9 @@ nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
 	    }
 	}
 
+	/* Free resources. */
+	free(filterids);
+
 	if (zstandardp)
 	    *zstandardp = zstandard;
     }
