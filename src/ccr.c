@@ -314,15 +314,23 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
   int ret;
   nc_type var_typ;
   
-  /* NSD must be between 1 and 15 */
-  if (nsd < 1 || nsd > 15)
-    return NC_EINVAL;
-
   /* BitGroom only quantizes floating-point values */
   if ((ret = nc_inq_vartype(ncid, varid, &var_typ)))
     return ret;
 
-  if (var_typ != NC_FLOAT && var_typ != NC_DOUBLE)
+  if (var_typ == NC_FLOAT)
+    {
+      /* NSD must be between 1 and 7 for NC_FLOAT */
+      if (nsd < 1 || nsd > 7)
+	return NC_EINVAL;
+    } 
+  else if (var_typ == NC_DOUBLE)
+    {
+      /* NSD must be between 1 and 7 for NC_DOUBLE */
+      if (nsd < 1 || nsd > 15)
+	return NC_EINVAL;
+    }
+  else
     {
       printf ("BitGroom filter can only be defined for floating-point variables.\n");
       return NC_EINVAL;
