@@ -83,6 +83,9 @@
 #include <H5DSpublic.h>
 #include <stdlib.h>
 
+#define MAX_BITGROOM_NSD_FLOAT 7
+#define MAX_BITGROOM_NSD_DOUBLE 15
+
 /**
  * Turn on bzip2 compression for a variable.
  *
@@ -372,10 +375,6 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
   int ret;
   nc_type var_typ;
   
-  /* NSD must be between 1 and 15 */
-  if (nsd < 1 || nsd > 15)
-    return NC_EINVAL;
-
   /* BitGroom only quantizes floating-point values */
   if ((ret = nc_inq_vartype(ncid, varid, &var_typ)))
     return ret;
@@ -386,6 +385,11 @@ nc_def_var_bitgroom(int ncid, int varid, int nsd)
       return NC_EINVAL;
   }
   
+  /* NSD must be between 1 and 7 for NC_FLOAT, 1 and 15 for
+   * NC_DOUBLE. */
+  if (nsd < 1 || nsd > (var_typ == NC_FLOAT ? MAX_BITGROOM_NSD_FLOAT : MAX_BITGROOM_NSD_DOUBLE))
+    return NC_EINVAL;
+
   if (!H5Zfilter_avail(BITGROOM_ID))
   {
       printf ("BitGroom filter not available.\n");

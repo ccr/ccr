@@ -20,6 +20,7 @@
 #define Y_NAME "Y"
 #define NDIM2 2
 #define VAR_NAME "Bad_Moon_Rising"
+#define VAR_NAME2 "Fortunate_Son"
 #define NDIMS 2
 #define NX 60
 #define NY 120
@@ -42,7 +43,7 @@ main()
     {
         int ncid;
         int dimid[NDIM2];
-        int varid;
+        int varid, varid2;
         float data_out[NX][NY];
         int x, y;
 	int nsd_in;
@@ -62,20 +63,25 @@ main()
         if (nc_def_dim(ncid, X_NAME, NX, &dimid[0])) ERR;
 	if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
 
-        /* Create the variable. */
+        /* Create the variables. */
         if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
+        if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM2, dimid, &varid2)) ERR;
 
         /* These won't work. */
         if (nc_def_var_bitgroom(ncid, varid, -9) != NC_EINVAL) ERR;
         if (nc_def_var_bitgroom(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_bitgroom(ncid, varid, 16) != NC_EINVAL) ERR;
+        if (nc_def_var_bitgroom(ncid, varid, 8) != NC_EINVAL) ERR;
+        if (nc_def_var_bitgroom(ncid, varid2, 16) != NC_EINVAL) ERR;
 
         /* Check setting. */
         if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
         if (bitgroom) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
+        if (bitgroom) ERR;
 
         /* Set up quantization. */
         if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR;
 
         /* Check setting. */
         if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
@@ -89,35 +95,47 @@ main()
         if (!bitgroom || nsd_in != nsd_out) ERR;
         if (nc_inq_var_bitgroom(ncid, varid, NULL, NULL)) ERR;
 
+	/* Check varid2. */
+        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
+        nsd_in = params[0];
+        if (!bitgroom || nsd_in != nsd_out) ERR;
+
         /* Write the data. */
         if (nc_put_var(ncid, varid, data_out)) ERR;
+        if (nc_put_var_float(ncid, varid2, (float *)data_out)) ERR;
 
         /* Close the file. */
         if (nc_close(ncid)) ERR;
 
         {
             float data_in[NX][NY];
+            float data_in2[NX][NY];
 	    float data_tst[NX][NY];
 
             /* Now reopen the file and check. */
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
-            /* Check setting. */
+            /* Check settings. */
             if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
+	    nsd_in=params[0];
+            if (!bitgroom || nsd_in != nsd_out) ERR;
+            if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
 	    nsd_in=params[0];
             if (!bitgroom || nsd_in != nsd_out) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
+            if (nc_get_var_float(ncid, varid2, (float *)data_in2)) ERR;
 
             /* Check the data. Quantization alter data, so do not check for equality :) */
 	    double scale=powf(10.0,nsd_out);
             for (x = 0; x < NX; x++)
                for (y = 0; y < NY; y++)
 		 {
+		   /* //(void)printf("dat_rgn = %g, dat_bgr = %g, dat_tst = %g\n",data_out[x][y],data_in[x][y],data_tst[x][y]); */
 		   data_tst[x][y]=rint(scale*data_out[x][y])/scale;
-		   //(void)printf("dat_rgn = %g, dat_bgr = %g, dat_tst = %g\n",data_out[x][y],data_in[x][y],data_tst[x][y]);
 		   if (fabs(data_in[x][y]-data_tst[x][y]) > fabs(5.0*data_out[x][y]/scale)) ERR;
+		   if (fabs(data_in2[x][y]-data_tst[x][y]) > fabs(5.0*data_out[x][y]/scale)) ERR;
 		 }
             /* Close the file. */
             if (nc_close(ncid)) ERR;
@@ -184,6 +202,44 @@ main()
 
         free(data_out);
         free(data_in);
+    }
+    SUMMARIZE_ERR;
+#define NTYPES 9
+    printf("*** Checking BitGroom handling of non-floats...");
+    {
+        int ncid;
+        int dimid[NDIM2];
+        int varid;
+        int nsd_in, bitgroom;
+	int nsd_out=3;
+	char file_name[STR_LEN + 1];
+	int xtype[NTYPES] = {NC_CHAR, NC_SHORT, NC_INT, NC_BYTE, NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
+	int t;
+
+	for (t = 0; t < NTYPES; t++)
+	{
+	    sprintf(file_name, "%s_bitgroom_type_%d.nc", TEST, xtype[t]);
+	    nc_set_log_level(3);
+
+	    /* Create file. */
+	    if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
+	    if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+	    if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
+	    if (nc_def_var(ncid, VAR_NAME, xtype[t], NDIM2, dimid, &varid)) ERR;
+
+	    /* Bitgroom filter returns NC_EINVAL because this is not an
+	     * NC_FLOAT or NC_DOULBE. */
+	    if (nc_def_var_bitgroom(ncid, varid, nsd_out) != NC_EINVAL) ERR;
+	    if (nc_close(ncid)) ERR;
+
+	    /* Check file. */
+	    {
+		if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
+		if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
+		if (bitgroom) ERR;
+		if (nc_close(ncid)) ERR;
+	    } 
+	}
     }
     SUMMARIZE_ERR;
     FINAL_RESULTS;
