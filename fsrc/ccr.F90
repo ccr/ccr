@@ -82,7 +82,7 @@ contains
   !! @param varid Variable ID.
   !! @param level The compression level.
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_def_var_bzip2(ncid, varid, level) result(status)
     use iso_c_binding
     implicit none
@@ -102,7 +102,7 @@ contains
   !! @param levelp Pointer that gets compression level, if BZIP2 is in
   !! use. Ignored if NULL.
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_inq_var_bzip2(ncid, varid, bzip2p, levelp) result(status)
     use iso_c_binding
     implicit none
@@ -120,7 +120,7 @@ contains
   ! !! @param varid Variable ID.
   ! !! @param level The compression level.
   ! !!
-  ! !! @return 0 for sucess, error code otherwise.
+  ! !! @return 0 for success, error code otherwise.
   ! function nf90_def_var_lz4(ncid, varid, level) result(status)
   !   use iso_c_binding
   !   implicit none
@@ -140,7 +140,7 @@ contains
   ! !! @param levelp Pointer that gets compression level, if LZ4 is in
   ! !! use. Ignored if NULL.
   ! !!
-  ! !! @return 0 for sucess, error code otherwise.
+  ! !! @return 0 for success, error code otherwise.
   ! function nf90_inq_var_lz4(ncid, varid, lz4p, levelp) result(status)
   !   use iso_c_binding
   !   implicit none
@@ -159,7 +159,7 @@ contains
   !! @param nsd Number of significant digits to retain. Allowed single- and
   !! double-precision NSDs are 1-7 and 1-15, respectively. (Default is 3).
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_def_var_bitgroom(ncid, varid, nsd) result(status)
     use iso_c_binding
     implicit none
@@ -179,7 +179,7 @@ contains
   !! @param nsdp Pointer that gets number of significant digits,
   !! if BitGroom is in use. Ignored if NULL.
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_inq_var_bitgroom(ncid, varid, bitgroomp, nsdp) result(status)
     use iso_c_binding
     implicit none
@@ -197,7 +197,7 @@ contains
   !! @param varid Variable ID.
   !! @param level The compression level.
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_def_var_zstandard(ncid, varid, level) result(status)
     use iso_c_binding
     implicit none
@@ -217,7 +217,7 @@ contains
   !! @param levelp Pointer that gets compression level, if Zstandard is in
   !! use. Ignored if NULL.
   !!
-  !! @return 0 for sucess, error code otherwise.
+  !! @return 0 for success, error code otherwise.
   function nf90_inq_var_zstandard(ncid, varid, zstandardp, levelp) result(status)
     use iso_c_binding
     implicit none
