@@ -424,45 +424,105 @@ int
 nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 {
   unsigned int nsd[BITGROOM_FLT_PRM_NBR];
-  unsigned int id;
   size_t nparams;
   int bitgroom = 0; /* Is BitGroom in use? */
   int ret;
   
-  /* Get filter information. */
-  ret = nc_inq_var_filter(ncid, varid, &id, &nparams, nsd);
-  if (ret == NC_ENOFILTER)
+#ifdef HAVE_MULTIFILTERS
     {
-      if (bitgroomp)
-	*bitgroomp = 0;
-      return 0;
+	size_t nfilters;
+	unsigned int *filterids;
+	int f;
+	
+	/* Get filter information. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, NULL)))
+	    return ret;
+	
+	/* If there are no filters, we're done. */
+	if (nfilters == 0)
+	{
+	    if (bitgroomp)
+		*bitgroomp = 0;
+	    return 0;
+	}
+
+	/* Allocate storage for filter IDs. */
+	if (!(filterids = malloc(nfilters * sizeof(unsigned int))))
+	    return NC_ENOMEM;
+
+	/* Get the filter IDs. */
+	if ((ret = nc_inq_var_filter_ids(ncid, varid, &nfilters, filterids)))
+	    return ret;
+    
+	/* Check each filter to see if it is BitGroom. */
+	for (f = 0; f < nfilters; f++)
+	{
+	    if (filterids[f] == BITGROOM_ID)
+		bitgroom++;
+
+	    /* If BitGroom is in use, check parameter. */
+	    if (bitgroom)
+	    {
+	    
+		if ((ret = nc_inq_var_filter_info(ncid, varid, filterids[f], &nparams, nsd)))
+		    return ret;
+
+		/* BitGroom has BITGROOM_FLT_PRM_NBR == 5 internal parameters.
+		   We expose only the first (NSD) through this API because a variable's properties 
+		   uniquely determine the remainder and exposing them to users, well, invites disaster */
+		//fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
+		if (nparams != BITGROOM_FLT_PRM_NBR)
+		  return NC_EFILTER;
+
+		/* Tell the caller, if they want to know. */
+		if (nsdp)
+		    *nsdp = (int)nsd[0];
+	    }
+	}
+
+	/* Does caller want to know if BitGroom is in use? */
+	if (bitgroomp)
+	    *bitgroomp = bitgroom;
     }
-  else if (ret)
-    return ret;
-  
-  /* Is BitGroom in use? */
-  if (id == BITGROOM_ID)
-    bitgroom++;
-  
-  /* Does caller want to know if BitGroom is in use? */
-  if (bitgroomp)
-    *bitgroomp = bitgroom;
-  
-  /* If BitGroom is in use, check parameter. */
-  if (bitgroom)
+#else
     {
-      /* BitGroom has 6 internal parameters.
-	 We expose only the first (NSD) through this API because a variable's properties 
-	 uniquely determine the remainder and exposing them to users, well, invites disaster */
-      //fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
-      if (nparams != BITGROOM_FLT_PRM_NBR)
-	return NC_EFILTER;
+	unsigned int id;
+
+	/* Get filter information. */
+	ret = nc_inq_var_filter(ncid, varid, &id, &nparams, nsd);
+	if (ret == NC_ENOFILTER)
+	  {
+	    if (bitgroomp)
+	      *bitgroomp = 0;
+	    return 0;
+	  }
+	else if (ret)
+	  return ret;
+  
+	/* Is BitGroom in use? */
+	if (id == BITGROOM_ID)
+	  bitgroom++;
+  
+	/* Does caller want to know if BitGroom is in use? */
+	if (bitgroomp)
+	  *bitgroomp = bitgroom;
+  
+	/* If BitGroom is in use, check parameter. */
+	if (bitgroom)
+	  {
+	    /* BitGroom has BITGROOM_FLT_PRM_NBR == 5 internal parameters.
+	       We expose only the first (NSD) through this API because a variable's properties 
+	       uniquely determine the remainder and exposing them to users, well, invites disaster */
+	    //fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
+	    if (nparams != BITGROOM_FLT_PRM_NBR)
+	      return NC_EFILTER;
       
-      /* Tell the caller, if they want to know. */
-      if (nsdp)
-	*nsdp =(int)nsd[0];
+	    /* Tell the caller, if they want to know. */
+	    if (nsdp)
+	      *nsdp =(int)nsd[0];
+	  }
     }
-  
+#endif /* HAVE_MULTIFILTERS */
   return 0;
 }
 
