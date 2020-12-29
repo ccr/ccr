@@ -60,5 +60,5 @@ jobs:
     - name: configure, build, and test
       run: |
         autoreconf -i
-        ./configure --disable-lz4 --disable-zstd --enable-docs
+        ./configure --disable-zstd --enable-docs
         make check
