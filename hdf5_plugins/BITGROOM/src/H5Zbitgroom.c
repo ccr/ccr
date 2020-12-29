@@ -393,11 +393,11 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
 # define M_LN2          0.69314718055994530942  /* log_e 2 */
 #endif /* M_LN2 */
   const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
-  const double dcm_per_bit_dgt_prc=M_LN2/M_LN10; /* 0.301 [frc] Bits per decimal digit of precision */
+  //const double dcm_per_bit_dgt_prc=M_LN2/M_LN10; /* 0.301 [frc] Bits per decimal digit of precision */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
-  const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
+  //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   
@@ -409,11 +409,11 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   unsigned int *u32_ptr;
   unsigned int msk_f32_u32_zro;
   unsigned int msk_f32_u32_one;
-  unsigned int msk_f32_u32_hshv;
+  //unsigned int msk_f32_u32_hshv;
   unsigned long long int *u64_ptr;
   unsigned long long int msk_f64_u64_zro;
   unsigned long long int msk_f64_u64_one;
-  unsigned long long int msk_f64_u64_hshv;
+  //unsigned long long int msk_f64_u64_hshv;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
 
@@ -447,7 +447,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     msk_f32_u32_zro <<= bit_xpl_nbr_zro;
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f32_u32_one=~msk_f32_u32_zro;
-    msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
+    //msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
 
     /* Bit-Groom: alternately shave and set LSBs */
     if(!has_mss_val){
@@ -475,7 +475,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     msk_f64_u64_zro <<= bit_xpl_nbr_zro;
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f64_u64_one=~msk_f64_u64_zro;
-    msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
+    //msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
     /* Bit-Groom: alternately shave and set LSBs */
     if(!has_mss_val){
       for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
