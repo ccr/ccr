@@ -190,6 +190,8 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
 	    }
 	}
 
+	free(filterids);
+
 	if (bzip2p)
 	    *bzip2p = bzip2;
     }
@@ -637,6 +639,9 @@ nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
 		    *levelp = (int)level;
 	    }
 	}
+
+	/* Free resources. */
+	free(filterids);
 
 	if (zstandardp)
 	    *zstandardp = zstandard;
