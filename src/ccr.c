@@ -480,6 +480,9 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 	    }
 	}
 
+	/* Free resources. */
+	free(filterids);
+
 	/* Does caller want to know if BitGroom is in use? */
 	if (bitgroomp)
 	    *bitgroomp = bitgroom;
