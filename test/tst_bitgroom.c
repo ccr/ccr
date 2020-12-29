@@ -48,7 +48,6 @@ main()
         int x, y;
 	int nsd_in;
 	int nsd_out=3;
-	int params[BITGROOM_FLT_PRM_NBR];
         int bitgroom;
 
         /* Create some data to write. */
@@ -74,9 +73,9 @@ main()
         if (nc_def_var_bitgroom(ncid, varid2, 16) != NC_EINVAL) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
         if (bitgroom) ERR;
-        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, &nsd_in)) ERR;
         if (bitgroom) ERR;
 
         /* Set up quantization. */
@@ -84,20 +83,17 @@ main()
         if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
-        nsd_in = params[0];
+        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
         if (!bitgroom || nsd_in != nsd_out) ERR;
         nsd_in = 0;
         bitgroom = 1;
-        if (nc_inq_var_bitgroom(ncid, varid, NULL, params)) ERR;
+        if (nc_inq_var_bitgroom(ncid, varid, NULL, &nsd_in)) ERR;
         if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, NULL)) ERR;
-        nsd_in = params[0];
         if (!bitgroom || nsd_in != nsd_out) ERR;
         if (nc_inq_var_bitgroom(ncid, varid, NULL, NULL)) ERR;
 
 	/* Check varid2. */
-        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
-        nsd_in = params[0];
+        if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, &nsd_in)) ERR;
         if (!bitgroom || nsd_in != nsd_out) ERR;
 
         /* Write the data. */
@@ -116,11 +112,9 @@ main()
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
             /* Check settings. */
-            if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, params)) ERR;
-	    nsd_in=params[0];
+            if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
             if (!bitgroom || nsd_in != nsd_out) ERR;
-            if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, params)) ERR;
-	    nsd_in=params[0];
+            if (nc_inq_var_bitgroom(ncid, varid2, &bitgroom, &nsd_in)) ERR;
             if (!bitgroom || nsd_in != nsd_out) ERR;
 
             /* Read the data. */

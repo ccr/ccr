@@ -234,6 +234,8 @@ main()
                 if ((ret = nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)))
 		    NCERR(ret);
 
+		if (!bitgroom || nsd_in != nsd_out) ERR;
+
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
 		{
