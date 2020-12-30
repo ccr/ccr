@@ -187,9 +187,13 @@ nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp)
 		/* Tell the caller, if they want to know. */
 		if (levelp)
 		    *levelp = (int)level;
+
+		/* Exit loop to report parameters (neglect remaining filters) */
+		break;
 	    }
 	}
 
+	/* Free resources. */
 	free(filterids);
 
 	if (bzip2p)
@@ -472,13 +476,16 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 		/* BitGroom has BITGROOM_FLT_PRM_NBR == 5 internal parameters.
 		   We expose only the first (NSD) through this API because a variable's properties 
 		   uniquely determine the remainder and exposing them to users, well, invites disaster */
-		//fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
 		if (nparams != BITGROOM_FLT_PRM_NBR)
 		  return NC_EFILTER;
 
 		/* Tell the caller, if they want to know. */
 		if (nsdp)
 		    *nsdp = (int)nsd[0];
+
+		/* Exit loop to report parameters (neglect remaining filters) */
+		break;
+
 	    }
 	}
 
@@ -518,7 +525,6 @@ nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp)
 	    /* BitGroom has BITGROOM_FLT_PRM_NBR == 5 internal parameters.
 	       We expose only the first (NSD) through this API because a variable's properties 
 	       uniquely determine the remainder and exposing them to users, well, invites disaster */
-	    //fprintf(stdout,"INFO: nc_inq_var_bitgroom() reports BitGroom filter ID = %d, nparams = %lu, nsd[0] = %d\n",id,nparams,nsd[0]);
 	    if (nparams != BITGROOM_FLT_PRM_NBR)
 	      return NC_EFILTER;
       
@@ -637,6 +643,10 @@ nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp)
 		/* Tell the caller, if they want to know. */
 		if (levelp)
 		    *levelp = (int)level;
+
+		/* Exit loop to report parameters (neglect remaining filters) */
+		break;
+
 	    }
 	}
 
