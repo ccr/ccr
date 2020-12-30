@@ -193,6 +193,9 @@ main()
             if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
             if (!bzip2 || level_in != 8) ERR;
 
+	    if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
+	    if (!bitgroom || nsd_in != nsd_out) ERR;
+
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
 

@@ -77,16 +77,16 @@ main()
         if (zstandard) ERR;
 
         /* Set up compression. */
-        if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
+        if (nc_def_var_zstandard(ncid, varid, DEFLATE_LEVEL)) ERR;
 
         /* Check setting. */
         if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
-        if (!zstandard || level_in != 3) ERR;
+        if (!zstandard || level_in != DEFLATE_LEVEL) ERR;
         level_in = 0;
         zstandard = 1;
         if (nc_inq_var_zstandard(ncid, varid, NULL, &level_in)) ERR;
         if (nc_inq_var_zstandard(ncid, varid, &zstandard, NULL)) ERR;
-        if (!zstandard || level_in != 3) ERR;
+        if (!zstandard || level_in != DEFLATE_LEVEL) ERR;
         if (nc_inq_var_zstandard(ncid, varid, NULL, NULL)) ERR;
 
         /* Write the data. */
@@ -103,7 +103,7 @@ main()
 
             /* Check setting. */
             if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
-            if (!zstandard || level_in != 3) ERR;
+            if (!zstandard || level_in != DEFLATE_LEVEL) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
@@ -148,7 +148,7 @@ main()
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
-                if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
+                if (nc_def_var_zstandard(ncid, varid, DEFLATE_LEVEL)) ERR;
             if (nc_put_var(ncid, varid, data_out)) ERR;
             if (nc_close(ncid)) ERR;
 
@@ -158,7 +158,7 @@ main()
                 if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR;
                 if (f)
                 {
-                    if (!zstandard || level_in != 3) ERR;
+                    if (!zstandard || level_in != DEFLATE_LEVEL) ERR;
                 }
                 else
                 {
@@ -212,7 +212,7 @@ main()
             if (f)
 	    {
 	        if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
-                if (nc_def_var_zstandard(ncid, varid, 3)) ERR;
+                if (nc_def_var_zstandard(ncid, varid, DEFLATE_LEVEL)) ERR;
 	    }
             if ((ret = nc_put_var(ncid, varid, data_out)))
 		NCERR(ret);
@@ -225,14 +225,23 @@ main()
 		    NCERR(ret);
                 if (f)
                 {
-                    if (!zstandard || level_in != 3) ERR;
+                    if (!zstandard || level_in != DEFLATE_LEVEL) ERR;
                 }
                 else
                 {
                     if (zstandard) ERR;
                 }
+
                 if ((ret = nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)))
 		    NCERR(ret);
+                if (f)
+                {
+		    if (!bitgroom || nsd_in != nsd_out) ERR;
+                }
+                else
+                {
+                    if (bitgroom) ERR;
+                }
 
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
