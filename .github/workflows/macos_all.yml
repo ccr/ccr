@@ -14,6 +14,7 @@ jobs:
     env:
       CFLAGS: "-Wno-implicit-function-declaration"
       HDF5_PLUGIN_PATH: "/Users/runner/plugin"
+      FC: "gfortran"
 
     steps:
     - uses: actions/checkout@v2
