@@ -17,10 +17,12 @@
 #include <sys/time.h> /* Extra high precision time info. */
 #include <mpi.h>
 #include <stdio.h>
+#include <string.h>
 #include "ccr.h"
 #include "ccr_test.h"
 #include <netcdf.h>
 #include <netcdf_par.h>
+#include <netcdf_meta.h>
 
 #define FILE_NAME "tst_gfs_data_1.nc"
 #define NUM_META_VARS 7
@@ -30,7 +32,7 @@
 #define NDIM5 5
 #define NUM_PROC 4
 #define NUM_SHUFFLE_SETTINGS 2
-#ifdef HAVE_H5Z_SZIP
+#ifdef NC_HAS_SZIP_WRITE
 #define NUM_COMPRESSION_FILTERS 2
 #else
 #define NUM_COMPRESSION_FILTERS 1
@@ -55,6 +57,11 @@ int var_type[NUM_META_VARS] = {NC_DOUBLE, NC_DOUBLE, NC_DOUBLE, NC_DOUBLE,
 			       NC_FLOAT, NC_FLOAT, NC_DOUBLE};
 int dim_len[NDIM5] = {GRID_XT_LEN, GRID_YT_LEN, PFULL_LEN, PHALF_LEN,
 		      TIME_LEN};
+
+/* Err is used to keep track of errors within each set of tests,
+ * total_err is the number of errors in the entire test program, which
+ * generally cosists of several sets of tests. */
+static int total_err = 0, err = 0;
 
 /* Get the size of a file in bytes. */
 int
@@ -282,11 +289,9 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
             res = nc_def_var_deflate(ncid, data_varid[dv], s, 1, deflate);
         else
         {
-            res = nc_def_var_deflate(ncid, data_varid[dv], s, 0, 0);
-            if (!res)
-                res = nc_def_var_szip(ncid, data_varid[dv], 32, 32);
+            res = nc_def_var_szip(ncid, data_varid[dv], 32, 32);
         }
-#ifdef HDF5_SUPPORTS_PAR_FILTERS
+#ifdef NC_HAS_PAR_FILTERS
         if (res) ERR;
 #else
         if (res != NC_EINVAL) ERR;
