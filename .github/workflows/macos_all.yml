@@ -65,7 +65,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf-fortran
-        key: netcdf-fortran-${{ runner.os }}-4.5.3
+        key: netcdf-fortran-${{ runner.os }}-4.5.3-1
 
     - name: build-netcdf-fortran
       if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -85,6 +85,7 @@ jobs:
     - name: configure and build
       run: |
         set -x
+        ls -l /Users/runner/netcdf-fortran/lib
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include -I/Users/runner/netcdf-fortran/include"

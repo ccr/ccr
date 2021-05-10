@@ -32,11 +32,6 @@
 #define NDIM5 5
 #define NUM_PROC 4
 #define NUM_SHUFFLE_SETTINGS 2
-#ifdef NC_HAS_SZIP_WRITE
-#define NUM_COMPRESSION_FILTERS 2
-#else
-#define NUM_COMPRESSION_FILTERS 1
-#endif
 #define NUM_DEFLATE_LEVELS 3
 #define NUM_UNLIM_TRIES 1
 #define THOUSAND 1000
@@ -48,6 +43,25 @@
 #define PFULL_LEN 127
 #define PHALF_LEN 128
 #define TIME_LEN 1
+
+#ifdef NC_HAS_SZIP_WRITE
+#define NUM_COMPRESSION_FILTERS 2
+#else
+#define NUM_COMPRESSION_FILTERS 1
+#endif
+
+#define MAX_COMPRESSION_FILTERS 2
+char compression_filter_name[MAX_COMPRESSION_FILTERS][NC_MAX_NAME + 1];
+
+/* zlib is always present. */
+strcpy(compression_filter_name[0], "zlib");
+int num_compression_filters = 1;
+
+/* szip is optionally present. */
+#ifdef NC_HAS_SZIP_WRITE
+strcpy(compression_filter_name[num_compression_filters], "zlib");
+num_compression_filters++;
+#endif /* NC_HAS_SZIP_WRITE */
 
 char dim_name[NDIM5][NC_MAX_NAME + 1] = {"grid_xt", "grid_yt", "pfull",
 					 "phalf", "time"};
@@ -637,7 +651,7 @@ main(int argc, char **argv)
 			data_size = NUM_DATA_VARS * dim_len[0] * dim_len[1] *
 			    dim_len[3] * sizeof(float)/1000000;
 			data_rate = data_size / (data_stop_time - data_start_time);
-			printf("%d %s, %d, %d, %g, %g, %g\n", u, (f ? "szip" : "zlib"),
+			printf("%d %s, %d, %d, %g, %g, %g\n", u, compression_filter_name[f],
 			       deflate_level[dl], s, meta_stop_time - meta_start_time,
 			       data_rate, (float)file_size/1000000);
 		    }
