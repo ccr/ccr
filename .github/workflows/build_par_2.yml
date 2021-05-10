@@ -1,4 +1,4 @@
-name: parallel I/O build 
+name: parallel I/O build netcdf-c-4.8.0-hdf-5.1.10.7
 
 on:
   push:
@@ -82,7 +82,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf-fortran
-        key: netcdf-fortran-${{ runner.os }}-4.5.3-mpich-3.3.2
+        key: netcdf-fortran-${{ runner.os }}-4.5.3-mpich-3.3.2-1
 
     - name: build-netcdf-fortran
       if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
