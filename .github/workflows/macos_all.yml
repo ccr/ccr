@@ -74,10 +74,8 @@ jobs:
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
         tar -xzf v4.5.3.tar.gz
         pushd netcdf-fortran-4.5.3
-        which gfortran
-        which gfortran-9
         which gfortran-10
-        export FC="gfortran"
+        export FC="gfortran-10"
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include"
         export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib"
         ./configure --prefix=/Users/runner/netcdf-fortran
