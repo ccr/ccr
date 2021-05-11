@@ -9,7 +9,7 @@ if test "@BUILD_ZSTD@" = "yes"; then
     export HDF5_PLUGIN_PATH="../hdf5_plugins/ZSTANDARD/src/.libs:../hdf5_plugins/BZIP2/src/.libs:../hdf5_plugins/BITGROOM/src/.libs:$HDF5_PLUGIN_PATH"
 fi
 
-./tst_eamv1_benchmark
+#./tst_eamv1_benchmark
 
 
 
