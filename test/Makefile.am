@@ -44,6 +44,9 @@ endif
 if BUILD_BENCHMARKS
 check_PROGRAMS += tst_eamv1_benchmark
 tst_eamv1_benchmark_SOURCES = tst_eamv1_benchmark.c tst_utils.c
+if BUILD_PARALLEL
+check_PROGRAMS += tst_gfs_data_1
+endif # BUILD_PARALLEL
 TESTS += run_benchmarks.sh
 endif
 

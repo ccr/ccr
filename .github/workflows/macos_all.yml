@@ -65,7 +65,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf-fortran
-        key: netcdf-fortran-${{ runner.os }}-4.5.3
+        key: netcdf-fortran-${{ runner.os }}-4.5.3-1
 
     - name: build-netcdf-fortran
       if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -74,6 +74,8 @@ jobs:
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
         tar -xzf v4.5.3.tar.gz
         pushd netcdf-fortran-4.5.3
+        which gfortran-10
+        export FC="gfortran-10"
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include"
         export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib"
         ./configure --prefix=/Users/runner/netcdf-fortran
@@ -83,10 +85,16 @@ jobs:
     - name: configure and build
       run: |
         set -x
+        ls -l /Users/runner/netcdf-fortran/lib
+        ls -l /Users/runner/netcdf-c/bin
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
+        export PATH="/Users/runner/netcdf-c/bin:$PATH"
+        nc-config --libs --static
+        export FC="gfortran-10"        
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include -I/Users/runner/netcdf-fortran/include"
-        export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib"
+        export LDFLAGS=`nc_config --libs --static`
+        export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib $LDFLAGS"
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
         ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
         make -j distcheck
