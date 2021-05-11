@@ -25,18 +25,18 @@
 #include <netcdf_par.h>
 #include <netcdf_meta.h>
 
-#define FILE_NAME "tst_gfs_data_1.nc"
+#define FILE_NAME "tst_gfs_data_1"
 #define NUM_META_VARS 7
 #define NUM_META_TRIES 2
 #define NDIM2 2
 #define NDIM4 4
 #define NDIM5 5
 #define NUM_PROC 4
-#define NUM_SHUFFLE_SETTINGS 2
+#define NUM_SHUFFLE_SETTINGS 1
 #define NUM_DEFLATE_LEVELS 3
 #define NUM_UNLIM_TRIES 1
 #define THOUSAND 1000
-#define NUM_DATA_VARS 10
+#define NUM_DATA_VARS 1
 #define ERR_AWFUL 1
 
 #define GRID_XT_LEN 3072
@@ -47,6 +47,7 @@
 
 #define MAX_COMPRESSION_FILTERS 4
 char compression_filter_name[MAX_COMPRESSION_FILTERS][NC_MAX_NAME + 1];
+int deflate_level[MAX_COMPRESSION_FILTERS][NUM_DEFLATE_LEVELS];
 
 char dim_name[NDIM5][NC_MAX_NAME + 1] = {"grid_xt", "grid_yt", "pfull",
 					 "phalf", "time"};
@@ -179,7 +180,6 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
     int varid[NUM_META_VARS];
     double value_time = 2.0;
     int dv;
-    int res;
 
     /* Turn off fill mode. */
     if (nc_set_fill(ncid, NC_NOFILL, NULL)) ERR;
@@ -283,26 +283,19 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
         if (nc_def_var(ncid, data_var_name, NC_FLOAT, NDIM4, dimid_data, &data_varid[dv])) ERR;
 
         /* Setting any filter only will work for HDF5-1.10.3 and later */
-        /* versions. */
+        /* versions. Do nothing for "none". */
         if (!strcmp(compression_filter_name[f], "zlib"))
-            res = nc_def_var_deflate(ncid, data_varid[dv], s, 1, deflate);
+            if (nc_def_var_deflate(ncid, data_varid[dv], s, 1, deflate)) ERR;
         
 #ifdef NC_HAS_SZIP_WRITE
         if (!strcmp(compression_filter_name[f], "szip"))
-            res = nc_def_var_szip(ncid, data_varid[dv], 32, 32);
+            if (nc_def_var_szip(ncid, data_varid[dv], 32, 32)) ERR;
 #endif /* NC_HAS_SZIP_WRITE */
         
 #ifdef BUILD_ZSTD
         if (!strcmp(compression_filter_name[f], "zstd"))
-            res = nc_def_var_zstandard(ncid, data_varid[dv], deflate);
+            if (nc_def_var_zstandard(ncid, data_varid[dv], deflate)) ERR;
 #endif /* BUILD_ZSTD */
-
-        
-#ifdef NC_HAS_PAR_FILTERS
-        if (res) ERR;
-#else
-        if (res != NC_EINVAL) ERR;
-#endif
 
         if (nc_var_par_access(ncid, data_varid[dv], NC_COLLECTIVE)) ERR;
         if (nc_enddef(ncid)) ERR;
@@ -511,13 +504,21 @@ decomp_p(int my_rank, int mpi_size, size_t *data_count, int *dim_len,
 
 /* Determine what compression filters are present. */
 int
-find_filters(int *num_compression_filters, char compression_filter_name[][NC_MAX_NAME + 1])
+find_filters(int *num_compression_filters, char compression_filter_name[][NC_MAX_NAME + 1],
+             int deflate_level[][NUM_DEFLATE_LEVELS])
 {
-    int nfilters;
+    int nfilters = 0;
        
+    /* Try with no compression. */
+    strcpy(compression_filter_name[nfilters], "none");
+    nfilters++;
+
     /* zlib is always present. */
-    nfilters = 1;
-    strcpy(compression_filter_name[0], "zlib");
+    strcpy(compression_filter_name[nfilters], "zlib");
+    deflate_level[nfilters][0] = 1;
+    deflate_level[nfilters][1] = 4;
+    deflate_level[nfilters][2] = 9;
+    nfilters++;
 
     /* szip is optionally present. */
 #ifdef NC_HAS_SZIP_WRITE
@@ -528,6 +529,9 @@ find_filters(int *num_compression_filters, char compression_filter_name[][NC_MAX
     /* zstd is optionally present. */
 #ifdef BUILD_ZSTD
     strcpy(compression_filter_name[nfilters], "zstd");
+    deflate_level[nfilters][0] = 1;
+    deflate_level[nfilters][1] = 10;
+    deflate_level[nfilters][2] = 20;
     nfilters++;
 #endif /* BUILD_ZSTD */
 
@@ -564,7 +568,6 @@ main(int argc, char **argv)
     double *lon = NULL;
     double *lat = NULL;
     float *value_data;
-    int deflate_level[NUM_DEFLATE_LEVELS] = {1, 4, 9};
 
     /* Compression filter info. */
     int num_compression_filters;
@@ -579,7 +582,7 @@ main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     /* Determine what compression filters are present. */
-    if ((ret = find_filters(&num_compression_filters, compression_filter_name)))
+    if ((ret = find_filters(&num_compression_filters, compression_filter_name, deflate_level)))
         return ret;       
 
     /* Determine 4D data decomposition to write data vars. */
@@ -605,11 +608,11 @@ main(int argc, char **argv)
     for (k = 0; k < data_count[1]; k++)
     	for (j = 0; j < data_count[2]; j++)
     	    for(i = 0; i < data_count[3]; i++)
-                value_data[j * data_count[3] + i] = my_rank * 100 + i + j + k;
+                value_data[j * data_count[3] + i] = my_rank * 100 + i + j + k / k;
 
     if (my_rank == 0)
     {
-        printf("Benchmarking creation of UFS file.\n");
+        printf("Benchmarking creation of file similar to one produced by the UFS.\n");
         printf("unlim, comp, level, shuffle, meta wr time (s), data wr rate (MB/s), "
 	       "file size (MB)\n");
     }
@@ -622,16 +625,20 @@ main(int argc, char **argv)
 		for (dl = 0; dl < NUM_DEFLATE_LEVELS; dl++)
 		{
 		    size_t file_size;
+                    char file_name[NC_MAX_NAME * 3 + 1];
 
-		    /* No deflate levels for szip. */
+		    /* No deflate levels for szip or none. */
                     if (!strcmp(compression_filter_name[f], "szip") && dl) continue;
+                    if (!strcmp(compression_filter_name[f], "none") && dl) continue;
+
+                    sprintf(file_name, "%s_%s_%d.nc", FILE_NAME, compression_filter_name[f], deflate_level[f][dl]);
 
 		    /* nc_set_log_level(3); */
 		    /* Create a parallel netcdf-4 file. */
 		    meta_start_time = MPI_Wtime();
-		    if (nc_create_par(FILE_NAME, NC_NETCDF4, comm, info,
+		    if (nc_create_par(file_name, NC_NETCDF4, comm, info,
 				      &ncid)) ERR;
-		    if (write_meta(ncid, data_varid, s, f, deflate_level[dl], u,
+		    if (write_meta(ncid, data_varid, s, f, deflate_level[f][dl], u,
 				   phalf_size, phalf_start, phalf,
 				   data_start, data_count, pfull_start, pfull_size, pfull, grid_xt_start,
 				   grid_xt_size, grid_xt, grid_yt_start,
@@ -659,11 +666,11 @@ main(int argc, char **argv)
 		    data_stop_time = MPI_Wtime();
 
 		    /* Get the file size. */
-		    if (get_file_size(FILE_NAME, &file_size)) ERR;
+		    if (get_file_size(file_name, &file_size)) ERR;
 
 		    /* Check the file metadata for correctness. */
-		    if (nc_open_par(FILE_NAME, NC_NOWRITE, comm, info, &ncid)) ERR;
-		    if (check_meta(ncid, data_varid, s, f, deflate_level[dl], u,
+		    if (nc_open_par(file_name, NC_NOWRITE, comm, info, &ncid)) ERR;
+		    if (check_meta(ncid, data_varid, s, f, deflate_level[f][dl], u,
 				   phalf_size, phalf_start, phalf,
 				   data_start, data_count, pfull_start, pfull_size,
 				   pfull, grid_xt_start, grid_xt_size, grid_xt,
@@ -679,7 +686,7 @@ main(int argc, char **argv)
 			    dim_len[3] * sizeof(float)/1000000;
 			data_rate = data_size / (data_stop_time - data_start_time);
 			printf("%d, %s, %d, %d, %g, %g, %g\n", u, compression_filter_name[f],
-			       deflate_level[dl], s, meta_stop_time - meta_start_time,
+			       deflate_level[f][dl], s, meta_stop_time - meta_start_time,
 			       data_rate, (float)file_size/1000000);
 		    }
 		    MPI_Barrier(MPI_COMM_WORLD);
