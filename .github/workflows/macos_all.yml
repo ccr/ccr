@@ -90,7 +90,7 @@ jobs:
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export PATH="/Users/runner/netcdf-c/bin:$PATH"
-        nc_config --libs --static
+        nc-config --libs --static
         export FC="gfortran-10"        
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include -I/Users/runner/netcdf-fortran/include"
         export LDFLAGS=`nc_config --libs --static`
