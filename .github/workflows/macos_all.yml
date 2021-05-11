@@ -88,8 +88,11 @@ jobs:
         ls -l /Users/runner/netcdf-fortran/lib
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
+        export PATH="/Users/runner/netcdf-c/bin:$PATH"
+        nc_config --libs --static
         export CPPFLAGS="-I/Users/runner/hdf5/include -I/Users/runner/netcdf-c/include -I/Users/runner/netcdf-fortran/include"
-        export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib"
+        export LDFLAGS=`nc_config --libs --static`
+        export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib $LDFLAGS"
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
         ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
         make -j distcheck
