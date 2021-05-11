@@ -24,5 +24,6 @@
 #define CCR_HAS_PAR_FILTERS    @CCR_HAS_PAR_FILTERS@ /*!< Parallel I/O filter support. */
 #define CCR_HAS_MULTIFILTERS   @CCR_HAS_MULTIFILTERS@ /*!< Multiple filter support. */
 #define CCR_HAS_BENCHMARKS     @CCR_HAS_BENCHMARKS@ /*!< Benchmarks built. */
+#define CCR_HAS_FORTRAN        @CCR_HAS_FORTRAN@ /*!< Benchmarks built. */
 
 #endif

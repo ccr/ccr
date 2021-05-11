@@ -403,6 +403,8 @@ AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
 AX_SET_META([CCR_HAS_BENCHMARKS],[$enable_benchmarks],[yes])
 
+AX_SET_META([CCR_HAS_FORTRAN],[$enable_fortran],[yes])
+
 AX_SET_META([CCR_HAS_NETCDF_PAR],[$have_netcdf_par],[yes])
 AX_SET_META([CCR_HAS_PAR_FILTERS],[$have_par_filters],[yes])
 AX_SET_META([CCR_HAS_MULTIFILTERS],[$have_multifilters],[yes])

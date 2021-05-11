@@ -25,8 +25,6 @@ has_par="@HAS_NETCDF_PAR@"
 has_multifilters="@HAS_MULTIFILTERS@"
 
 has_fortran="@BUILD_FORTRAN@"
-has_f90="no"
-has_f03="no"
 
 if test "x$has_fortran" = xyes; then
   fc="@FC@"
