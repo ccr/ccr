@@ -13,6 +13,7 @@
   Ed Hartnett, 6/28/20
 */
 
+#include <config.h>
 #include <time.h>
 #include <sys/time.h> /* Extra high precision time info. */
 #include <mpi.h>
@@ -44,24 +45,8 @@
 #define PHALF_LEN 128
 #define TIME_LEN 1
 
-#ifdef NC_HAS_SZIP_WRITE
-#define NUM_COMPRESSION_FILTERS 2
-#else
-#define NUM_COMPRESSION_FILTERS 1
-#endif
-
-#define MAX_COMPRESSION_FILTERS 2
+#define MAX_COMPRESSION_FILTERS 4
 char compression_filter_name[MAX_COMPRESSION_FILTERS][NC_MAX_NAME + 1];
-
-/* zlib is always present. */
-strcpy(compression_filter_name[0], "zlib");
-int num_compression_filters = 1;
-
-/* szip is optionally present. */
-#ifdef NC_HAS_SZIP_WRITE
-strcpy(compression_filter_name[num_compression_filters], "zlib");
-num_compression_filters++;
-#endif /* NC_HAS_SZIP_WRITE */
 
 char dim_name[NDIM5][NC_MAX_NAME + 1] = {"grid_xt", "grid_yt", "pfull",
 					 "phalf", "time"};
@@ -299,12 +284,20 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
 
         /* Setting any filter only will work for HDF5-1.10.3 and later */
         /* versions. */
-        if (!f)
+        if (!strcmp(compression_filter_name[f], "zlib"))
             res = nc_def_var_deflate(ncid, data_varid[dv], s, 1, deflate);
-        else
-        {
+        
+#ifdef NC_HAS_SZIP_WRITE
+        if (!strcmp(compression_filter_name[f], "szip"))
             res = nc_def_var_szip(ncid, data_varid[dv], 32, 32);
-        }
+#endif /* NC_HAS_SZIP_WRITE */
+        
+#ifdef BUILD_ZSTD
+        if (!strcmp(compression_filter_name[f], "zstd"))
+            res = nc_def_var_zstandard(ncid, data_varid[dv], deflate);
+#endif /* BUILD_ZSTD */
+
+        
 #ifdef NC_HAS_PAR_FILTERS
         if (res) ERR;
 #else
@@ -516,6 +509,32 @@ decomp_p(int my_rank, int mpi_size, size_t *data_count, int *dim_len,
     return 0;
 }
 
+/* Determine what compression filters are present. */
+int
+find_filters(int *num_compression_filters, char compression_filter_name[][NC_MAX_NAME + 1])
+{
+    int nfilters;
+       
+    /* zlib is always present. */
+    nfilters = 1;
+    strcpy(compression_filter_name[0], "zlib");
+
+    /* szip is optionally present. */
+#ifdef NC_HAS_SZIP_WRITE
+    strcpy(compression_filter_name[nfilters], "szip");
+    nfilters++;
+#endif /* NC_HAS_SZIP_WRITE */
+
+    /* zstd is optionally present. */
+#ifdef BUILD_ZSTD
+    strcpy(compression_filter_name[nfilters], "zstd");
+    nfilters++;
+#endif /* BUILD_ZSTD */
+
+    *num_compression_filters = nfilters;
+    return 0;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -547,13 +566,21 @@ main(int argc, char **argv)
     float *value_data;
     int deflate_level[NUM_DEFLATE_LEVELS] = {1, 4, 9};
 
+    /* Compression filter info. */
+    int num_compression_filters;
+
     int f, s, u;
     int i, j, k, dv, dl;
+    int ret;
 
     /* Initialize MPI. */
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+    /* Determine what compression filters are present. */
+    if ((ret = find_filters(&num_compression_filters, compression_filter_name)))
+        return ret;       
 
     /* Determine 4D data decomposition to write data vars. */
     if (decomp_4D(my_rank, mpi_size, dim_len, data_start, data_count)) ERR;
@@ -588,7 +615,7 @@ main(int argc, char **argv)
     }
     for (u = 0; u < NUM_UNLIM_TRIES; u++)
     {
-	for (f = 0; f < NUM_COMPRESSION_FILTERS; f++)
+	for (f = 0; f < num_compression_filters; f++)
 	{
 	    for (s = 0; s < NUM_SHUFFLE_SETTINGS; s++)
 	    {
@@ -597,7 +624,7 @@ main(int argc, char **argv)
 		    size_t file_size;
 
 		    /* No deflate levels for szip. */
-		    if (f && dl) continue;
+                    if (!strcmp(compression_filter_name[f], "szip") && dl) continue;
 
 		    /* nc_set_log_level(3); */
 		    /* Create a parallel netcdf-4 file. */
@@ -651,7 +678,7 @@ main(int argc, char **argv)
 			data_size = NUM_DATA_VARS * dim_len[0] * dim_len[1] *
 			    dim_len[3] * sizeof(float)/1000000;
 			data_rate = data_size / (data_stop_time - data_start_time);
-			printf("%d %s, %d, %d, %g, %g, %g\n", u, compression_filter_name[f],
+			printf("%d, %s, %d, %d, %g, %g, %g\n", u, compression_filter_name[f],
 			       deflate_level[dl], s, meta_stop_time - meta_start_time,
 			       data_rate, (float)file_size/1000000);
 		    }
