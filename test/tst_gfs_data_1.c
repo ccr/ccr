@@ -39,10 +39,19 @@
 #define NUM_DATA_VARS 1
 #define ERR_AWFUL 1
 
+#define USE_SMALL 0
+
+#ifdef USE_SMALL
 #define GRID_XT_LEN 3072
 #define GRID_YT_LEN 1536
 #define PFULL_LEN 127
 #define PHALF_LEN 128
+#else
+#define GRID_XT_LEN 3072
+#define GRID_YT_LEN 1536
+#define PFULL_LEN 127
+#define PHALF_LEN 128
+#endif /* USE_SMALL */
 #define TIME_LEN 1
 
 #define MAX_COMPRESSION_FILTERS 4
