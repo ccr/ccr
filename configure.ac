@@ -6,7 +6,7 @@
 AC_PREREQ([2.59])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.1.0], [])
+AC_INIT([ccr], [1.2.0], [])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -19,9 +19,9 @@ LT_INIT()
 
 # Components of the version.
 AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=1
-AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=0
+AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=2
 AC_SUBST([CCR_VERSION_PATCH]) CCR_VERSION_PATCH=0
-AC_SUBST([CCR_VERSION_NOTE]) CCR_VERSION_NOTE="-development"
+AC_SUBST([CCR_VERSION_NOTE]) CCR_VERSION_NOTE=""
 AC_SUBST([CCR_VERSION]) CCR_VERSION=$VERSION
 
 # Configuration Date
