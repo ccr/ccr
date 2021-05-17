@@ -97,6 +97,11 @@ jobs:
         export LDFLAGS="-L/Users/runner/hdf5/lib -L/Users/runner/netcdf-c/lib -L/Users/runner/netcdf-fortran/lib $LDFLAGS"
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran"
         ./configure --with-hdf5-plugin-path=/Users/runner/plugin --enable-fortran
-        make -j distcheck
+        make
+        cd ftest
+        make ftst_ccr_bzip2
+        make ftst_ccr_zstandard
+        ./ftst_ccr_bzip2
+        ./ftst_ccr_zstandard
 
 
