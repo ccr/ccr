@@ -25,7 +25,7 @@
 #include <netcdf_par.h>
 #include <netcdf_meta.h>
 
-#define FILE_NAME "tst_gfs_data_1"
+#define TEST_NAME "tst_gfs_data_1"
 #define NUM_META_VARS 7
 #define NUM_META_TRIES 2
 #define NDIM2 2
@@ -33,19 +33,20 @@
 #define NDIM5 5
 #define NUM_PROC 4
 #define NUM_SHUFFLE_SETTINGS 1
+/* #define NUM_DEFLATE_LEVELS 3 */
 #define NUM_DEFLATE_LEVELS 3
 #define NUM_UNLIM_TRIES 1
 #define THOUSAND 1000
-#define NUM_DATA_VARS 1
+#define NUM_DATA_VARS 3
 #define ERR_AWFUL 1
 
-#define USE_SMALL 0
+/* #define USE_SMALL 1 */
 
 #ifdef USE_SMALL
-#define GRID_XT_LEN 3072
-#define GRID_YT_LEN 1536
-#define PFULL_LEN 127
-#define PHALF_LEN 128
+#define GRID_XT_LEN 8
+#define GRID_YT_LEN 4
+#define PFULL_LEN 4
+#define PHALF_LEN 5
 #else
 #define GRID_XT_LEN 3072
 #define GRID_YT_LEN 1536
@@ -372,9 +373,8 @@ decomp_latlon(int my_rank, int mpi_size, int *dim_len, size_t *latlon_start,
 	    latlon_start[1] = dim_len[1]/2;
 	}
     }
-    else if (mpi_size == 36)
-    {
-    }
+    else 
+        return ERR_AWFUL;
 
     /* Allocate storage. */
     if (!(*lon = malloc(latlon_count[0] * latlon_count[1] * sizeof(double)))) ERR;
@@ -390,8 +390,8 @@ decomp_latlon(int my_rank, int mpi_size, int *dim_len, size_t *latlon_start,
         }
     }
 
-    printf("%d: latlon_start %ld %ld latlon_count %ld %ld\n", my_rank, latlon_start[0],
-           latlon_start[1], latlon_count[0], latlon_count[1]);
+    /* printf("%d: latlon_start %ld %ld latlon_count %ld %ld\n", my_rank, latlon_start[0], */
+    /*        latlon_start[1], latlon_count[0], latlon_count[1]); */
 
     return 0;
 }
@@ -401,9 +401,11 @@ decomp_latlon(int my_rank, int mpi_size, int *dim_len, size_t *latlon_start,
 int
 decomp_4D(int my_rank, int mpi_size, int *dim_len, size_t *start, size_t *count)
 {
+    /* Time dimension. */
     start[0] = 0;
     count[0] = 1;
 
+    /* Vertical dimension (pfull). */
     count[1] = dim_len[2];
     start[1] = 0;
     
@@ -411,36 +413,28 @@ decomp_4D(int my_rank, int mpi_size, int *dim_len, size_t *start, size_t *count)
     {
 	start[2] = 0;
 	start[3] = 0;
-	count[2] = dim_len[2];
-	count[3] = dim_len[3];
+	count[2] = dim_len[1];
+	count[3] = dim_len[0];
     }
     else if (mpi_size == 4)
     {
-        if (my_rank == 0 || my_rank == 1)
-        {
-            start[2] = 0;
-            start[3] = 0;
-        }
-        else
-        {
-            start[2] = 768;
-            start[3] = 768;
-        }
+#ifdef USE_SMALL
+        start[2] = (my_rank < 2) ? 0 : 2;
+        start[3] = (!my_rank || my_rank == 2) ? 0 : 4;
+        count[2] = 2;
+        count[3] = 4;
+#else
+        start[2] = (my_rank < 2) ? 0 : 768;
+        start[3] = (!my_rank || my_rank == 2) ? 0 : 1536;        
         count[2] = 768;
         count[3] = 1536;
-    }
-    else if (mpi_size == 36)
-    {
-        start[2] = my_rank * 256;
-        start[3] = my_rank * 512;
-        count[2] = 256;
-        count[3] = 512;
+#endif /* USE_SMALL */
     }
     else
         return ERR_AWFUL;
 
-    printf("%d: start %ld %ld %ld %ld count %ld %ld %ld %ld\n", my_rank, start[0],
-           start[1], start[2], start[3], count[0], count[1], count[2], count[3]);
+    /* printf("%d: start %ld %ld %ld %ld count %ld %ld %ld %ld\n", my_rank, start[0], */
+    /*        start[1], start[2], start[3], count[0], count[1], count[2], count[3]); */
 
     return 0;
 }
@@ -608,16 +602,28 @@ main(int argc, char **argv)
     /* Decompose phalf and pfull. */
     if (decomp_p(my_rank, mpi_size, data_count, dim_len, &phalf_start,
 		 &phalf_size, &phalf, &pfull_start, &pfull_size, &pfull)) ERR;
+
+    /* printf("%d: data_count[3] %ld data_count[2] %ld data_count[1] %ld\n", my_rank, */
+    /*        data_count[3], data_count[2], data_count[1]); */
     
     /* Allocate space to hold the data. */
     if (!(value_data = malloc(data_count[3] * data_count[2] * data_count[1] *
 			      sizeof(float)))) ERR;
 
     /* Create some data. */
+    size_t cnt = 0;
     for (k = 0; k < data_count[1]; k++)
+    {
     	for (j = 0; j < data_count[2]; j++)
+        {
     	    for(i = 0; i < data_count[3]; i++)
-                value_data[j * data_count[3] + i] = my_rank * 100 + i + j + k / k;
+            {
+                value_data[cnt] = my_rank * 1000 + cnt / (float)1001;
+                /* printf("%d: value_data[%ld] %g\n", my_rank, cnt, value_data[cnt]); */
+                cnt++;
+            }
+        }
+    }
 
     if (my_rank == 0)
     {
@@ -640,7 +646,9 @@ main(int argc, char **argv)
                     if (!strcmp(compression_filter_name[f], "szip") && dl) continue;
                     if (!strcmp(compression_filter_name[f], "none") && dl) continue;
 
-                    sprintf(file_name, "%s_%s_%d.nc", FILE_NAME, compression_filter_name[f], deflate_level[f][dl]);
+                    /* Use the same filename every time, so we don't
+                     * create many large files, just one. ;-) */
+                    sprintf(file_name, "%s.nc", TEST_NAME);
 
 		    /* nc_set_log_level(3); */
 		    /* Create a parallel netcdf-4 file. */
@@ -662,8 +670,11 @@ main(int argc, char **argv)
 		    /* Write one record each of the data variables. */
 		    for (dv = 0; dv < NUM_DATA_VARS; dv++)
 		    {
-			if (nc_put_vara_float(ncid, data_varid[dv], data_start,
-					      data_count, value_data)) ERR;
+                        /* printf("%d: data_start %ld %ld %ld %ld data_count %ld %ld %ld %ld\n", my_rank, data_start[0], data_start[1], */
+                        /*        data_start[2], data_start[3], data_count[0], data_count[1], data_count[2], data_count[3]); */
+                        /* MPI_Barrier(MPI_COMM_WORLD); */
+                        if (nc_put_vara_float(ncid, data_varid[dv], data_start, data_count,
+                                              value_data)) ERR;
 			if (nc_redef(ncid)) ERR;
 		    }
 
@@ -680,23 +691,24 @@ main(int argc, char **argv)
 		    /* Check the file metadata for correctness. */
 		    if (nc_open_par(file_name, NC_NOWRITE, comm, info, &ncid)) ERR;
 		    if (check_meta(ncid, data_varid, s, f, deflate_level[f][dl], u,
-				   phalf_size, phalf_start, phalf,
-				   data_start, data_count, pfull_start, pfull_size,
-				   pfull, grid_xt_start, grid_xt_size, grid_xt,
-				   grid_yt_start, grid_yt_size, grid_yt, latlon_start,
-				   latlon_count, lat, lon, my_rank)) ERR;
+		        	   phalf_size, phalf_start, phalf,
+		        	   data_start, data_count, pfull_start, pfull_size,
+		        	   pfull, grid_xt_start, grid_xt_size, grid_xt,
+		        	   grid_yt_start, grid_yt_size, grid_yt, latlon_start,
+		        	   latlon_count, lat, lon, my_rank)) ERR;
 		    if (nc_close(ncid)) ERR;
 
 		    /* Print out results. */
 		    if (my_rank == 0)
 		    {
 			float data_size, data_rate;
-			data_size = NUM_DATA_VARS * dim_len[0] * dim_len[1] *
-			    dim_len[3] * sizeof(float)/1000000;
+			data_size = (NUM_DATA_VARS * dim_len[0] * dim_len[1] * dim_len[2] *
+                                     dim_len[4] * sizeof(float))/MILLION;
+                        /* printf("data_size %f (data_stop_time - data_start_time) %g\n", data_size, (data_stop_time - data_start_time)); */
 			data_rate = data_size / (data_stop_time - data_start_time);
 			printf("%d, %s, %d, %d, %g, %g, %g\n", u, compression_filter_name[f],
 			       deflate_level[f][dl], s, meta_stop_time - meta_start_time,
-			       data_rate, (float)file_size/1000000);
+			       data_rate, (float)file_size/MILLION);
 		    }
 		    MPI_Barrier(MPI_COMM_WORLD);
 		} /* next deflate level */
