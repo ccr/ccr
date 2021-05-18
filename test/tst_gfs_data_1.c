@@ -294,7 +294,7 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
         if (!strcmp(compression_filter_name[f], "zlib"))
             if (nc_def_var_deflate(ncid, data_varid[dv], s, 1, deflate)) ERR;
         
-#ifdef NC_HAS_SZIP_WRITE
+#if NC_HAS_SZIP_WRITE
         if (!strcmp(compression_filter_name[f], "szip"))
             if (nc_def_var_szip(ncid, data_varid[dv], 32, 32)) ERR;
 #endif /* NC_HAS_SZIP_WRITE */
@@ -521,7 +521,7 @@ find_filters(int *num_compression_filters, char compression_filter_name[][NC_MAX
     nfilters++;
 
     /* szip is optionally present. */
-#ifdef NC_HAS_SZIP_WRITE
+#if NC_HAS_SZIP_WRITE
     strcpy(compression_filter_name[nfilters], "szip");
     nfilters++;
 #endif /* NC_HAS_SZIP_WRITE */
