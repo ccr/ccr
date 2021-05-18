@@ -1,16 +1,13 @@
 /*
-  Copyright 2020, UCAR/Unidata See COPYRIGHT file for copying and
-  redistribution conditions.
-
   This program tests and benchmarks netcdf-4 parallel I/O using the
   same access pattern as is used by NOAA's GFS when writing and
   reading model data. See:
   https://github.com/Unidata/netcdf-fortran/issues/264.
 
-  Also see the file gfs_sample.cdl to see what is being produced by
-  this program.
+  This program is a modified copy of the program of the same name in
+  the netcdf-c library: nc_perf/tst_gfs_data1.c.
 
-  Ed Hartnett, 6/28/20
+  Ed Hartnett, 5/18/21
 */
 
 #include <config.h>
@@ -618,7 +615,7 @@ main(int argc, char **argv)
         {
     	    for(i = 0; i < data_count[3]; i++)
             {
-                value_data[cnt] = my_rank * 1000 + cnt / (float)1001;
+                value_data[cnt] = my_rank * 1000 + cnt / sqrt(my_rank + cnt + 1);
                 /* printf("%d: value_data[%ld] %g\n", my_rank, cnt, value_data[cnt]); */
                 cnt++;
             }

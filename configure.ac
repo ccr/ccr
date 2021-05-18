@@ -3,10 +3,10 @@
 
 # Ed Hartnett 12/24/2019
 
-AC_PREREQ([2.59])
+AC_PREREQ([2.69])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr], [1.2.0], [])
+AC_INIT([ccr],[1.2.0],[])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -424,7 +424,7 @@ AC_CONFIG_FILES([Makefile
 	test/Makefile
 	docs/Makefile
         ])
-AC_OUTPUT()
+AC_OUTPUT
 
 # Print build summary.
 cat libccr.settings
