@@ -80,6 +80,12 @@
 #ifndef NC_DOUBLE
 # define NC_DOUBLE 6
 #endif /* !NC_DOUBLE */
+#ifndef NC_FILL_FLOAT
+# define NC_FILL_FLOAT   (9.9692099683868690e+36f) /* near 15 * 2^119 */
+#endif /* !NC_FILL_FLOAT */
+#ifndef NC_FILL_DOUBLE
+# define NC_FILL_DOUBLE  (9.9692099683868690e+36)
+#endif /* !NC_FILL_DOUBLE */
 
 /* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values
    Codes will preserve at least two explicit bits, IEEE significand representation contains one implicit bit
@@ -434,6 +440,9 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
   if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
 
+  const float mss_val_dfl_flt=NC_FILL_FLOAT;
+  const double mss_val_dfl_dbl=NC_FILL_DOUBLE;
+
   switch(type){
   case NC_FLOAT:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
@@ -451,16 +460,19 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
 
     /* Bit-Groom: alternately shave and set LSBs */
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
+      for(idx=0L;idx<sz;idx+=2L)
+	if(op1.fp[idx] != mss_val_dfl_flt) u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	if(op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
-    }else{ /* !has_mss_val */
+    }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+	if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt)
+	  u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
+	if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U)
+	  u32_ptr[idx]|=msk_f32_u32_one;
     } /* !has_mss_val */
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
@@ -478,17 +490,21 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     //msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
     /* Bit-Groom: alternately shave and set LSBs */
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
+      for(idx=0L;idx<sz;idx+=2L)
+	if(op1.dp[idx] != mss_val_dfl_dbl)
+	  u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
+	if(op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
     }else{
       const double mss_val_dbl=*mss_val.dp;
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl)
+	  u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
-    } /* end else */
+	if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL)
+	  u64_ptr[idx]|=msk_f64_u64_one;
+    } /* !has_mss_val */
     break; /* !NC_DOUBLE */
   default: 
     (void)fprintf(stderr,"ERROR: %s reports datum size = %d B is invalid for %s filter\n",fnc_nm,type,CCR_FLT_NAME);
