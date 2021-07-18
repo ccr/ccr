@@ -468,10 +468,10 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt)
+	if(op1.fp[idx] != mss_val_flt)
 	  u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U)
+	if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U)
 	  u32_ptr[idx]|=msk_f32_u32_one;
     } /* !has_mss_val */
     break; /* !NC_FLOAT */
@@ -499,10 +499,10 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     }else{
       const double mss_val_dbl=*mss_val.dp;
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl)
+	if(op1.dp[idx] != mss_val_dbl)
 	  u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL)
+	if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0ULL)
 	  u64_ptr[idx]|=msk_f64_u64_one;
     } /* !has_mss_val */
     break; /* !NC_DOUBLE */
