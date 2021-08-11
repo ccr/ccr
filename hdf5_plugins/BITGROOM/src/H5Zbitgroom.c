@@ -406,6 +406,9 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
+  double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
+
+  float mss_val_cmp_flt; /* Missing value for comparison to single precision values */
   
   int bit_xpl_nbr_sgn=-1; /* [nbr] Number of explicit bits in significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
@@ -440,11 +443,10 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
   if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
 
-  const float mss_val_dfl_flt=NC_FILL_FLOAT;
-  const double mss_val_dfl_dbl=NC_FILL_DOUBLE;
-
   switch(type){
   case NC_FLOAT:
+    /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
+    if(has_mss_val) mss_val_cmp_flt=*mss_val.fp; else mss_val_cmp_flt=NC_FILL_FLOAT;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
@@ -459,23 +461,15 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     //msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
 
     /* Bit-Groom: alternately shave and set LSBs */
-    if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_dfl_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
-	  u32_ptr[idx]|=msk_f32_u32_one;
-    }else{
-      const float mss_val_flt=*mss_val.fp;
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt)
-	  u32_ptr[idx]&=msk_f32_u32_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U)
-	  u32_ptr[idx]|=msk_f32_u32_one;
-    } /* !has_mss_val */
+    for(idx=0L;idx<sz;idx+=2L)
+      if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+    for(idx=1L;idx<sz;idx+=2L)
+      if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	u32_ptr[idx]|=msk_f32_u32_one;
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
+    /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
+    if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
@@ -489,22 +483,12 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     msk_f64_u64_one=~msk_f64_u64_zro;
     //msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
     /* Bit-Groom: alternately shave and set LSBs */
-    if(!has_mss_val){
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dfl_dbl)
-	  u64_ptr[idx]&=msk_f64_u64_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
-	  u64_ptr[idx]|=msk_f64_u64_one;
-    }else{
-      const double mss_val_dbl=*mss_val.dp;
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl)
-	  u64_ptr[idx]&=msk_f64_u64_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0ULL)
-	  u64_ptr[idx]|=msk_f64_u64_one;
-    } /* !has_mss_val */
+    for(idx=0L;idx<sz;idx+=2L)
+      if(op1.dp[idx] != mss_val_cmp_dbl)
+	u64_ptr[idx]&=msk_f64_u64_zro;
+    for(idx=1L;idx<sz;idx+=2L)
+      if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
+	u64_ptr[idx]|=msk_f64_u64_one;
     break; /* !NC_DOUBLE */
   default: 
     (void)fprintf(stderr,"ERROR: %s reports datum size = %d B is invalid for %s filter\n",fnc_nm,type,CCR_FLT_NAME);
