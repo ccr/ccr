@@ -30,6 +30,9 @@
 #define NX_BIG 100
 #define NY_BIG 100
 
+#define SMALL_X 3
+#define NDIM1 1
+
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
  * generally cosists of several sets of tests. */
@@ -166,10 +169,8 @@ main()
 
             /* Create file. */
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
-            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
-                ;
-            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
-                ;
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
                 if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
@@ -236,6 +237,66 @@ main()
                 if (bitgroom) ERR;
                 if (nc_close(ncid)) ERR;
             }
+        }
+    }
+    SUMMARIZE_ERR;
+    printf("*** Checking BitGroom values...");
+    {
+        int ncid;
+        int dimid;
+        int varid, varid2;
+        float float_data[SMALL_X] = {1.11111111, 1.0, 9.99999999};
+        double double_data[SMALL_X] = {1.1111111, 1.0, 9.999999999};
+        int nsd_out = 3;
+
+        /* Create file. */
+        if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+
+        /* Create dims. */
+        if (nc_def_dim(ncid, X_NAME, SMALL_X, &dimid)) ERR;
+
+        /* Create the variables. */
+        if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM1, &dimid, &varid)) ERR;
+        if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
+
+        /* Set up quantization. */
+        if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR;
+
+        /* Write the data. */
+        if (nc_put_var_float(ncid, varid, float_data)) ERR;
+        if (nc_put_var_double(ncid, varid2, double_data)) ERR;
+
+        /* Close the file. */
+        if (nc_close(ncid)) ERR;
+
+        {
+            float float_data_in[SMALL_X];
+            double double_data_in[SMALL_X];
+	    int x;
+
+            /* Now reopen the file and check. */
+            if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+
+            /* Read the data. */
+            if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
+            if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
+
+	    for (x = 0; x < SMALL_X; x++)
+	    {
+		union {
+		    float f;
+		    uint32_t u;
+		} fin, fout;
+		
+		fout.f = float_data[x];
+		fin.f = float_data_in[x];
+		printf ("\nfloat_data %d : %10f   : 0x%x  float_data_in %d : %10f   : 0x%x\n",
+			x, float_data[x], fout.u, x, float_data_in[x], fin.u);
+	    }
+
+            /* Close the file. */
+            if (nc_close(ncid)) ERR;
         }
     }
     SUMMARIZE_ERR;
