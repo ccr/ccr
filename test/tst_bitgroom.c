@@ -282,6 +282,7 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
+	    printf("\n");
 	    for (x = 0; x < SMALL_X; x++)
 	    {
 		union {
@@ -291,7 +292,7 @@ main()
 		
 		fout.f = float_data[x];
 		fin.f = float_data_in[x];
-		printf ("\nfloat_data %d : %10f   : 0x%x  float_data_in %d : %10f   : 0x%x\n",
+		printf ("float_data %d : %10f   : 0x%x  float_data_in %d : %10f   : 0x%x\n",
 			x, float_data[x], fout.u, x, float_data_in[x], fin.u);
 	    }
 
