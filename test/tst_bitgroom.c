@@ -38,6 +38,22 @@
  * generally cosists of several sets of tests. */
 static int total_err = 0, err = 0;
 
+/* This var used to help print a float in hex. */
+char pf_str[11];
+
+/* This function prints a float as hex. */
+char *
+pf(float myf)
+{
+    union {
+	float f;
+	uint32_t u;
+    } fu;
+    fu.f = myf;
+    sprintf(pf_str, "0x%x", fu.u);
+    return pf_str;
+}
+
 int
 main()
 {
@@ -292,8 +308,8 @@ main()
 		
 		fout.f = float_data[x];
 		fin.f = float_data_in[x];
-		printf ("float_data %d : %10f   : 0x%x  float_data_in %d : %10f   : 0x%x\n",
-			x, float_data[x], fout.u, x, float_data_in[x], fin.u);
+		printf ("float_data %d : %10f   : %s  float_data_in %d : %10f   : 0x%x\n",
+			x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u);
 	    }
 
             /* Close the file. */
