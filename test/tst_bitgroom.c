@@ -30,7 +30,7 @@
 #define NX_BIG 100
 #define NY_BIG 100
 
-#define SMALL_X 3
+#define SMALL_X 5
 #define NDIM1 1
 
 /* Err is used to keep track of errors within each set of tests,
@@ -40,6 +40,13 @@ static int total_err = 0, err = 0;
 
 /* This var used to help print a float in hex. */
 char pf_str[11];
+
+/* This struct allows us to treat floating points as uint32_t
+ * types. */
+union FU {
+    float f;
+    uint32_t u;
+};
 
 /* This function prints a float as hex. */
 char *
@@ -261,8 +268,8 @@ main()
         int ncid;
         int dimid;
         int varid, varid2;
-        float float_data[SMALL_X] = {1.11111111, 1.0, 9.99999999};
-        double double_data[SMALL_X] = {1.1111111, 1.0, 9.999999999};
+        float float_data[SMALL_X] = {1.11111111, 1.0, 9.99999999, 12345.67, .1234567};
+        double double_data[SMALL_X] = {1.1111111, 1.0, 9.999999999, 1234567890.12345, 123456789012345.0};
         int nsd_out = 3;
 
         /* Create file. */
@@ -299,15 +306,25 @@ main()
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
 	    printf("\n");
+	    union FU fin, fout;
+	    union FU xpect[SMALL_X];
+	    xpect[0].u = 0x3f8e3000;
+	    xpect[1].u = 0x3f800fff;
+	    xpect[2].u = 0x41200000;
+	    xpect[3].u = 0x4640efff;
+	    xpect[4].u = 0x3dfcd000;
 	    for (x = 0; x < SMALL_X; x++)
 	    {
-		union {
-		    float f;
-		    uint32_t u;
-		} fin, fout;
-		
 		fout.f = float_data[x];
 		fin.f = float_data_in[x];
+		if (fin.u != xpect[x].u)
+		{
+		    printf ("Error: float_data %d : %10f   : %s  float_data_in %d : %10f   : 0x%x"
+			    " expected %10f   : 0x%x\n",
+			    x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u,
+			    xpect[x].f, xpect[x].u);
+//		    ERR;
+		}
 		printf ("float_data %d : %10f   : %s  float_data_in %d : %10f   : 0x%x\n",
 			x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u);
 	    }
