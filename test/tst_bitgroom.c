@@ -39,13 +39,20 @@
 static int total_err = 0, err = 0;
 
 /* This var used to help print a float in hex. */
-char pf_str[11];
+char pf_str[20];
 
-/* This struct allows us to treat floating points as uint32_t
+/* This struct allows us to treat float as uint32_t
  * types. */
 union FU {
     float f;
     uint32_t u;
+};
+
+/* This struct allows us to treat double points as uint64_t
+ * types. */
+union DU {
+    double d;
+    uint64_t u;
 };
 
 /* This function prints a float as hex. */
@@ -58,6 +65,19 @@ pf(float myf)
     } fu;
     fu.f = myf;
     sprintf(pf_str, "0x%x", fu.u);
+    return pf_str;
+}
+
+/* This function prints a double as hex. */
+char *
+pd(double myd)
+{
+    union {
+	double d;
+	uint64_t u;
+    } du;
+    du.d = myd;
+    sprintf(pf_str, "0x%lx", du.u);
     return pf_str;
 }
 
@@ -305,28 +325,35 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    printf("\n");
 	    union FU fin, fout;
 	    union FU xpect[SMALL_X];
+	    union DU dfin, dfout;
+	    union DU double_xpect[SMALL_X];
 	    xpect[0].u = 0x3f8e3000;
 	    xpect[1].u = 0x3f800fff;
 	    xpect[2].u = 0x41200000;
 	    xpect[3].u = 0x4640efff;
 	    xpect[4].u = 0x3dfcd000;
+	    double_xpect[0].u = 0x3ff1c60000000000;
+	    double_xpect[1].u = 0x3ff001ffffffffff;
+	    double_xpect[2].u = 0x4023fe0000000000;
+	    double_xpect[3].u = 0x41d265ffffffffff;
+	    double_xpect[4].u = 0x42dc120000000000;
+
 	    for (x = 0; x < SMALL_X; x++)
 	    {
 		fout.f = float_data[x];
 		fin.f = float_data_in[x];
+		dfout.d = double_data[x];
+		dfin.d = double_data_in[x];
+		/* printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
+		/* 	" expected %15g   : 0x%lx\n", */
+		/* 	x, double_data[x], pd(double_data[x]), x, double_data_in[x], dfin.u, */
+		/* 	double_xpect[x].d, double_xpect[x].u); */
 		if (fin.u != xpect[x].u)
-		{
-		    printf ("Error: float_data %d : %10f   : %s  float_data_in %d : %10f   : 0x%x"
-			    " expected %10f   : 0x%x\n",
-			    x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u,
-			    xpect[x].f, xpect[x].u);
-//		    ERR;
-		}
-		printf ("float_data %d : %10f   : %s  float_data_in %d : %10f   : 0x%x\n",
-			x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u);
+		    ERR;
+		if (dfin.u != double_xpect[x].u)
+		    ERR;
 	    }
 
             /* Close the file. */
