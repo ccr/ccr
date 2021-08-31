@@ -424,14 +424,14 @@ main()
 		fin.f = float_data_in[x];
 		dfout.d = double_data[x];
 		dfin.d = double_data_in[x];
-		/* printf ("float_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x" */
+		printf ("double_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x"
+			" expected %15g   : 0x%x\n",
+			x, double_data[x], pd(double_data[x]), x, float_data_in[x], fin.u,
+			xpect[x].f, xpect[x].u);
+		/* printf ("float_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
 		/* 	" expected %15g   : 0x%x\n", */
-		/* 	x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u, */
+		/* 	x, float_data[x], pf(float_data[x]), x, double_data_in[x], dfin.u, */
 		/* 	xpect[x].f, xpect[x].u); */
-		/* printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
-		/* 	" expected %15g   : 0x%lx\n", */
-		/* 	x, double_data[x], pd(double_data[x]), x, double_data_in[x], dfin.u, */
-		/* 	double_xpect[x].d, double_xpect[x].u); */
 		if (fin.u != xpect[x].u)
 		    ERR;
 		if (dfin.u != double_xpect[x].u)
