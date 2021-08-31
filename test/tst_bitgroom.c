@@ -525,5 +525,93 @@ main()
         }
     }
     SUMMARIZE_ERR;
+    printf("*** Checking BitGroom values with some custom fill values...");
+    {
+	#define CUSTOM_FILL_FLOAT 99.99999
+	#define CUSTOM_FILL_DOUBLE -99999.99999
+        int ncid;
+        int dimid;
+        int varid, varid2;
+        float float_data[SMALL_X] = {1.11111111, CUSTOM_FILL_FLOAT, 9.99999999, 12345.67, CUSTOM_FILL_FLOAT};
+        double double_data[SMALL_X] = {1.1111111, CUSTOM_FILL_DOUBLE, 9.999999999, 1234567890.12345, CUSTOM_FILL_DOUBLE};
+        int nsd_out = 3;
+	float custom_fill_float = CUSTOM_FILL_FLOAT;
+	double custom_fill_double = CUSTOM_FILL_DOUBLE;
+
+        /* Create file. */
+        if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+
+        /* Create dims. */
+        if (nc_def_dim(ncid, X_NAME, SMALL_X, &dimid)) ERR;
+
+        /* Create the variables. */
+        if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM1, &dimid, &varid)) ERR;
+	if (nc_put_att_float(ncid, varid, _FillValue, NC_FLOAT, 1, &custom_fill_float)) ERR;
+        if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
+	if (nc_put_att_double(ncid, varid2, _FillValue, NC_DOUBLE, 1, &custom_fill_double)) ERR;
+
+        /* Set up quantization. */
+        if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR;
+
+        /* Write the data. */
+        if (nc_put_var_float(ncid, varid, float_data)) ERR;
+        if (nc_put_var_double(ncid, varid2, double_data)) ERR;
+
+        /* Close the file. */
+        if (nc_close(ncid)) ERR;
+
+        {
+            float float_data_in[SMALL_X];
+            double double_data_in[SMALL_X];
+	    int x;
+
+            /* Now reopen the file and check. */
+            if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+
+            /* Read the data. */
+            if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
+            if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
+
+	    union FU fin, fout;
+	    union FU xpect[SMALL_X];
+	    union DU dfin, dfout;
+	    union DU double_xpect[SMALL_X];
+	    xpect[0].u = 0x3f8e3000;
+	    xpect[1].u = 0x42c7ffff;
+	    xpect[2].u = 0x41200000;
+	    xpect[3].u = 0x4640efff;
+	    xpect[4].u = 0x42c7ffff;
+	    double_xpect[0].u = 0x3ff1c60000000000;
+	    double_xpect[1].u = 0xc0f869fffff583a5;
+	    double_xpect[2].u = 0x4023fe0000000000;
+	    double_xpect[3].u = 0x41d265ffffffffff;
+	    double_xpect[4].u = 0xc0f869fffff583a5;
+
+	    for (x = 0; x < SMALL_X; x++)
+	    {
+		fout.f = float_data[x];
+		fin.f = float_data_in[x];
+		dfout.d = double_data[x];
+		dfin.d = double_data_in[x];
+		/* printf ("float_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x" */
+		/* 	" expected %15g   : 0x%x\n", */
+		/* 	x, float_data[x], pf(float_data[x]), x, float_data_in[x], fin.u, */
+		/* 	xpect[x].f, xpect[x].u); */
+		/* printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
+		/* 	" expected %15g   : 0x%lx\n", */
+		/* 	x, double_data[x], pd(double_data[x]), x, double_data_in[x], dfin.u, */
+		/* 	double_xpect[x].d, double_xpect[x].u); */
+		if (fin.u != xpect[x].u)
+		    ERR;
+		if (dfin.u != double_xpect[x].u)
+		    ERR;
+	    }
+
+            /* Close the file. */
+            if (nc_close(ncid)) ERR;
+        }
+    }
+    SUMMARIZE_ERR;
     FINAL_RESULTS;
 }
