@@ -472,7 +472,6 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    printf("bit_xpl_nbr_zro %d\n", bit_xpl_nbr_zro);
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     u64_ptr=(unsigned long long int *)op1.ui64p;
     /* Create mask */
