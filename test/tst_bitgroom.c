@@ -326,9 +326,11 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    union FU fin, fout;
+	    union FU fin;
+	    /* union FU fout; */
 	    union FU xpect[DIM_LEN_5];
-	    union DU dfin, dfout;
+	    union DU dfin;
+	    /* union DU dfout; */
 	    union DU double_xpect[DIM_LEN_5];
 	    xpect[0].u = 0x3f8e3000;
 	    xpect[1].u = 0x3f800fff;
@@ -343,9 +345,9 @@ main()
 
 	    for (x = 0; x < DIM_LEN_5; x++)
 	    {
-		fout.f = float_data[x];
+		/* fout.f = float_data[x]; */
 		fin.f = float_data_in[x];
-		dfout.d = double_data[x];
+		/* dfout.d = double_data[x]; */
 		dfin.d = double_data_in[x];
 		/* printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
 		/* 	" expected %15g   : 0x%lx\n", */
@@ -404,9 +406,11 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    union FU fin, fout;
+	    union FU fin;
+	    /* union FU fout; */
 	    union FU xpect[DIM_LEN_5];
-	    union DU dfin, dfout;
+	    union DU dfin;
+	    /* union DU dfout; */
 	    union DU double_xpect[DIM_LEN_5];
 	    xpect[0].u = 0x3f8e3000;
 	    xpect[1].u = 0x3f800fff;
@@ -421,9 +425,9 @@ main()
 
 	    for (x = 0; x < DIM_LEN_5; x++)
 	    {
-		fout.f = float_data[x];
+		/* fout.f = float_data[x]; */
 		fin.f = float_data_in[x];
-		dfout.d = double_data[x];
+		/* dfout.d = double_data[x]; */
 		dfin.d = double_data_in[x];
 		/* printf ("double_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x" */
 		/* 	" expected %15g   : 0x%x\n", */
@@ -486,9 +490,11 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    union FU fin, fout;
+	    union FU fin;
+	    /* union FU fout; */
 	    union FU xpect[DIM_LEN_5];
-	    union DU dfin, dfout;
+	    union DU dfin;
+	    /* union DU dfout; */
 	    union DU double_xpect[DIM_LEN_5];
 	    xpect[0].u = 0x3f8e3000;
 	    xpect[1].u = 0x7cf00000;
@@ -503,9 +509,9 @@ main()
 
 	    for (x = 0; x < DIM_LEN_5; x++)
 	    {
-		fout.f = float_data[x];
+		/* fout.f = float_data[x]; */
 		fin.f = float_data_in[x];
-		dfout.d = double_data[x];
+		/* dfout.d = double_data[x]; */
 		dfin.d = double_data_in[x];
 		/* printf ("float_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x" */
 		/* 	" expected %15g   : 0x%x\n", */
@@ -574,9 +580,11 @@ main()
             if (nc_get_var_float(ncid, varid, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    union FU fin, fout;
+	    union FU fin;
+	    /* union FU fout; */
 	    union FU xpect[DIM_LEN_5];
-	    union DU dfin, dfout;
+	    union DU dfin;
+	    /* union DU dfout; */
 	    union DU double_xpect[DIM_LEN_5];
 	    xpect[0].u = 0x3f8e3000;
 	    xpect[1].u = 0x42c7ffff;
@@ -591,9 +599,9 @@ main()
 
 	    for (x = 0; x < DIM_LEN_5; x++)
 	    {
-		fout.f = float_data[x];
+		/* fout.f = float_data[x]; */
 		fin.f = float_data_in[x];
-		dfout.d = double_data[x];
+		/* dfout.d = double_data[x]; */
 		dfin.d = double_data_in[x];
 		/* printf ("float_data %d : %15g   : %s  float_data_in %d : %15g   : 0x%x" */
 		/* 	" expected %15g   : 0x%x\n", */
@@ -619,8 +627,6 @@ main()
         int ncid;
         int dimid;
         int varid1, varid2;
-        float float_data[DIM_LEN_5] = {1.11111111, 1.0, 9.99999999, 12345.67, .1234567};
-        double double_data[DIM_LEN_5] = {1.1111111, 1.0, 9.999999999, 1234567890.12345, 123456789012345.0};
 	unsigned char uc = 99;
 	signed char sc = -99;
 	unsigned short us = 9999;
@@ -643,8 +649,8 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
 
         /* Set up quantization. */
-        /* if (nc_def_var_bitgroom(ncid, varid1, nsd_out)) ERR; */
-        /* if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR; */
+        if (nc_def_var_bitgroom(ncid, varid1, nsd_out)) ERR;
+        if (nc_def_var_bitgroom(ncid, varid2, nsd_out)) ERR;
 
         /* Write data. */
 	index = 0;
@@ -687,26 +693,28 @@ main()
             if (nc_get_var_float(ncid, varid1, float_data_in)) ERR;
             if (nc_get_var_double(ncid, varid2, double_data_in)) ERR;
 
-	    union FU fin, fout;
+	    union FU fin;
+	    /* union FU fout; */
 	    union FU xpect[DIM_LEN_8];
-	    union DU dfin, dfout;
+	    union DU dfin;
+	    /* union DU dfout; */
 	    union DU double_xpect[DIM_LEN_8];
 	    xpect[0].u = 0x42c60000;
-	    xpect[1].u = 0xc2c60000;
-	    xpect[2].u = 0x461c3c00;
-	    xpect[3].u = 0xc61c3c00;
-	    xpect[4].u = 0x4b18967f;
-	    xpect[5].u = 0xcb18967f;
-	    xpect[6].u = 0x4e6e6b28;
-	    xpect[7].u = 0xce6e6b28;
+	    xpect[1].u = 0xc2c60fff;
+	    xpect[2].u = 0x461c3000;
+	    xpect[3].u = 0xc61c3fff;
+	    xpect[4].u = 0x4b189000;
+	    xpect[5].u = 0xcb189fff;
+	    xpect[6].u = 0x4e6e6000;
+	    xpect[7].u = 0xce6e6fff;
 	    double_xpect[0].u = 0x4058c00000000000;
-	    double_xpect[1].u = 0xc058c00000000000;
-	    double_xpect[2].u = 0x40c3878000000000;
-	    double_xpect[3].u = 0xc0c3878000000000;
-	    double_xpect[4].u = 0x416312cfe0000000;
-	    double_xpect[5].u = 0xc16312cfe0000000;
-	    double_xpect[6].u = 0x41cdcd64ff800000;
-	    double_xpect[7].u = 0xc1cdcd64ff800000;
+	    double_xpect[1].u = 0xc058c1ffffffffff;
+	    double_xpect[2].u = 0x40c3860000000000;
+	    double_xpect[3].u = 0xc0c387ffffffffff;
+	    double_xpect[4].u = 0x4163120000000000;
+	    double_xpect[5].u = 0xc16313ffffffffff;
+	    double_xpect[6].u = 0x41cdcc0000000000;
+	    double_xpect[7].u = 0xc1cdcdffffffffff;
 
 	    for (x = 0; x < DIM_LEN_8; x++)
 	    {
