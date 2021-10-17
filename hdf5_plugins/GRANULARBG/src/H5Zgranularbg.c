@@ -62,7 +62,7 @@
 #include "H5PLextern.h" /* HDF5 Plugin Library: H5PLget_plugin_type(), H5PLget_plugin_info() */
 
 /* Tokens and typedefs */
-#define H5Z_FILTER_GRANULARBG 37037 /* fxm: Obtain ID from HDF Group */
+#define H5Z_FILTER_GRANULARBG 37373 /* fxm: Obtain ID from HDF Group */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
 #define CCR_FLT_NAME "Granular BitGroom filter" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */

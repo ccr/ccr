@@ -22,7 +22,7 @@
 #define BITGROOM_FLT_PRM_NBR 5 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
 
 /** The filter ID for BitGroom quantization. */
-#define GRANULARBG_ID 37037
+#define GRANULARBG_ID 37373
 
 /** Number of parameters used internally by filter and returned by nc_inq_var_granularbg() */
 #define GRANULARBG_FLT_PRM_NBR 5 /* H5Zgranularbg.c: CCR_FLT_PRM_NBR */

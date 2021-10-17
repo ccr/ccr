@@ -691,7 +691,7 @@ nc_inq_var_granularbg(int ncid, int varid, int *granularbgp, int *nsdp)
 {
   unsigned int nsd[GRANULARBG_FLT_PRM_NBR];
   size_t nparams;
-  int bitgroom = 0; /* Is Granular BitGroom in use? */
+  int granularbg = 0; /* Is Granular BitGroom in use? */
   int ret;
   
 #ifdef HAVE_MULTIFILTERS
