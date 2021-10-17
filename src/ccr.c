@@ -63,7 +63,7 @@
  * GBG is a second generation quantization filter that incorporates aspects
  * of the BitGroom, DigitRound, and BitRound algorithms.
  * GBG determines the quantization mask for each value independently using
- * the basse-10 logarithm method discussed in the DigitRound paper. 
+ * the base-10 logarithm method discussed in the DigitRound paper. 
  * GBG computes exact log10() of every number, in contrast to DigitRound
  * which uses a lookup table for speed. This makes GBG slower than DR.
  * However, GBG-quantized values will use the same mask regardless of the
@@ -73,7 +73,7 @@
  * Similar to BitGroom, GBG ignores the value zero, and the _FillValue.
  * GBG quantizes a few more bits than BitGroom from the raw number yet
  * still maintains the precision guarantee, thus the quantization error 
- * of GBG is larger than BitGroom. GBG improver compression rations 
+ * of GBG is larger than BitGroom. GBG improves compression ratios 
  * by ~20% relative to BitGroom for typical climate data with NSD = 3.
  * Consider GBG as a pre-filter for subsequent lossless compression 
  * which with the simple mantissas yields better compression ratios.
