@@ -1,9 +1,9 @@
-/* Copyright (C) 2020--present Charlie Zender */
+/* Copyright (C) 2021--present Charlie Zender */
 
  /*
  * This file is an example of an HDF5 filter plugin.
  * The plugin can be used with the HDF5 library vesrion 1.8.11+ to read and write
- * HDF5 datasets quantized with BitGrooming.
+ * HDF5 datasets quantized with Granular BitGrooming.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -54,7 +54,7 @@
 # include <features.h> /* __USE_BSD */
 #endif
 #ifdef HAVE_MATH_H
-/* Needed for M_LN10, M_LN2 in ccr_bgr() */
+/* Needed for M_LN10, M_LN2 in ccr_gbg() */
 # include <math.h> /* sin cos cos sin 3.14159 */
 #endif
 
@@ -62,11 +62,11 @@
 #include "H5PLextern.h" /* HDF5 Plugin Library: H5PLget_plugin_type(), H5PLget_plugin_info() */
 
 /* Tokens and typedefs */
-#define H5Z_FILTER_BITGROOM 32022 /* NB: ID assigned by HDF Group 20201223 */
+#define H5Z_FILTER_GRANULARBG 37373 /* fxm: Obtain ID from HDF Group */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
-#define CCR_FLT_NAME "BitGroom filter (Zender, 2016 GMD: http://www.geosci-model-dev.net/9/3199/2016)" /* [sng] Filter name in vernacular for HDF5 messages */
+#define CCR_FLT_NAME "Granular BitGroom filter" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
-#define CCR_FLT_PRM_NBR 5 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:BITGROOM_FLT_PRM_NBR */
+#define CCR_FLT_PRM_NBR 5 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:GRANULARBG_FLT_PRM_NBR */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_HAS_MSS_VAL 2 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
@@ -104,7 +104,7 @@ typedef union{ /* ptr_unn */
 
 /* Forward-declare functions before their names appear in H5Z_class2_t filter structure */
 size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
-H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
+H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
@@ -113,20 +113,20 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
  void **bfr_inout); /* I/O [frc] Values to quantize */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_granularbg /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
-const H5Z_class2_t H5Z_BITGROOM[1]={{
+const H5Z_class2_t H5Z_GRANULARBG[1]={{
     H5Z_CLASS_T_VERS, /* H5Z_class_t version */
-    (H5Z_filter_t)H5Z_FILTER_BITGROOM, /* Filter ID number */
+    (H5Z_filter_t)H5Z_FILTER_GRANULARBG, /* Filter ID number */
 #ifdef FILTER_DECODE_ONLY
     0, /* [flg] Encoder availability flag */
 #else
@@ -134,13 +134,13 @@ const H5Z_class2_t H5Z_BITGROOM[1]={{
 #endif
     1, /* [flg] Encoder availability flag */
     CCR_FLT_NAME, /* [sng] Filter name for debugging */
-    ccr_can_apply_bitgroom, /* [fnc] Callback to determine if current variable meets filter criteria */
-    ccr_set_local_bitgroom, /* [fnc] Callback to determine and set per-variable filter parameters */
-    (H5Z_func_t)H5Z_filter_bitgroom, /* [fnc] Function to implement filter */
-  }}; /* !H5Z_BITGROOM */
+    ccr_can_apply_granularbg, /* [fnc] Callback to determine if current variable meets filter criteria */
+    ccr_set_local_granularbg, /* [fnc] Callback to determine and set per-variable filter parameters */
+    (H5Z_func_t)H5Z_filter_granularbg, /* [fnc] Function to implement filter */
+  }}; /* !H5Z_GRANULARBG */
 
 void
-ccr_bgr /* [fnc] BitGroom buffer of float values */
+ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
 (const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
  const int type, /* I [enm] netCDF type of operand */
  const size_t sz, /* I [nbr] Size (in elements) of buffer to quantize */
@@ -160,13 +160,13 @@ H5PLget_plugin_type /* [fnc] Provide plug-in type provided by this shared librar
 const void * /* O [enm] */
 H5PLget_plugin_info /* [fnc] Return structure */
 (void)
-{ /* Purpose: Provide structure that defines BitGroom filter so the filter may be dynamically registered with the plugin mechanism
+{ /* Purpose: Provide structure that defines Granular BitGroom filter so the filter may be dynamically registered with the plugin mechanism
      The HDF5 plugin mechanism usually calls this function after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
-  return H5Z_BITGROOM;
+  return H5Z_GRANULARBG;
 } /* !H5PLget_plugin_info() */
 
 size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
-H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
+H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
@@ -174,13 +174,13 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
  size_t *bfr_sz_out, /* O [B] Number of bytes in output buffer (after forward/reverse filter) */
  void **bfr_inout) /* I/O [frc] Values to quantize */
 {
-  /* Purpose: Dynamic filter invoked by HDF5 to BitGroom a variable */
+  /* Purpose: Dynamic filter invoked by HDF5 to Granular BitGroom a variable */
 
-  const char fnc_nm[]="H5Z_filter_bitgroom()"; /* [sng] Function name */
+  const char fnc_nm[]="H5Z_filter_granularbg()"; /* [sng] Function name */
 
   if(flags & H5Z_FLAG_REVERSE){
 
-    /* Currently supported quantization methods (BitGrooming) store results in IEEE754 format 
+    /* Currently supported quantization methods (Granular BitGrooming) store results in IEEE754 format 
        These quantized buffers are full of legal IEEE754 numbers that need no "dequantization"
        In other words, the input values in bfr_inout are also the output values */
     return bfr_sz_in;
@@ -210,7 +210,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
       } /* !has_mss_val */
       op1.fp=(float *)(*bfr_inout);
-      ccr_bgr(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
+      ccr_gbg(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
       break;
     case 8:
       /* Double-precision floating-point data */
@@ -219,7 +219,7 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
 	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
       } /* !has_mss_val */
       op1.dp=(double *)(*bfr_inout);
-      ccr_bgr(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
+      ccr_gbg(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
       break;
     default:
       (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
@@ -237,10 +237,10 @@ H5Z_filter_bitgroom /* [fnc] HDF5 BitGroom Filter */
   /* Quantization filters generally allocate no memory, so just return with error code */
   return 0;
 
-} /* !H5Z_filter_bitgroom() */
+} /* !H5Z_filter_granularbg() */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_granularbg /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
@@ -253,15 +253,15 @@ ccr_can_apply_bitgroom /* [fnc] Callback to determine if current variable meets 
 
   /* Filter can be applied */
   return 1;
-} /* !ccr_can_apply_bitgroom() */
+} /* !ccr_can_apply_granularbg() */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
 {
-  const char fnc_nm[]="ccr_set_local_bitgroom()"; /* [sng] Function name */
+  const char fnc_nm[]="ccr_set_local_granularbg()"; /* [sng] Function name */
 
   herr_t rcd; /* [flg] Return code */
   
@@ -276,7 +276,7 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
   /* Retrieve parameters specified by user
      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#FunctionIndex
      Ignore name and filter_config by setting last three arguments to 0/NULL */
-  rcd=H5Pget_filter_by_id(dcpl,H5Z_FILTER_BITGROOM,&flags,&cd_nelmts,cd_values,0,NULL,NULL);
+  rcd=H5Pget_filter_by_id(dcpl,H5Z_FILTER_GRANULARBG,&flags,&cd_nelmts,cd_values,0,NULL,NULL);
   if(rcd < 0){
     (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Pget_filter_by_id() failed to get filter flags and parameters for current variable\n",CCR_FLT_NAME,fnc_nm);
     return 0;
@@ -292,7 +292,7 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
     if(CCR_FLT_DBG_INFO){
       (void)fprintf(stdout,"INFO: \"%s\" filter callback function %s reports H5Tget_class() returned data type class identifier = %d != H5T_FLOAT = %d. Attempting to remove quantization filter using H5Premove_filter()...",CCR_FLT_NAME,fnc_nm,(int)data_class,H5T_FLOAT);
     } /* !CCR_FLT_DBG_INFO */
-    rcd=H5Premove_filter(dcpl,H5Z_FILTER_BITGROOM);
+    rcd=H5Premove_filter(dcpl,H5Z_FILTER_GRANULARBG);
     if(rcd < 0){
       if(CCR_FLT_DBG_INFO) (void)fprintf(stdout,"failure :(\n");
       return 0;
@@ -370,17 +370,17 @@ ccr_set_local_bitgroom /* [fnc] Callback to determine and set per-variable filte
   ccr_flt_prm[CCR_FLT_PRM_PSN_HAS_MSS_VAL]=has_mss_val;
 
   /* Update invoked filter with generic parameters as invoked with variable-specific values */
-  rcd=H5Pmodify_filter(dcpl,H5Z_FILTER_BITGROOM,flags,CCR_FLT_PRM_NBR,cd_values);
+  rcd=H5Pmodify_filter(dcpl,H5Z_FILTER_GRANULARBG,flags,CCR_FLT_PRM_NBR,cd_values);
   if(rcd < 0){
     (void)fprintf(stderr,"ERROR: \"%s\" filter callback function %s reports H5Pmodify_filter() unable to modify filter parameters\n",CCR_FLT_NAME,fnc_nm);
     return 0;
   } /* !rcd */
 
   return 1;
-} /* !ccr_set_local_bitgroom() */
+} /* !ccr_set_local_granularbg() */
 
 void
-ccr_bgr /* [fnc] BitGroom buffer of float values */
+ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
 (const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
  const int type, /* I [enm] netCDF type of operand */
  const size_t sz, /* I [nbr] Size (in elements) of buffer to quantize */
@@ -388,7 +388,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
  ptr_unn mss_val, /* I [val] Value of missing value */
  ptr_unn op1) /* I/O [frc] Values to quantize */
 {
-  const char fnc_nm[]="ccr_bgr()"; /* [sng] Function name */
+  const char fnc_nm[]="ccr_gbg()"; /* [sng] Function name */
 
   /* Prefer constants defined in math.h, however, ...
      20201002 GCC environments can have hard time defining M_LN10/M_LN2 despite finding math.h */
@@ -399,9 +399,15 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
 # define M_LN2          0.69314718055994530942  /* log_e 2 */
 #endif /* M_LN2 */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
+  const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
+  
+  double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
+  double mnt_fabs; /* [frc] fabs(mantissa) */
+  double mnt_log10_fabs; /* [frc] log10(fabs(mantissa))) */
+  double val; /* [frc] Copy of input value to avoid indirection */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
@@ -411,32 +417,26 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   int bit_xpl_nbr_sgn=-1; /* [nbr] Number of explicit bits in significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
 
+  int dgt_nbr; /* [nbr] Number of digits before decimal point */
+  int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
+  int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
+
   size_t idx;
 
   unsigned int *u32_ptr;
   unsigned int msk_f32_u32_zro;
   unsigned int msk_f32_u32_one;
-  //unsigned int msk_f32_u32_hshv;
+  unsigned int msk_f32_u32_hshv;
   unsigned long long int *u64_ptr;
   unsigned long long int msk_f64_u64_zro;
   unsigned long long int msk_f64_u64_one;
-  //unsigned long long int msk_f64_u64_hshv;
+  unsigned long long int msk_f64_u64_hshv;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
 
   /* Disallow unreasonable quantization */
   assert(nsd > 0);
   assert(nsd <= 16);
-
-  /* How many bits to preserve? */
-  prc_bnr_xct=nsd*bit_per_dgt;
-  /* Be conservative, round upwards */
-  prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
-  /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil;
-  prc_bnr_xpl_rqr=prc_bnr_ceil+1;
-  if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
 
   if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
   if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
@@ -446,51 +446,65 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
     /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
     if(has_mss_val) mss_val_cmp_flt=*mss_val.fp; else mss_val_cmp_flt=NC_FILL_FLOAT;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
-    bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     u32_ptr=op1.ui32p;
-    /* Create mask */
-    msk_f32_u32_zro=0u; /* Zero all bits */
-    msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
-    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
-    msk_f32_u32_zro <<= bit_xpl_nbr_zro;
-    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
-    msk_f32_u32_one=~msk_f32_u32_zro;
-    //msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
 
-    /* Bit-Groom: alternately shave and set LSBs */
-    for(idx=0L;idx<sz;idx+=2L)
-      if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-    for(idx=1L;idx<sz;idx+=2L)
-      if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
-	u32_ptr[idx]|=msk_f32_u32_one;
+    for(idx=0L;idx<sz;idx++){
+      if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	mnt_fabs=fabs(mnt);
+	mnt_log10_fabs=log10(mnt_fabs);
+	/* 20211003 Continuous determination of dgt_nbr improves CR by ~10% */
+	dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_fabs)+1; /* DGG19 p. 4102 (8.67) */
+	qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	prc_bnr_xpl_rqr= mnt_fabs == 0.0 ? 0 : abs((int)floor(xpn_bs2-bit_per_dgt*mnt_log10_fabs)-qnt_pwr); /* Protect against mnt = -0.0 */
+	prc_bnr_xpl_rqr--; /* 20211003 Reduce formula result by 1 bit: Passes all tests, improves CR by ~10% */
+
+	bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
+	msk_f32_u32_zro=0u; /* Zero all bits */
+	msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
+	/* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
+	msk_f32_u32_zro <<= bit_xpl_nbr_zro;
+	/* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
+	msk_f32_u32_one=~msk_f32_u32_zro;
+	msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
+	u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
+	u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
+      } /* !mss_val_cmp_flt */
+    } /* !idx */
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
     /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
-    if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
+    if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_FLOAT;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
-    bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
-    u64_ptr=(unsigned long long int *)op1.ui64p;
-    /* Create mask */
-    msk_f64_u64_zro=0ul; /* Zero all bits */
-    msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
-    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
-    msk_f64_u64_zro <<= bit_xpl_nbr_zro;
-    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
-    msk_f64_u64_one=~msk_f64_u64_zro;
-    //msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
-    /* Bit-Groom: alternately shave and set LSBs */
-    for(idx=0L;idx<sz;idx+=2L)
-      if(op1.dp[idx] != mss_val_cmp_dbl)
-	u64_ptr[idx]&=msk_f64_u64_zro;
-    for(idx=1L;idx<sz;idx+=2L)
-      if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
-	u64_ptr[idx]|=msk_f64_u64_one;
+    u64_ptr=op1.ui64p;
+
+    for(idx=0L;idx<sz;idx++){
+      if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0U){
+	mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	mnt_fabs=fabs(mnt);
+	mnt_log10_fabs=log10(mnt_fabs);
+	/* 20211003 Continuous determination of dgt_nbr improves CR by ~10% */
+	dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_fabs)+1; /* DGG19 p. 4102 (8.67) */
+	qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	prc_bnr_xpl_rqr= mnt_fabs == 0.0 ? 0 : abs((int)floor(xpn_bs2-bit_per_dgt*mnt_log10_fabs)-qnt_pwr); /* Protect against mnt = -0.0 */
+	prc_bnr_xpl_rqr--; /* 20211003 Reduce formula result by 1 bit: Passes all tests, improves CR by ~10% */
+
+	bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
+	msk_f64_u64_zro=0u; /* Zero all bits */
+	msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
+	/* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
+	msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+	/* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
+	msk_f64_u64_one=~msk_f64_u64_zro;
+	msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
+	u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
+	u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
+      } /* !mss_val_cmp_dbl */
+    } /* !idx */
     break; /* !NC_DOUBLE */
   default: 
     (void)fprintf(stderr,"ERROR: %s reports datum size = %d B is invalid for %s filter\n",fnc_nm,type,CCR_FLT_NAME);
     break;
   } /* !type */
   
-} /* ccr_bgr() */
+} /* ccr_gbg() */
