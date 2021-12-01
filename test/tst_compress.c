@@ -290,8 +290,8 @@ write_meta(int ncid, int *data_varid, int s, int f, int nsd, int deflate, int u,
         if (nc_redef(ncid)) ERR;
         if (nc_def_var(ncid, data_var_name, NC_FLOAT, NDIM4, dimid_data, &data_varid[dv])) ERR;
 
-        if (nsd)
-            if (nc_def_var_quantize(ncid, data_varid[dv], NC_QUANTIZE_BITGROOM, nsd)) ERR;
+        /* if (nsd) */
+        /*     if (nc_def_var_quantize(ncid, data_varid[dv], NC_QUANTIZE_BITGROOM, nsd)) ERR; */
 
         /* Setting any filter only will work for HDF5-1.10.3 and later */
         /* versions. Do nothing for "none". */
