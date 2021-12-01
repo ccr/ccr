@@ -1,13 +1,12 @@
 /*
-  Copyright 2021, UCAR/Unidata See COPYRIGHT file for copying and
-  redistribution conditions.
-
   This program tests and benchmarks netcdf-4 I/O doing compression.
 
-  This is a sequential version of tst_compress_par.c.
+  This is a sequential version of the netcdf-c test
+  nc_perf/tst_compress_par.c.
 
-  Also see the file gfs_sample.cdl to see what is being produced by
-  this program.
+  Also see the file in the netcdf-c distribution
+  nc_perf/gfs_sample.cdl to see what is being produced by this
+  program.
 
   Ed Hartnett, 11/27/21
 */
