@@ -57,10 +57,12 @@ Zstandard |  MacPorts    | sudo port install zstd
 
 ## Autotools Build
 
-Download the CCR release and unpack it. Run configure and make.
+Download the CCR release and unpack it. Run autoreconf, configure, and make.
 
 Example:
 <pre>
+# Create configure script
+autoreconf -i
 # Set your environment as necessary and (re-)configure as necessary:
 export CFLAGS='-g -Wall'
 export CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include'
