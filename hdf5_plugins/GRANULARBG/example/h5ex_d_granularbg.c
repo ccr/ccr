@@ -30,7 +30,7 @@
 #define DIM1            64
 #define CHUNK0          4
 #define CHUNK1          8
-#define H5Z_FILTER_GRANULARBG        37373
+#define H5Z_FILTER_GRANULARBG        32023
 
 int
 main (void)
