@@ -3,7 +3,7 @@
 #
 # Charlie Zender 9/12/20
 
-# csz No extra paths necessary since BitGroom filter source currently in plugin code
+# No extra paths necessary since BitGroom filter source is in plugin code
 # AM_CPPFLAGS = -I$(HDF5_ROOT)/include -I$(BITGROOM_ROOT)/include
 
 # This is where HDF5 wants us to install plugins

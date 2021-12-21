@@ -22,14 +22,20 @@ if BUILD_BITGROOM
 check_PROGRAMS += tst_bitgroom
 endif
 
+# Build Granular BitGroom tests, if needed.
+if BUILD_GRANULARBG
+check_PROGRAMS += tst_granularbg
+endif
+
 # Build Zstandard tests, if needed.
 if BUILD_ZSTD
 check_PROGRAMS += tst_zstandard
 endif
 
-# Build the performance test.
-check_PROGRAMS += tst_perf
+# Build the performance tests.
+check_PROGRAMS += tst_perf tst_compress
 tst_perf_SOURCES = tst_perf.c tst_utils.c
+tst_compress_SOURCES = tst_compress.c tst_utils.c
 
 # Run all the appropriate tests in this script.
 TESTS = run_tests.sh

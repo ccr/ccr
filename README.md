@@ -11,10 +11,11 @@ added nc_def_var_filter() method (in version 4.7.3 and later).
 Additional filters are available, and support additional compression
 methods.
 
-Version 1.1.0 of the CCR supports:
+Version 1.2.0 of the CCR supports:
 * BZIP2 compression
 * Zstandard compression
-* BITGROOM pre-compression
+* BitGROOM pre-compression
+* Granular BitGroom pre-compression
 
 For full documentation see https://ccr.github.io/ccr/.
 
@@ -27,6 +28,7 @@ Filter | Author
 Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
 Zstandard | Yann Collet
 BitGroom | Charlie Zender
+Granular BitGroom | Charlie Zender
 
 # Building CCR
 
@@ -55,10 +57,12 @@ Zstandard |  MacPorts    | sudo port install zstd
 
 ## Autotools Build
 
-Download the CCR release and unpack it. Run configure and make.
+Download the CCR release and unpack it. Run autoreconf, configure, and make.
 
 Example:
 <pre>
+# Create configure script
+autoreconf -i
 # Set your environment as necessary and (re-)configure as necessary:
 export CFLAGS='-g -Wall'
 export CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include'
@@ -79,6 +83,8 @@ https://www.researchgate.net/publication/335987647_Evaluation_of_lossless_and_lo
 
 Hartnett, E. (2011), netCDF-4/HDF5 File Format,
 https://earthdata.nasa.gov/files/ESDS-RFC-022v1.pdf
+
+Kouznetsov, R. (2021), A note on precision-preserving compression of scientific data, Geosci. Model Dev., 14(1), 377-389, https://doi.org/10.5194/gmd-14-377-2021
 
 Zender, C. S. (2016), Bit Grooming: Statistically accurate
 precision-preserving quantization with compression, evaluated in the

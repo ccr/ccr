@@ -1,7 +1,7 @@
 # This is the main configure file for the netCDF Community Codec
 # Repository (ccr).
 
-# Ed Hartnett 12/24/2019
+# Ed Hartnett 12/24/2019, Charlie Zender 9/20/20
 
 AC_PREREQ([2.69])
 
@@ -72,9 +72,9 @@ AC_PROG_INSTALL
 # Check to see if any macros must be set to enable large (>2GB) files.
 AC_SYS_LARGEFILE
 
-if test "x$enable_shared" = xno; then
-   AC_MSG_ERROR([Only shared library builds allowed.])
-fi
+dnl if test "x$enable_shared" = xno; then
+dnl    AC_MSG_ERROR([Only shared library builds allowed.])
+dnl fi
 
 # Does the user want to enable Fortran library?
 AC_MSG_CHECKING([whether Fortran library should be built])
@@ -158,8 +158,8 @@ if test "x$enable_lz4" = xyes; then
 fi
 AC_SUBST([BUILD_LZ4], [$enable_lz4])
 
-# Does the user want BITGROOM?
-AC_MSG_CHECKING([whether BITGROOM filter library should be built and installed])
+# Does the user want BitGroom?
+AC_MSG_CHECKING([whether BitGroom filter library should be built and installed])
 AC_ARG_ENABLE([bitgroom],
               [AS_HELP_STRING([--disable-bitgroom],
                               [Disable the build and install of BitGroom filter library.])])
@@ -167,9 +167,22 @@ test "x$enable_bitgroom" = xno || enable_bitgroom=yes
 AC_MSG_RESULT($enable_bitgroom)
 AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
 if test "x$enable_bitgroom" = xyes; then
-   AC_DEFINE([BUILD_BITGROOM], 1, [If true, build with bitgroom filter.])
+   AC_DEFINE([BUILD_BITGROOM], 1, [If true, build with BitGroom filter.])
 fi
 AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
+
+# Does the user want Granular BitGroom?
+AC_MSG_CHECKING([whether Granular BitGroom filter library should be built and installed])
+AC_ARG_ENABLE([granularbg],
+              [AS_HELP_STRING([--disable-granularbg],
+                              [Disable the build and install of Granular BitGroom filter library.])])
+test "x$enable_granularbg" = xno || enable_granularbg=yes
+AC_MSG_RESULT($enable_granularbg)
+AM_CONDITIONAL(BUILD_GRANULARBG, [test "x$enable_granularbg" = xyes])
+if test "x$enable_granularbg" = xyes; then
+   AC_DEFINE([BUILD_GRANULARBG], 1, [If true, build with Granular BitGroom filter.])
+fi
+AC_SUBST([BUILD_GRANULARBG], [$enable_granularbg])
 
 # Does the user want Zstandard?
 AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
@@ -398,6 +411,8 @@ AC_SUBST(HAS_ZSTD,[$enable_zstd])
 AX_SET_META([CCR_HAS_ZSTD],[$enable_zstd],[yes])
 AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
 AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
+AC_SUBST(HAS_GRANULARBG,[$enable_granularbg])
+AX_SET_META([CCR_HAS_GRANULARBG],[$enable_granularbg],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
