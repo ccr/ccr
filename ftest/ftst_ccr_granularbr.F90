@@ -1,16 +1,16 @@
-  ! This is a test program for the CCR Granular BitGroom quantization filter for
+  ! This is a test program for the CCR Granular BitRound quantization filter for
   ! netCDF. This started as an example nc4_pres_temp_4D_wr.f90 from
   ! the netcdf-fortran project.
 
   ! Ed Hartnett 1/23/20, Charlie Zender 10/17/21
 
-program ftst_ccr_granularbg
+program ftst_ccr_granularbr
   use netcdf
   use ccr
   implicit none
 
   ! This is the name of the data file we will create.
-  character (len = *), parameter :: FILE_NAME = "ftst_ccr_granularbg.nc"
+  character (len = *), parameter :: FILE_NAME = "ftst_ccr_granularbr.nc"
   integer :: ncid
 
   ! We are writing 4D data.
@@ -30,7 +30,7 @@ program ftst_ccr_granularbg
   real :: lats(NLATS), lons(NLONS)
   integer :: lon_varid, lat_varid
   integer, parameter :: QUANTIZATION_NSD = 3
-  integer :: granularbgp, nsdp
+  integer :: granularbrp, nsdp
 
   ! We will create two netCDF variables, one each for temperature and
   ! pressure fields.
@@ -97,19 +97,19 @@ program ftst_ccr_granularbg
   ! Define the netCDF variables for the pressure and temperature data.
   dimids = (/ lon_dimid, lat_dimid, lvl_dimid, rec_dimid /)
   call check( nf90_def_var(ncid, PRES_NAME, NF90_REAL, dimids, pres_varid) )
-  call check( nf90_def_var_granularbg(ncid, pres_varid, QUANTIZATION_NSD) )
+  call check( nf90_def_var_granularbr(ncid, pres_varid, QUANTIZATION_NSD) )
   call check( nf90_def_var(ncid, TEMP_NAME, NF90_REAL, dimids, temp_varid) )
-  call check( nf90_def_var_granularbg(ncid, temp_varid, QUANTIZATION_NSD) )
+  call check( nf90_def_var_granularbr(ncid, temp_varid, QUANTIZATION_NSD) )
 
   ! Check the quantization settings.
-  call check( nf90_inq_var_granularbg(ncid, pres_varid, granularbgp, nsdp) )
+  call check( nf90_inq_var_granularbr(ncid, pres_varid, granularbrp, nsdp) )
   if (nsdp .ne. QUANTIZATION_NSD) stop 2
-  if (granularbgp .ne. 1) stop 2
+  if (granularbrp .ne. 1) stop 2
   nsdp = 0
-  granularbgp = 0
-  call check( nf90_inq_var_granularbg(ncid, temp_varid, granularbgp, nsdp) )
+  granularbrp = 0
+  call check( nf90_inq_var_granularbr(ncid, temp_varid, granularbrp, nsdp) )
   if (nsdp .ne. QUANTIZATION_NSD) stop 2
-  if (granularbgp .ne. 1) stop 2
+  if (granularbrp .ne. 1) stop 2
 
   ! End define mode.
   call check( nf90_enddef(ncid) )
@@ -140,14 +140,14 @@ program ftst_ccr_granularbg
   call check( nf90_inq_varid(ncid, TEMP_NAME, temp_varid) )
 
   ! Check the quantization settings.
-  call check( nf90_inq_var_granularbg(ncid, pres_varid, granularbgp, nsdp) )
+  call check( nf90_inq_var_granularbr(ncid, pres_varid, granularbrp, nsdp) )
   if (nsdp .ne. QUANTIZATION_NSD) stop 2
-  if (granularbgp .ne. 1) stop 2
+  if (granularbrp .ne. 1) stop 2
   nsdp = 0
-  granularbgp = 0
-  call check( nf90_inq_var_granularbg(ncid, temp_varid, granularbgp, nsdp) )
+  granularbrp = 0
+  call check( nf90_inq_var_granularbr(ncid, temp_varid, granularbrp, nsdp) )
   if (nsdp .ne. QUANTIZATION_NSD) stop 2
-  if (granularbgp .ne. 1) stop 2
+  if (granularbrp .ne. 1) stop 2
 
   ! Read the data and check it.
   count = (/ NLONS, NLATS, NLVLS, 1 /)
@@ -206,4 +206,4 @@ contains
       stop 2
     end if
   end subroutine check
-end program ftst_ccr_granularbg
+end program ftst_ccr_granularbr

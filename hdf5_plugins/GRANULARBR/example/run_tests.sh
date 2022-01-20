@@ -6,4 +6,4 @@
 export HDF5_PLUGIN_PATH=../src/.libs
 
 # Run the example
-./h5ex_d_granularbg
+./h5ex_d_granularbr

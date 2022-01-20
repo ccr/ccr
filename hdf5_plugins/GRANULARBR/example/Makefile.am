@@ -3,7 +3,7 @@
 # Charlie Zender 10/17/21
 
 # Build example program and run it as a test
-check_PROGRAMS = h5ex_d_granularbg
+check_PROGRAMS = h5ex_d_granularbr
 TESTS = run_tests.sh
 
 # Clean up HDF5 file created by example.

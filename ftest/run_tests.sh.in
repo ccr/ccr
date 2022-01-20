@@ -22,10 +22,10 @@ if test "@BUILD_BITGROOM@" = "yes"; then
     ./ftst_ccr_bitgroom
 fi
 
-# If Granular BitGroom was built, run the Granular BitGroom test.
-if test "@BUILD_GRANULARBG@" = "yes"; then
-    export HDF5_PLUGIN_PATH="../hdf5_plugins/GRANULARBG/src/.libs:$HDF5_PLUGIN_PATH"
-    ./ftst_ccr_granularbg
+# If Granular BitRound was built, run the Granular BitRound test.
+if test "@BUILD_GRANULARBR@" = "yes"; then
+    export HDF5_PLUGIN_PATH="../hdf5_plugins/GRANULARBR/src/.libs:$HDF5_PLUGIN_PATH"
+    ./ftst_ccr_granularbr
 fi
 
 # If zstandard was built, run the zstandard test.

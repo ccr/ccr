@@ -14,8 +14,8 @@ methods.
 Version 1.2.0 of the CCR supports:
 * BZIP2 compression
 * Zstandard compression
-* BitGROOM pre-compression
-* Granular BitGroom pre-compression
+* BitGroom pre-compression
+* Granular BitRound pre-compression
 
 For full documentation see https://ccr.github.io/ccr/.
 
@@ -28,7 +28,7 @@ Filter | Author
 Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
 Zstandard | Yann Collet
 BitGroom | Charlie Zender
-Granular BitGroom | Charlie Zender
+Granular BitRound | Charlie Zender
 
 # Building CCR
 

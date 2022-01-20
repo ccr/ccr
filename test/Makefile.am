@@ -22,9 +22,9 @@ if BUILD_BITGROOM
 check_PROGRAMS += tst_bitgroom
 endif
 
-# Build Granular BitGroom tests, if needed.
-if BUILD_GRANULARBG
-check_PROGRAMS += tst_granularbg
+# Build Granular BitRound tests, if needed.
+if BUILD_GRANULARBR
+check_PROGRAMS += tst_granularbr
 endif
 
 # Build Zstandard tests, if needed.

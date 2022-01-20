@@ -1,6 +1,6 @@
 /* This is part of the CCR package. Copyright 2021.
 
-   Test Granular BitGroom quantization.
+   Test Granular BitRound quantization.
 
    Charlie Zender 10/17/21, Ed Hartnett 1/20/20
 */
@@ -13,8 +13,8 @@
 #include <H5DSpublic.h>
 #include <netcdf.h>
 
-#define FILE_NAME "tst_granularbg.nc"
-#define TEST "tst_granularbg"
+#define FILE_NAME "tst_granularbr.nc"
+#define TEST "tst_granularbr"
 #define STR_LEN 255
 #define X_NAME "X"
 #define Y_NAME "Y"
@@ -85,8 +85,8 @@ pd(double myd)
 int
 main()
 {
-    printf("\n*** Checking Granular BitGroom filter.\n");
-    printf("*** Checking Granular BitGroom quantization...");
+    printf("\n*** Checking Granular BitRound filter.\n");
+    printf("*** Checking Granular BitRound quantization...");
     {
         int ncid;
         int dimid[NDIM2];
@@ -95,7 +95,7 @@ main()
         int x, y;
         int nsd_in;
         int nsd_out=3;
-        int granularbg;
+        int granularbr;
 
         /* Create some data to write. */
         for (x = 0; x < NX; x++)
@@ -114,34 +114,34 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM2, dimid, &varid2)) ERR;
 
         /* These won't work. */
-        if (nc_def_var_granularbg(ncid, varid, -9) != NC_EINVAL) ERR;
-        if (nc_def_var_granularbg(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_granularbg(ncid, varid, 8) != NC_EINVAL) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, 16) != NC_EINVAL) ERR;
+        if (nc_def_var_granularbr(ncid, varid, -9) != NC_EINVAL) ERR;
+        if (nc_def_var_granularbr(ncid, varid, 0) != NC_EINVAL) ERR;
+        if (nc_def_var_granularbr(ncid, varid, 8) != NC_EINVAL) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, 16) != NC_EINVAL) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_granularbg(ncid, varid, &granularbg, &nsd_in)) ERR;
-        if (granularbg) ERR;
-        if (nc_inq_var_granularbg(ncid, varid2, &granularbg, &nsd_in)) ERR;
-        if (granularbg) ERR;
+        if (nc_inq_var_granularbr(ncid, varid, &granularbr, &nsd_in)) ERR;
+        if (granularbr) ERR;
+        if (nc_inq_var_granularbr(ncid, varid2, &granularbr, &nsd_in)) ERR;
+        if (granularbr) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Check setting. */
-        if (nc_inq_var_granularbg(ncid, varid, &granularbg, &nsd_in)) ERR;
-        if (!granularbg || nsd_in != nsd_out) ERR;
+        if (nc_inq_var_granularbr(ncid, varid, &granularbr, &nsd_in)) ERR;
+        if (!granularbr || nsd_in != nsd_out) ERR;
         nsd_in = 0;
-        granularbg = 1;
-        if (nc_inq_var_granularbg(ncid, varid, NULL, &nsd_in)) ERR;
-        if (nc_inq_var_granularbg(ncid, varid, &granularbg, NULL)) ERR;
-        if (!granularbg || nsd_in != nsd_out) ERR;
-        if (nc_inq_var_granularbg(ncid, varid, NULL, NULL)) ERR;
+        granularbr = 1;
+        if (nc_inq_var_granularbr(ncid, varid, NULL, &nsd_in)) ERR;
+        if (nc_inq_var_granularbr(ncid, varid, &granularbr, NULL)) ERR;
+        if (!granularbr || nsd_in != nsd_out) ERR;
+        if (nc_inq_var_granularbr(ncid, varid, NULL, NULL)) ERR;
 
         /* Check varid2. */
-        if (nc_inq_var_granularbg(ncid, varid2, &granularbg, &nsd_in)) ERR;
-        if (!granularbg || nsd_in != nsd_out) ERR;
+        if (nc_inq_var_granularbr(ncid, varid2, &granularbr, &nsd_in)) ERR;
+        if (!granularbr || nsd_in != nsd_out) ERR;
 
         /* Write the data. */
         if (nc_put_var(ncid, varid, data_out)) ERR;
@@ -159,10 +159,10 @@ main()
             if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
 
             /* Check settings. */
-            if (nc_inq_var_granularbg(ncid, varid, &granularbg, &nsd_in)) ERR;
-            if (!granularbg || nsd_in != nsd_out) ERR;
-            if (nc_inq_var_granularbg(ncid, varid2, &granularbg, &nsd_in)) ERR;
-            if (!granularbg || nsd_in != nsd_out) ERR;
+            if (nc_inq_var_granularbr(ncid, varid, &granularbr, &nsd_in)) ERR;
+            if (!granularbr || nsd_in != nsd_out) ERR;
+            if (nc_inq_var_granularbr(ncid, varid2, &granularbr, &nsd_in)) ERR;
+            if (!granularbr || nsd_in != nsd_out) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;
@@ -186,7 +186,7 @@ main()
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom size of quantization...");
+    printf("*** Checking Granular BitRound size of quantization...");
     {
         int ncid;
         int dimid[NDIM2];
@@ -194,7 +194,7 @@ main()
         float *data_out;
         float *data_in;
         int x, f;
-        int nsd_in, granularbg;
+        int nsd_in, granularbr;
         int nsd_out=3;
 
         if (!(data_out = malloc(NX_BIG * NY_BIG * sizeof(float)))) ERR;
@@ -208,7 +208,7 @@ main()
         {
             char file_name[STR_LEN + 1];
 
-            sprintf(file_name, "%s_%s.nc", TEST, (f ? "granularbg" : "unquantized"));
+            sprintf(file_name, "%s_%s.nc", TEST, (f ? "granularbr" : "unquantized"));
             nc_set_log_level(3);
 
             /* Create file. */
@@ -217,21 +217,21 @@ main()
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
             if (f)
-                if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
+                if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
             if (nc_put_var(ncid, varid, data_out)) ERR;
             if (nc_close(ncid)) ERR;
 
             /* Check file. */
             {
                 if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
-                if (nc_inq_var_granularbg(ncid, varid, &granularbg, &nsd_in)) ERR;
+                if (nc_inq_var_granularbr(ncid, varid, &granularbr, &nsd_in)) ERR;
                 if (f)
                 {
-                    if (!granularbg || nsd_in != nsd_out) ERR;
+                    if (!granularbr || nsd_in != nsd_out) ERR;
                 }
                 else
                 {
-                    if (granularbg) ERR;
+                    if (granularbr) ERR;
                 }
                 if (nc_get_var(ncid, varid, data_in)) ERR;
                 for (x = 0; x < NX_BIG * NY_BIG; x++)
@@ -247,12 +247,12 @@ main()
     }
     SUMMARIZE_ERR;
 #define NTYPES 9
-    printf("*** Checking Granular BitGroom handling of non-floats...");
+    printf("*** Checking Granular BitRound handling of non-floats...");
     {
         int ncid;
         int dimid[NDIM2];
         int varid;
-        int nsd_in, granularbg;
+        int nsd_in, granularbr;
         int nsd_out=3;
         char file_name[STR_LEN + 1];
         int xtype[NTYPES] = {NC_CHAR, NC_SHORT, NC_INT, NC_BYTE, NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
@@ -260,7 +260,7 @@ main()
 
         for (t = 0; t < NTYPES; t++)
         {
-            sprintf(file_name, "%s_granularbg_type_%d.nc", TEST, xtype[t]);
+            sprintf(file_name, "%s_granularbr_type_%d.nc", TEST, xtype[t]);
             nc_set_log_level(3);
 
             /* Create file. */
@@ -269,22 +269,22 @@ main()
             if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, xtype[t], NDIM2, dimid, &varid)) ERR;
 
-            /* Granular BitGroom filter returns NC_EINVAL because this is not an
+            /* Granular BitRound filter returns NC_EINVAL because this is not an
              * NC_FLOAT or NC_DOULBE. */
-            if (nc_def_var_granularbg(ncid, varid, nsd_out) != NC_EINVAL) ERR;
+            if (nc_def_var_granularbr(ncid, varid, nsd_out) != NC_EINVAL) ERR;
             if (nc_close(ncid)) ERR;
 
             /* Check file. */
             {
                 if (nc_open(file_name, NC_NETCDF4, &ncid)) ERR;
-                if (nc_inq_var_granularbg(ncid, varid, &granularbg, &nsd_in)) ERR;
-                if (granularbg) ERR;
+                if (nc_inq_var_granularbr(ncid, varid, &granularbr, &nsd_in)) ERR;
+                if (granularbr) ERR;
                 if (nc_close(ncid)) ERR;
             }
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom values...");
+    printf("*** Checking Granular BitRound values...");
     {
         int ncid;
         int dimid;
@@ -304,8 +304,8 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Write the data. */
         if (nc_put_var_float(ncid, varid, float_data)) ERR;
@@ -364,7 +364,7 @@ main()
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom values with type conversion between double and float...");
+    printf("*** Checking Granular BitRound values with type conversion between double and float...");
     {
         int ncid;
         int dimid;
@@ -384,8 +384,8 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Write the float data to double, and vice versa. */
         if (nc_put_var_double(ncid, varid, double_data)) ERR;
@@ -448,7 +448,7 @@ main()
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom values with some default fill values...");
+    printf("*** Checking Granular BitRound values with some default fill values...");
     {
         int ncid;
         int dimid;
@@ -468,8 +468,8 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Write the data. */
         if (nc_put_var_float(ncid, varid, float_data)) ERR;
@@ -532,7 +532,7 @@ main()
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom values with some custom fill values...");
+    printf("*** Checking Granular BitRound values with some custom fill values...");
     {
 	#define CUSTOM_FILL_FLOAT 99.99999
 	#define CUSTOM_FILL_DOUBLE -99999.99999
@@ -558,8 +558,8 @@ main()
 	if (nc_put_att_double(ncid, varid2, _FillValue, NC_DOUBLE, 1, &custom_fill_double)) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Write the data. */
         if (nc_put_var_float(ncid, varid, float_data)) ERR;
@@ -622,7 +622,7 @@ main()
         }
     }
     SUMMARIZE_ERR;
-    printf("*** Checking Granular BitGroom values with type conversion between ints and floats...");
+    printf("*** Checking Granular BitRound values with type conversion between ints and floats...");
     {
         int ncid;
         int dimid;
@@ -649,8 +649,8 @@ main()
         if (nc_def_var(ncid, VAR_NAME2, NC_DOUBLE, NDIM1, &dimid, &varid2)) ERR;
 
         /* Set up quantization. */
-        if (nc_def_var_granularbg(ncid, varid1, nsd_out)) ERR;
-        if (nc_def_var_granularbg(ncid, varid2, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid1, nsd_out)) ERR;
+        if (nc_def_var_granularbr(ncid, varid2, nsd_out)) ERR;
 
         /* Write data. */
 	index = 0;

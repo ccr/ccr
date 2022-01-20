@@ -22,9 +22,9 @@ if BUILD_BITGROOM
 BITGROOM = BITGROOM
 endif
 
-# Does the user want to build Granular BitGroom?
-if BUILD_GRANULARBG
-GRANULARBG = GRANULARBG
+# Does the user want to build Granular BitRound?
+if BUILD_GRANULARBR
+GRANULARBR = GRANULARBR
 endif
 
 # Does the user want to build Zstandard?
@@ -48,4 +48,4 @@ endif
 # endif
 
 # Build the desired subdirectories.
-SUBDIRS = $(BZIP2) $(BITGROOM) $(GRANULARBG) $(ZSTANDARD) $(BLOSC) $(JPEG) $(LZF)
+SUBDIRS = $(BZIP2) $(BITGROOM) $(GRANULARBR) $(ZSTANDARD) $(BLOSC) $(JPEG) $(LZF)

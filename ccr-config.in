@@ -17,7 +17,7 @@ libs="-L${libdir} @CCR_LIBS@"
 libsprivate="@LIBS@"
 
 has_bitgroom="@BUILD_BITGROOM@"
-has_granularbg="@BUILD_GRANULARBG@"
+has_granularbr="@BUILD_GRANULARBR@"
 has_bzip2="@BUILD_BZIP2@"
 has_lz4="@BUILD_LZ4@"
 has_zstd="@BUILD_ZSTD@"
@@ -48,7 +48,7 @@ Available values for OPTION include:
   --has-bitgroom  whether BitGroom filter is installed
   --has-bzip2     whether Bzip2 filter is installed
   --has-fortran   whether Fortran API is installed
-  --has-granularbg  whether Granular BitGroom filter is installed
+  --has-granularbr  whether Granular BitRound filter is installed
   --has-lz4       whether LZ4 filter is installed
   --has-zstd      whether Zstandard filter is installed
   --has-par       whether Parallel I/O is enabled
@@ -94,7 +94,7 @@ if test "x$has_fortran" = xyes; then
 fi
         echo "  --has-bitgroom  -> $has_bitgroom"
         echo "  --has-bzip2     -> $has_bzip2"
-        echo "  --has-granularbg  -> $has_granularbg"
+        echo "  --has-granularbr  -> $has_granularbr"
         echo "  --has-lz4       -> $has_lz4"
         echo "  --has-zstd      -> $has_zstd"
         echo "  --has-par       -> $has_par"
@@ -142,8 +142,8 @@ while test $# -gt 0; do
         echo $has_bitgroom
         ;;
 
-    --has-granularbg)
-        echo $has_granularbg
+    --has-granularbr)
+        echo $has_granularbr
         ;;
 
     --has-bzip2)

@@ -3,7 +3,7 @@
  /*
  * This file is an example of an HDF5 filter plugin.
  * The plugin can be used with the HDF5 library vesrion 1.8.11+ to read and write
- * HDF5 datasets quantized with Granular BitGrooming.
+ * HDF5 datasets quantized with Granular BitRound.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -54,7 +54,7 @@
 # include <features.h> /* __USE_BSD */
 #endif
 #ifdef HAVE_MATH_H
-/* Needed for M_LN10, M_LN2 in ccr_gbg() */
+/* Needed for M_LN10, M_LN2 in ccr_gbr() */
 # include <math.h> /* sin cos cos sin 3.14159 */
 #endif
 
@@ -62,11 +62,11 @@
 #include "H5PLextern.h" /* HDF5 Plugin Library: H5PLget_plugin_type(), H5PLget_plugin_info() */
 
 /* Tokens and typedefs */
-#define H5Z_FILTER_GRANULARBG 32023 /* Received ID from HDF Group 20211210 */
+#define H5Z_FILTER_GRANULARBR 32023 /* Received ID from HDF Group 20211210 */
 #define CCR_FLT_DBG_INFO 0 /* [flg] Print non-fatal debugging information */
-#define CCR_FLT_NAME "Granular BitGroom filter" /* [sng] Filter name in vernacular for HDF5 messages */
+#define CCR_FLT_NAME "Granular BitRound filter" /* [sng] Filter name in vernacular for HDF5 messages */
 #define CCR_FLT_NSD_DFL 3 /* [nbr] Default number of significant digits for quantization */
-#define CCR_FLT_PRM_NBR 5 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:GRANULARBG_FLT_PRM_NBR */
+#define CCR_FLT_PRM_NBR 5 /* [nbr] Number of parameters sent to filter (in cd_params array). NB: keep identical with ccr.h:GRANULARBR_FLT_PRM_NBR */
 #define CCR_FLT_PRM_PSN_NSD 0 /* [nbr] Ordinal position of NSD in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_DATUM_SIZE 1 /* [nbr] Ordinal position of datum_size in parameter list (cd_params array) */
 #define CCR_FLT_PRM_PSN_HAS_MSS_VAL 2 /* [nbr] Ordinal position of missing value flag in parameter list (cd_params array) */
@@ -104,7 +104,7 @@ typedef union{ /* ptr_unn */
 
 /* Forward-declare functions before their names appear in H5Z_class2_t filter structure */
 size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
-H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
+H5Z_filter_granularbr /* [fnc] HDF5 Granular BitRound Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
@@ -113,20 +113,20 @@ H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
  void **bfr_inout); /* I/O [frc] Values to quantize */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-ccr_can_apply_granularbg /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_granularbr /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_granularbr /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space); /* I [id] Dataset space ID */
 
-const H5Z_class2_t H5Z_GRANULARBG[1]={{
+const H5Z_class2_t H5Z_GRANULARBR[1]={{
     H5Z_CLASS_T_VERS, /* H5Z_class_t version */
-    (H5Z_filter_t)H5Z_FILTER_GRANULARBG, /* Filter ID number */
+    (H5Z_filter_t)H5Z_FILTER_GRANULARBR, /* Filter ID number */
 #ifdef FILTER_DECODE_ONLY
     0, /* [flg] Encoder availability flag */
 #else
@@ -134,13 +134,13 @@ const H5Z_class2_t H5Z_GRANULARBG[1]={{
 #endif
     1, /* [flg] Encoder availability flag */
     CCR_FLT_NAME, /* [sng] Filter name for debugging */
-    ccr_can_apply_granularbg, /* [fnc] Callback to determine if current variable meets filter criteria */
-    ccr_set_local_granularbg, /* [fnc] Callback to determine and set per-variable filter parameters */
-    (H5Z_func_t)H5Z_filter_granularbg, /* [fnc] Function to implement filter */
-  }}; /* !H5Z_GRANULARBG */
+    ccr_can_apply_granularbr, /* [fnc] Callback to determine if current variable meets filter criteria */
+    ccr_set_local_granularbr, /* [fnc] Callback to determine and set per-variable filter parameters */
+    (H5Z_func_t)H5Z_filter_granularbr, /* [fnc] Function to implement filter */
+  }}; /* !H5Z_GRANULARBR */
 
 void
-ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
+ccr_gbr /* [fnc] Granular BitRound buffer of float values */
 (const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
  const int type, /* I [enm] netCDF type of operand */
  const size_t sz, /* I [nbr] Size (in elements) of buffer to quantize */
@@ -160,13 +160,13 @@ H5PLget_plugin_type /* [fnc] Provide plug-in type provided by this shared librar
 const void * /* O [enm] */
 H5PLget_plugin_info /* [fnc] Return structure */
 (void)
-{ /* Purpose: Provide structure that defines Granular BitGroom filter so the filter may be dynamically registered with the plugin mechanism
+{ /* Purpose: Provide structure that defines Granular BitRound filter so the filter may be dynamically registered with the plugin mechanism
      The HDF5 plugin mechanism usually calls this function after an application calls H5Pset_filter(), or when the data to which this filter will be applied are first read */
-  return H5Z_GRANULARBG;
+  return H5Z_GRANULARBR;
 } /* !H5PLget_plugin_info() */
 
 size_t /* O [B] Number of bytes resulting after forward/reverse filter applied */
-H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
+H5Z_filter_granularbr /* [fnc] HDF5 Granular BitRound Filter */
 (unsigned int flags, /* I [flg] Bitfield that encodes filter direction */
  size_t cd_nelmts, /* I [nbr] Number of elements in filter parameter (cd_values[]) array */
  const unsigned int cd_values[], /* I [enm] Filter parameters */
@@ -174,13 +174,13 @@ H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
  size_t *bfr_sz_out, /* O [B] Number of bytes in output buffer (after forward/reverse filter) */
  void **bfr_inout) /* I/O [frc] Values to quantize */
 {
-  /* Purpose: Dynamic filter invoked by HDF5 to Granular BitGroom a variable */
+  /* Purpose: Dynamic filter invoked by HDF5 to Granular BitRound a variable */
 
-  const char fnc_nm[]="H5Z_filter_granularbg()"; /* [sng] Function name */
+  const char fnc_nm[]="H5Z_filter_granularbr()"; /* [sng] Function name */
 
   if(flags & H5Z_FLAG_REVERSE){
 
-    /* Currently supported quantization methods (Granular BitGrooming) store results in IEEE754 format 
+    /* Currently supported quantization methods (Granular BitRound) store results in IEEE754 format 
        These quantized buffers are full of legal IEEE754 numbers that need no "dequantization"
        In other words, the input values in bfr_inout are also the output values */
     return bfr_sz_in;
@@ -210,7 +210,7 @@ H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
 	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.fp);
       } /* !has_mss_val */
       op1.fp=(float *)(*bfr_inout);
-      ccr_gbg(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
+      ccr_gbr(nsd,NC_FLOAT,bfr_sz_in/sizeof(float),has_mss_val,mss_val,op1);
       break;
     case 8:
       /* Double-precision floating-point data */
@@ -219,7 +219,7 @@ H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
 	if(CCR_FLT_DBG_INFO) (void)fprintf(stderr,"INFO: \"%s\" filter function %s reports missing value = %g\n",CCR_FLT_NAME,fnc_nm,*mss_val.dp);
       } /* !has_mss_val */
       op1.dp=(double *)(*bfr_inout);
-      ccr_gbg(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
+      ccr_gbr(nsd,NC_DOUBLE,bfr_sz_in/sizeof(double),has_mss_val,mss_val,op1);
       break;
     default:
       (void)fprintf(stderr,"ERROR: \"%s\" filter function %s reports datum size = %lu B is invalid\n",CCR_FLT_NAME,fnc_nm,datum_size);
@@ -237,10 +237,10 @@ H5Z_filter_granularbg /* [fnc] HDF5 Granular BitGroom Filter */
   /* Quantization filters generally allocate no memory, so just return with error code */
   return 0;
 
-} /* !H5Z_filter_granularbg() */
+} /* !H5Z_filter_granularbr() */
 
 htri_t /* O [flg] Data meet criteria to apply filter */
-ccr_can_apply_granularbg /* [fnc] Callback to determine if current variable meets filter criteria */
+ccr_can_apply_granularbr /* [fnc] Callback to determine if current variable meets filter criteria */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
@@ -253,15 +253,15 @@ ccr_can_apply_granularbg /* [fnc] Callback to determine if current variable meet
 
   /* Filter can be applied */
   return 1;
-} /* !ccr_can_apply_granularbg() */
+} /* !ccr_can_apply_granularbr() */
 
 htri_t /* O [flg] Filter parameters successfully modified for this variable */
-ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable filter parameters */
+ccr_set_local_granularbr /* [fnc] Callback to determine and set per-variable filter parameters */
 (hid_t dcpl, /* I [id] Dataset creation property list ID */
  hid_t type, /* I [id] Dataset type ID */
  hid_t space) /* I [id] Dataset space ID */
 {
-  const char fnc_nm[]="ccr_set_local_granularbg()"; /* [sng] Function name */
+  const char fnc_nm[]="ccr_set_local_granularbr()"; /* [sng] Function name */
 
   herr_t rcd; /* [flg] Return code */
   
@@ -276,7 +276,7 @@ ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable fil
   /* Retrieve parameters specified by user
      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#FunctionIndex
      Ignore name and filter_config by setting last three arguments to 0/NULL */
-  rcd=H5Pget_filter_by_id(dcpl,H5Z_FILTER_GRANULARBG,&flags,&cd_nelmts,cd_values,0,NULL,NULL);
+  rcd=H5Pget_filter_by_id(dcpl,H5Z_FILTER_GRANULARBR,&flags,&cd_nelmts,cd_values,0,NULL,NULL);
   if(rcd < 0){
     (void)fprintf(stderr,"ERROR: %s filter callback function %s reports H5Pget_filter_by_id() failed to get filter flags and parameters for current variable\n",CCR_FLT_NAME,fnc_nm);
     return 0;
@@ -292,7 +292,7 @@ ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable fil
     if(CCR_FLT_DBG_INFO){
       (void)fprintf(stdout,"INFO: \"%s\" filter callback function %s reports H5Tget_class() returned data type class identifier = %d != H5T_FLOAT = %d. Attempting to remove quantization filter using H5Premove_filter()...",CCR_FLT_NAME,fnc_nm,(int)data_class,H5T_FLOAT);
     } /* !CCR_FLT_DBG_INFO */
-    rcd=H5Premove_filter(dcpl,H5Z_FILTER_GRANULARBG);
+    rcd=H5Premove_filter(dcpl,H5Z_FILTER_GRANULARBR);
     if(rcd < 0){
       if(CCR_FLT_DBG_INFO) (void)fprintf(stdout,"failure :(\n");
       return 0;
@@ -370,17 +370,17 @@ ccr_set_local_granularbg /* [fnc] Callback to determine and set per-variable fil
   ccr_flt_prm[CCR_FLT_PRM_PSN_HAS_MSS_VAL]=has_mss_val;
 
   /* Update invoked filter with generic parameters as invoked with variable-specific values */
-  rcd=H5Pmodify_filter(dcpl,H5Z_FILTER_GRANULARBG,flags,CCR_FLT_PRM_NBR,cd_values);
+  rcd=H5Pmodify_filter(dcpl,H5Z_FILTER_GRANULARBR,flags,CCR_FLT_PRM_NBR,cd_values);
   if(rcd < 0){
     (void)fprintf(stderr,"ERROR: \"%s\" filter callback function %s reports H5Pmodify_filter() unable to modify filter parameters\n",CCR_FLT_NAME,fnc_nm);
     return 0;
   } /* !rcd */
 
   return 1;
-} /* !ccr_set_local_granularbg() */
+} /* !ccr_set_local_granularbr() */
 
 void
-ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
+ccr_gbr /* [fnc] Granular BitRound buffer of float values */
 (const int nsd, /* I [nbr] Number of decimal significant digits to quantize to */
  const int type, /* I [enm] netCDF type of operand */
  const size_t sz, /* I [nbr] Size (in elements) of buffer to quantize */
@@ -388,7 +388,7 @@ ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
  ptr_unn mss_val, /* I [val] Value of missing value */
  ptr_unn op1) /* I/O [frc] Values to quantize */
 {
-  const char fnc_nm[]="ccr_gbg()"; /* [sng] Function name */
+  const char fnc_nm[]="ccr_gbr()"; /* [sng] Function name */
 
   /* Prefer constants defined in math.h, however, ...
      20201002 GCC environments can have hard time defining M_LN10/M_LN2 despite finding math.h */
@@ -507,4 +507,4 @@ ccr_gbg /* [fnc] Granular BitGroom buffer of float values */
     break;
   } /* !type */
   
-} /* ccr_gbg() */
+} /* ccr_gbr() */
