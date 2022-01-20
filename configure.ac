@@ -171,18 +171,18 @@ if test "x$enable_bitgroom" = xyes; then
 fi
 AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
 
-# Does the user want Granular BitGroom?
-AC_MSG_CHECKING([whether Granular BitGroom filter library should be built and installed])
-AC_ARG_ENABLE([granularbg],
-              [AS_HELP_STRING([--disable-granularbg],
-                              [Disable the build and install of Granular BitGroom filter library.])])
-test "x$enable_granularbg" = xno || enable_granularbg=yes
-AC_MSG_RESULT($enable_granularbg)
-AM_CONDITIONAL(BUILD_GRANULARBG, [test "x$enable_granularbg" = xyes])
-if test "x$enable_granularbg" = xyes; then
-   AC_DEFINE([BUILD_GRANULARBG], 1, [If true, build with Granular BitGroom filter.])
+# Does the user want Granular BitRound?
+AC_MSG_CHECKING([whether Granular BitRound filter library should be built and installed])
+AC_ARG_ENABLE([granularbr],
+              [AS_HELP_STRING([--disable-granularbr],
+                              [Disable the build and install of Granular BitRound filter library.])])
+test "x$enable_granularbr" = xno || enable_granularbr=yes
+AC_MSG_RESULT($enable_granularbr)
+AM_CONDITIONAL(BUILD_GRANULARBR, [test "x$enable_granularbr" = xyes])
+if test "x$enable_granularbr" = xyes; then
+   AC_DEFINE([BUILD_GRANULARBR], 1, [If true, build with Granular BitRound filter.])
 fi
-AC_SUBST([BUILD_GRANULARBG], [$enable_granularbg])
+AC_SUBST([BUILD_GRANULARBR], [$enable_granularbr])
 
 # Does the user want Zstandard?
 AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
@@ -411,8 +411,8 @@ AC_SUBST(HAS_ZSTD,[$enable_zstd])
 AX_SET_META([CCR_HAS_ZSTD],[$enable_zstd],[yes])
 AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
 AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
-AC_SUBST(HAS_GRANULARBG,[$enable_granularbg])
-AX_SET_META([CCR_HAS_GRANULARBG],[$enable_granularbg],[yes])
+AC_SUBST(HAS_GRANULARBR,[$enable_granularbr])
+AX_SET_META([CCR_HAS_GRANULARBR],[$enable_granularbr],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])

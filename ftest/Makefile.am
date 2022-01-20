@@ -25,10 +25,10 @@ check_PROGRAMS += ftst_ccr_bitgroom
 ftst_ccr_bitgroom_SOURCES = ftst_ccr_bitgroom.F90
 endif
 
-# Build the Granular BitGroom tests?
-if BUILD_GRANULARBG
-check_PROGRAMS += ftst_ccr_granularbg
-ftst_ccr_granularbg_SOURCES = ftst_ccr_granularbg.F90
+# Build the Granular BitRound tests?
+if BUILD_GRANULARBR
+check_PROGRAMS += ftst_ccr_granularbr
+ftst_ccr_granularbr_SOURCES = ftst_ccr_granularbr.F90
 endif
 
 # Build the ZSTANDARD tests?

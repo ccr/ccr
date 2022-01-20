@@ -2,10 +2,10 @@
  * Copyright by The HDF Group.                                               *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of the HDF5 Granular BitGroom filter plugin source.  The full    *
+ * This file is part of the HDF5 Granular BitRound filter plugin source.  The full    *
  * copyright notice, including terms governing use, modification, and        *
  * terms governing use, modification, and redistribution, is contained in    *
- * the file COPYING, which can be found at the root of the GRANULARBG source code   *
+ * the file COPYING, which can be found at the root of the GRANULARBR source code   *
  * distribution tree.  If you do not have access to this file, you may       *
  * request a copy from help@hdfgroup.org.                                    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -13,8 +13,8 @@
 /************************************************************
 
   This example shows how to write data and read it from a dataset
-  using BitGroom quantization.
-  The BitGroom filter is not available by default in HDF5.
+  using Granular BitRound quantization.
+  The Granular BitRound filter is not available by default in HDF5.
   The example uses a new feature available in HDF5 version 1.8.11
   to discover, load and register filters at run time.
 
@@ -24,13 +24,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FILE            "h5ex_d_granularbg.h5"
+#define FILE            "h5ex_d_granularbr.h5"
 #define DATASET         "DS1"
 #define DIM0            32
 #define DIM1            64
 #define CHUNK0          4
 #define CHUNK1          8
-#define H5Z_FILTER_GRANULARBG        32023
+#define H5Z_FILTER_GRANULARBR        32023
 
 int
 main (void)
@@ -45,10 +45,10 @@ main (void)
     char            filter_name[80];
     hsize_t         dims[2] = {DIM0, DIM1},
                     chunk[2] = {CHUNK0, CHUNK1};
-    size_t          nelmts = 5; /* number of elements in cd_values */ /* NB: Must equal H5Zgranularbg.c: CCR_FLT_PRM_NBR */
+    size_t          nelmts = 5; /* number of elements in cd_values */ /* NB: Must equal H5Zgranularbr.c: CCR_FLT_PRM_NBR */
     unsigned int    flags;
     unsigned        filter_config;
-    const unsigned int    cd_values[5] = {3,4,0,0,0}; /* Granular BitGroom argument ordering is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
+    const unsigned int    cd_values[5] = {3,4,0,0,0}; /* Granular BitRound argument ordering is NSD,sizeof(data),has_mss_val,mss_val_byt_1to4[,mss_val_byt_5to8] */
     unsigned int    values_out[5] = {99,99,99,99,99};
     float           wdata[DIM0][DIM1],          /* Write buffer */
                     rdata[DIM0][DIM1],          /* Read buffer */
@@ -77,7 +77,7 @@ main (void)
     if (space_id < 0) goto done;
 
     /*
-     * Create the dataset creation property list, add the Granular BitGroom
+     * Create the dataset creation property list, add the Granular BitRound
      * quantization filter and set the chunk size.
      */
     dcpl_id = H5Pcreate (H5P_DATASET_CREATE);
@@ -85,19 +85,19 @@ main (void)
 
     /* 20200929: csz change this to H5Z_FLAG_OPTIONAL, so that can_apply() can reject filter for
        integers without causing program to exit()? */
-    status = H5Pset_filter (dcpl_id, H5Z_FILTER_GRANULARBG, H5Z_FLAG_MANDATORY, nelmts, cd_values);
+    status = H5Pset_filter (dcpl_id, H5Z_FILTER_GRANULARBR, H5Z_FLAG_MANDATORY, nelmts, cd_values);
     if (status < 0) goto done;
 
     /*
      * Check that filter is registered with the library now.
      * If it is registered, retrieve filter's configuration.
      */
-    avail = H5Zfilter_avail(H5Z_FILTER_GRANULARBG);
+    avail = H5Zfilter_avail(H5Z_FILTER_GRANULARBR);
     if (avail) {
-        status = H5Zget_filter_info (H5Z_FILTER_GRANULARBG, &filter_config);
+        status = H5Zget_filter_info (H5Z_FILTER_GRANULARBR, &filter_config);
         if ( (filter_config & H5Z_FILTER_CONFIG_ENCODE_ENABLED) &&
 	     (filter_config & H5Z_FILTER_CONFIG_DECODE_ENABLED) )
-	  printf ("Granular BitGroom filter is available for quantization and decoding.\n");
+	  printf ("Granular BitRound filter is available for quantization and decoding.\n");
     }
     else {
         printf ("H5Zfilter_avail - not found.\n");
@@ -119,7 +119,7 @@ main (void)
     /*
      * Write the data to the dataset.
      */
-    printf ("....Writing Granular BitGroom-quantized data ................\n");
+    printf ("....Writing Granular BitRound-quantized data ................\n");
     //    status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, wdata[0]);
     status = H5Dwrite (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)wdata);
     if (status < 0) printf ("failed to write data.\n");
@@ -163,13 +163,13 @@ main (void)
     if (dcpl_id < 0) goto done;
 
     /*
-     * Retrieve and print the filter id, quantization level and filter's name for Granular BitGroom.
+     * Retrieve and print the filter id, quantization level and filter's name for Granular BitRound.
      */
     filter_id = H5Pget_filter2 (dcpl_id, (unsigned) 0, &flags, &nelmts, values_out, sizeof(filter_name), filter_name, NULL);
     printf ("Filter info is available from the dataset creation property \n ");
     printf ("  Filter identifier is ");
     switch (filter_id) {
-        case H5Z_FILTER_GRANULARBG:
+        case H5Z_FILTER_GRANULARBR:
             printf ("%d\n", filter_id);
             printf ("   Number of parameters is %lu with the values %u, %u, %u, %u, %u\n", nelmts,values_out[0],values_out[1],values_out[2],values_out[3],values_out[4]);
             printf ("   To find more about the filter check %s\n", filter_name);
@@ -182,7 +182,7 @@ main (void)
     /*
      * Read the data using the default properties.
      */
-    printf ("....Reading Granular BitGroom-quantized data ................\n");
+    printf ("....Reading Granular BitRound-quantized data ................\n");
     status = H5Dread (dset_id, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, rdata[0]);
     if (status < 0) printf ("failed to read data.\n");
 
@@ -204,9 +204,9 @@ main (void)
     /*
      * Check that filter is registered with the library now.
      */
-    avail = H5Zfilter_avail(H5Z_FILTER_GRANULARBG);
+    avail = H5Zfilter_avail(H5Z_FILTER_GRANULARBR);
     if (avail)
-        printf ("Granular BitGroom filter is available now since H5Dread triggered loading of the filter.\n");
+        printf ("Granular BitRound filter is available now since H5Dread triggered loading of the filter.\n");
 
     ret_value = 0;
 

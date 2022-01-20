@@ -21,11 +21,11 @@
 /** Number of parameters used internally by filter and returned by nc_inq_var_bitgroom() */
 #define BITGROOM_FLT_PRM_NBR 5 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
 
-/** The filter ID for BitGroom quantization. */
-#define GRANULARBG_ID 32023
+/** The filter ID for Granular BitRound quantization. */
+#define GRANULARBR_ID 32023
 
-/** Number of parameters used internally by filter and returned by nc_inq_var_granularbg() */
-#define GRANULARBG_FLT_PRM_NBR 5 /* H5Zgranularbg.c: CCR_FLT_PRM_NBR */
+/** Number of parameters used internally by filter and returned by nc_inq_var_granularbr() */
+#define GRANULARBR_FLT_PRM_NBR 5 /* H5Zgranularbr.c: CCR_FLT_PRM_NBR */
 
 /** The filter ID for Zstandard compression. */
 #define ZSTANDARD_ID 32015
@@ -51,8 +51,8 @@ extern "C" {
     int nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp);
     int nc_def_var_zstandard(int ncid, int varid, int level);
     int nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp);
-    int nc_def_var_granularbg(int ncid, int varid, int nsd);
-    int nc_inq_var_granularbg(int ncid, int varid, int *granularbgp, int *nsdp);
+    int nc_def_var_granularbr(int ncid, int varid, int nsd);
+    int nc_inq_var_granularbr(int ncid, int varid, int *granularbrp, int *nsdp);
 
 #if defined(__cplusplus)
 }

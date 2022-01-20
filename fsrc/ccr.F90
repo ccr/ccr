@@ -58,21 +58,21 @@ module ccr
      end function nc_inq_var_bitgroom
   end interface
   
-  !> Interface to C function to set Granular BitGroom quantization.
+  !> Interface to C function to set Granular BitRound quantization.
   interface
-     function nc_def_var_granularbg(ncid, varid, nsd) bind(c)
+     function nc_def_var_granularbr(ncid, varid, nsd) bind(c)
        use iso_c_binding
        integer(C_INT), value :: ncid, varid, nsd
-     end function nc_def_var_granularbg
+     end function nc_def_var_granularbr
   end interface
 
-  !> Interface to C function to inquire about Granular BitGroom quantization.
+  !> Interface to C function to inquire about Granular BitRound quantization.
   interface
-     function nc_inq_var_granularbg(ncid, varid, granularbgp, nsdp) bind(c)
+     function nc_inq_var_granularbr(ncid, varid, granularbrp, nsdp) bind(c)
        use iso_c_binding
        integer(C_INT), value :: ncid, varid
-       integer(C_INT), intent(inout):: granularbgp, nsdp
-     end function nc_inq_var_granularbg
+       integer(C_INT), intent(inout):: granularbrp, nsdp
+     end function nc_inq_var_granularbr
   end interface
   
   !> Interface to C function to set Zstandard compression.
@@ -208,7 +208,7 @@ contains
     status = nc_inq_var_bitgroom(ncid, varid - 1, bitgroomp, nsdp)
   end function nf90_inq_var_bitgroom
 
-  !> Set Granular BitGroom quantization for a variable.
+  !> Set Granular BitRound quantization for a variable.
   !!
   !! @param ncid File or group ID.
   !! @param varid Variable ID.
@@ -216,36 +216,36 @@ contains
   !! double-precision NSDs are 1-7 and 1-15, respectively. (Default is 3).
   !!
   !! @return 0 for success, error code otherwise.
-  function nf90_def_var_granularbg(ncid, varid, nsd) result(status)
+  function nf90_def_var_granularbr(ncid, varid, nsd) result(status)
     use iso_c_binding
     implicit none
     integer, intent(in) :: ncid, varid, nsd
     integer :: status
 
     ! C varids start at 0, fortran at 1.
-    status = nc_def_var_granularbg(ncid, varid - 1, nsd)
-  end function nf90_def_var_granularbg
+    status = nc_def_var_granularbr(ncid, varid - 1, nsd)
+  end function nf90_def_var_granularbr
 
-  !> Inquire about Granular BitGroom quantization for a variable.
+  !> Inquire about Granular BitRound quantization for a variable.
   !!
   !! @param ncid File or group ID.
   !! @param varid Variable ID.
-  !! @param granularbgp Pointer that gets 1 if Granular BitGroom is in use, 0
+  !! @param granularbrp Pointer that gets 1 if Granular BitRound is in use, 0
   !! otherwise. Ignored if NULL.
   !! @param nsdp Pointer that gets number of significant digits,
-  !! if Granular BitGroom is in use. Ignored if NULL.
+  !! if Granular BitRound is in use. Ignored if NULL.
   !!
   !! @return 0 for success, error code otherwise.
-  function nf90_inq_var_granularbg(ncid, varid, granularbgp, nsdp) result(status)
+  function nf90_inq_var_granularbr(ncid, varid, granularbrp, nsdp) result(status)
     use iso_c_binding
     implicit none
     integer, intent(in) :: ncid, varid
-    integer, intent(inout) :: granularbgp, nsdp
+    integer, intent(inout) :: granularbrp, nsdp
     integer :: status
 
     ! C varids start at 0, fortran at 1.
-    status = nc_inq_var_granularbg(ncid, varid - 1, granularbgp, nsdp)
-  end function nf90_inq_var_granularbg
+    status = nc_inq_var_granularbr(ncid, varid - 1, granularbrp, nsdp)
+  end function nf90_inq_var_granularbr
 
   !> Set Zstandard compression for a variable.
   !!

@@ -25,8 +25,8 @@ HDF5_PLUGIN_PATH:	@HDF5_PLUGIN_PATH@
 
 BZIP2 Support:		@HAS_BZIP2@
 LZ4 Support:		@HAS_LZ4@
-BitGoom Support:	@HAS_BITGROOM@
-Granular BG Support:	@HAS_GRANULARBG@
+BitGroom Support:	@HAS_BITGROOM@
+Granular BR Support:	@HAS_GRANULARBR@
 ZSTD Support:		@HAS_ZSTD@
 Parallel I/O Support:	@HAS_NETCDF_PAR@
 Parallel I/O Filters:	@HAS_PAR_FILTERS@
