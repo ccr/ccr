@@ -11,7 +11,7 @@ added nc_def_var_filter() method (in version 4.7.3 and later).
 Additional filters are available, and support additional compression
 methods.
 
-Version 1.2.0 of the CCR supports:
+Version 1.3.0 of the CCR supports:
 * BZIP2 compression
 * Zstandard compression
 * BitGroom pre-compression
@@ -29,6 +29,7 @@ Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
 Zstandard | Yann Collet
 BitGroom | Charlie Zender
 Granular BitRound | Charlie Zender
+BitRound | Charlie Zender
 
 # Building CCR
 
