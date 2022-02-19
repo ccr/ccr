@@ -401,7 +401,7 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
-  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
+  const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicitly 1. */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
