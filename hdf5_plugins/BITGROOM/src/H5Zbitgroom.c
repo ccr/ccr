@@ -436,7 +436,6 @@ ccr_bgr /* [fnc] BitGroom buffer of float values */
   //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
   prc_bnr_xpl_rqr=prc_bnr_ceil+1;
-  if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
 
   if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
   if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
