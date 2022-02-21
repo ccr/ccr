@@ -78,7 +78,7 @@ pd(double myd)
 	uint64_t u;
     } du;
     du.d = myd;
-    sprintf(pf_str, "0x%lx", du.u);
+    sprintf(pf_str, "0x%llx", du.u);
     return pf_str;
 }
 
@@ -347,12 +347,12 @@ main()
 	    {
 		/* fout.f = float_data[x]; */
 		fin.f = float_data_in[x];
-		/* dfout.d = double_data[x]; */
+		/*dfout.d = double_data[x]; */
 		dfin.d = double_data_in[x];
-		/* printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%lx" */
-		/* 	" expected %15g   : 0x%lx\n", */
-		/* 	x, double_data[x], pd(double_data[x]), x, double_data_in[x], dfin.u, */
-		/* 	double_xpect[x].d, double_xpect[x].u); */
+		/*printf ("double_data %d : %15g   : %s  double_data_in %d : %15g   : 0x%llx" */
+		/*		 	" expected %15g   : 0x%llx\n", */
+		/*		 	x, double_data[x], pd(double_data[x]), x, double_data_in[x], dfin.u, */
+		/*		 	double_xpect[x].d, double_xpect[x].u); */
 		if (fin.u != xpect[x].u)
 		    ERR;
 		if (dfin.u != double_xpect[x].u)
