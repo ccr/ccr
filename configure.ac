@@ -184,6 +184,19 @@ if test "x$enable_granularbr" = xyes; then
 fi
 AC_SUBST([BUILD_GRANULARBR], [$enable_granularbr])
 
+# Does the user want BitRound?
+AC_MSG_CHECKING([whether BitRound filter library should be built and installed])
+AC_ARG_ENABLE([bitround],
+              [AS_HELP_STRING([--disable-bitround],
+                              [Disable the build and install of Granular BitRound filter library.])])
+test "x$enable_bitround" = xno || enable_bitround=yes
+AC_MSG_RESULT($enable_bitround)
+AM_CONDITIONAL(BUILD_BITROUND, [test "x$enable_bitround" = xyes])
+if test "x$enable_bitround" = xyes; then
+   AC_DEFINE([BUILD_BITROUND], 1, [If true, build with BitRound filter.])
+fi
+AC_SUBST([BUILD_BITROUND], [$enable_bitround])
+
 # Does the user want Zstandard?
 AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
 AC_ARG_ENABLE([zstd],
@@ -413,6 +426,8 @@ AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
 AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
 AC_SUBST(HAS_GRANULARBR,[$enable_granularbr])
 AX_SET_META([CCR_HAS_GRANULARBR],[$enable_granularbr],[yes])
+AC_SUBST(HAS_BITROUND,[$enable_bitround])
+AX_SET_META([CCR_HAS_BITROUND],[$enable_bitround],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
