@@ -51,8 +51,8 @@ jobs:
       if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-4.7.4.tar.gz &> /dev/null
-        tar -xzf netcdf-c-4.7.4.tar.gz
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz &> /dev/null
+        tar -xzf v4.7.4.tar.gz
         pushd netcdf-c-4.7.4
         export CPPFLAGS="-I/Users/runner/hdf5/include"
         export LDFLAGS="-L/Users/runner/hdf5/lib"
