@@ -50,11 +50,10 @@ jobs:
       if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz
-        ls -l
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz  &> /dev/null
         tar -xzf v4.7.4.tar.gz
         ls -l
-        pushd v4.7.4
+        pushd netcdf-c-4.7.4
         ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
         make -j
         sudo make install
