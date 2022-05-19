@@ -71,7 +71,7 @@ jobs:
         export PATH="/home/runner/mpich/bin:$PATH"
         export CC=/home/runner/mpich/bin/mpicc
         wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz &> /dev/null
-        tar -xzf netcdf-c-4.7.4.tar.gz
+        tar -xzf v4.7.4.tar.gz
         pushd netcdf-c-4.7.4
         ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
         make -j
