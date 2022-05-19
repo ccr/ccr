@@ -93,3 +93,8 @@ precision-preserving quantization with compression, evaluated in the
 netCDF Operators (NCO, v4.4.8+), Geosci. Model Dev., 9, 3199-3211,
 doi:10.5194/gmd-9-3199-2016 Retrieved on Sep 21, 2020 from
 https://www.researchgate.net/publication/301575383_Bit_Grooming_Statistically_accurate_precision-preserving_quantization_with_compression_evaluated_in_the_netCDF_Operators_NCO_v448.
+
+# ACKNOWLEDGEMENTS
+
+The Community Codec Repository (CCR) used in this work is supported by
+the National Science Foundation under Grant No. OAC-2004993.
