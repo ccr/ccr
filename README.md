@@ -30,6 +30,7 @@ Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
 Zstandard | Yann Collet
 BitGroom | Charlie Zender
 Granular BitRound | Charlie Zender
+BitRound | Charlie Zender
 
 # Building CCR
 

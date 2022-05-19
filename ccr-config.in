@@ -17,6 +17,7 @@ libs="-L${libdir} @CCR_LIBS@"
 libsprivate="@LIBS@"
 
 has_bitgroom="@BUILD_BITGROOM@"
+has_bitround="@BUILD_BITROUND@"
 has_granularbr="@BUILD_GRANULARBR@"
 has_bzip2="@BUILD_BZIP2@"
 has_lz4="@BUILD_LZ4@"
@@ -46,6 +47,7 @@ Available values for OPTION include:
   --cc            C compiler
   --cflags        pre-processor and compiler flags
   --has-bitgroom  whether BitGroom filter is installed
+  --has-bitround  whether BitRound filter is installed
   --has-bzip2     whether Bzip2 filter is installed
   --has-fortran   whether Fortran API is installed
   --has-granularbr  whether Granular BitRound filter is installed
@@ -93,6 +95,7 @@ if test "x$has_fortran" = xyes; then
         echo
 fi
         echo "  --has-bitgroom  -> $has_bitgroom"
+        echo "  --has-bitround  -> $has_bitround"
         echo "  --has-bzip2     -> $has_bzip2"
         echo "  --has-granularbr  -> $has_granularbr"
         echo "  --has-lz4       -> $has_lz4"
@@ -140,6 +143,10 @@ while test $# -gt 0; do
 
     --has-bitgroom)
         echo $has_bitgroom
+        ;;
+
+    --has-bitround)
+        echo $has_bitround
         ;;
 
     --has-granularbr)

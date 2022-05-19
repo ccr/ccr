@@ -402,7 +402,7 @@ ccr_gbr /* [fnc] Granular BitRound buffer of float values */
   const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
-  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
+  const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicitly 1. */
   
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_fabs; /* [frc] fabs(mantissa) */
