@@ -1,4 +1,4 @@
-name: build all
+name: build versions
 
 on:
   push:
