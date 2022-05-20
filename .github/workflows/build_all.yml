@@ -26,15 +26,15 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/hdf5
-        key: hdf5-${{ runner.os }}-1.10.6
+        key: hdf5-${{ runner.os }}-1.12.1
 
     - name: build-hdf5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz  &> /dev/null
-        tar -xzf hdf5-1.10.6.tar.gz
-        pushd hdf5-1.10.6
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.gz  &> /dev/null
+        tar -xzf hdf5-1.12.1.tar.gz
+        pushd hdf5-1.12.1
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         sudo make install
@@ -44,16 +44,16 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf-c
-        key: netcdf-c-${{ runner.os }}-4.7.4
+        key: netcdf-c-${{ runner.os }}-4.8.1
 
     - name: build-netcdf-c
       if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.7.4.tar.gz  &> /dev/null
-        tar -xzf v4.7.4.tar.gz
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz  &> /dev/null
+        tar -xzf v4.8.1.tar.gz
         ls -l
-        pushd netcdf-c-4.7.4
+        pushd netcdf-c-4.8.1
         ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
         make -j
         sudo make install
@@ -63,15 +63,15 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/netcdf-fortran
-        key: netcdf-fortran-${{ runner.os }}-4.5.3-mpich-3.3.2
+        key: netcdf-fortran-${{ runner.os }}-4.5.4
 
     - name: build-netcdf-fortran
       if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
-        tar -xzf v4.5.3.tar.gz
-        pushd netcdf-fortran-4.5.3
+        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz &> /dev/null
+        tar -xzf v4.5.4.tar.gz
+        pushd netcdf-fortran-4.5.4
         ./configure --prefix=/home/runner/netcdf-fortran
         make -j
         sudo make install
