@@ -11,9 +11,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        hdf5: [ 1_10_6 ]
     env:
-      CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
-      LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
+      CPPFLAGS: "-I/home/runner/hdf5${{ matrix.hdf5 }}/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
+      LDFLAGS: "-L/home/runner/hdf5${{ matrix.hdf5 }}/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
 
     steps:
@@ -25,16 +28,16 @@ jobs:
       id: cache-hdf5
       uses: actions/cache@v2
       with:
-        path: ~/hdf5
-        key: hdf5-${{ runner.os }}-1.10.6
+        path: ~/hdf5-${{ matrix.hdf5 }}
+        key: hdf5-${{ runner.os }}-${{ matrix.hdf5 }}
 
     - name: build-hdf5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz  &> /dev/null
-        tar -xzf hdf5-1.10.6.tar.gz
-        pushd hdf5-1.10.6
+        wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-${{ matrix.hdf5 }}.tar.gz  &> /dev/null
+        tar -xzf hdf5-${{ matrix.hdf5 }}.tar.gz
+        pushd hdf5-${{ matrix.hdf5 }}
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         sudo make install
