@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build_all:
 
     runs-on: ubuntu-latest
 
@@ -26,15 +26,15 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/hdf5
-        key: hdf5-${{ runner.os }}-1.12.1
+        key: hdf5-${{ runner.os }}-1.14.6
 
     - name: build-hdf5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.gz  &> /dev/null
-        tar -xzf hdf5-1.12.1.tar.gz
-        pushd hdf5-1.12.1
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.14.6/src/hdf5-1.14.6.tar.gz  &> /dev/null
+        tar -xzf hdf5-1.14.6.tar.gz
+        pushd hdf5-1.14.6
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         sudo make install
