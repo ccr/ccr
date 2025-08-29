@@ -32,7 +32,7 @@ jobs:
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.14.6/src/hdf5-1.14.6.tar.gz  &> /dev/null
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.6/src/hdf5-1.14.6.tar.gz  &> /dev/null
         tar -xzf hdf5-1.14.6.tar.gz
         pushd hdf5-1.14.6
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
