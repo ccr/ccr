@@ -64,8 +64,7 @@ main()
     struct stat st;
     
     printf("\n*** Checking Performance of filters.\n");
-#ifdef BUILD_ZSTD    
-    printf("*** Checking Zstandard vs. zlib performance on large float data set...");
+    printf("*** Checking zlib performance on large float data set...");
     printf("\ncompression, level, write time (s), file size (MB)\n");
     {
         float *data_out;
@@ -116,7 +115,7 @@ main()
 		    level = MIN_ZLIB;
 		if (f < NFILE / 2 + 1)
 		{
-		    if (nc_def_var_zstandard(ncid, varid, level)) ERR;
+		    if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
 		    increment = 2;
 		}
 		else
@@ -151,15 +150,15 @@ main()
 	    /* { */
 	    /* 	int ncid; */
 	    /* 	int varid = 0; */
-	    /* 	int level_in, zstandard; */
+	    /* 	int level_in, deflate; */
 		
 	    /* 	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR; */
-	    /* 	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR; */
+	    /* 	if (nc_inq_var_deflate(ncid, varid, &deflate, &level_in)) ERR; */
 	    /* 	if (f) */
 	    /* 	{ */
 	    /* 	    if (f < NFILE / 2 + 1) */
 	    /* 	    { */
-	    /* 		if (!zstandard) ERR; */
+	    /* 		if (!deflate) ERR; */
 	    /* 	    } */
 	    /* 	    else */
 	    /* 	    { */
@@ -167,7 +166,7 @@ main()
 	    /* 	} */
 	    /* 	else */
 	    /* 	{ */
-	    /* 	    if (zstandard) ERR; */
+	    /* 	    if (deflate) ERR; */
 	    /* 	} */
 	    /* 	for (start[0] = 0; start[0] < NUM_REC; start[0]++) */
 	    /* 	{ */

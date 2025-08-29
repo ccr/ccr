@@ -20,20 +20,8 @@ if BUILD_LZ4
 check_PROGRAMS += tst_lz4
 endif
 
-# Build BitGroom tests, if needed.
-if BUILD_BITGROOM
-check_PROGRAMS += tst_bitgroom
-endif
 
-# Build Granular BitRound tests, if needed.
-if BUILD_GRANULARBR
-check_PROGRAMS += tst_granularbr
-endif
 
-# Build Zstandard tests, if needed.
-if BUILD_ZSTD
-check_PROGRAMS += tst_zstandard
-endif
 
 # Build the performance tests.
 check_PROGRAMS += tst_perf tst_compress

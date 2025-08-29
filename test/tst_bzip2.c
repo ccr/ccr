@@ -116,9 +116,8 @@ main()
         }
     }
     SUMMARIZE_ERR;
-#ifdef BUILD_BITGROOM    
 #ifdef HAVE_MULTIFILTERS
-    printf("*** Checking bzip2 filter with bitgroom...");
+    printf("*** Checking bzip2 filter...");
     {
         int ncid;
         int dimid[NDIM2];
@@ -126,7 +125,6 @@ main()
         float data_out[NX][NY];
         int x, y;
         int nsd_out = 3;	
-      	int bitgroom, nsd_in;
 	int level_in, bzip2;
 
         /* Create some data to write. */
@@ -144,25 +142,13 @@ main()
         /* Create the variable. */
         if (nc_def_var(ncid, VAR_NAME, NC_FLOAT, NDIM2, dimid, &varid)) ERR;
 
-	/* Bitgroom is not on. */
-        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
-	if (bitgroom) ERR;
 
-        /* These won't work. */
-        if (nc_def_var_bitgroom(ncid, varid, -9) != NC_EINVAL) ERR;
-        if (nc_def_var_bitgroom(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_bitgroom(ncid, varid, 16) != NC_EINVAL) ERR;
 
-	/* Bitgroom is still not on. */
-        if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
-	if (bitgroom) ERR;
 
         /* Check setting. */
         if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
         if (bzip2) ERR;
 
-	/* Turn on bitgroom. */
-	if (nc_def_var_bitgroom(ncid, varid, nsd_out)) ERR;
 
         /* Set up compression. */
         if (nc_def_var_bzip2(ncid, varid, 8)) ERR;
@@ -193,8 +179,6 @@ main()
             if (nc_inq_var_bzip2(ncid, varid, &bzip2, &level_in)) ERR;
             if (!bzip2 || level_in != 8) ERR;
 
-	    if (nc_inq_var_bitgroom(ncid, varid, &bitgroom, &nsd_in)) ERR;
-	    if (!bitgroom || nsd_in != nsd_out) ERR;
 
             /* Read the data. */
             if (nc_get_var(ncid, varid, data_in)) ERR;

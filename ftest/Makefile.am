@@ -19,23 +19,8 @@ check_PROGRAMS += ftst_ccr_lz4
 ftst_ccr_lz4_SOURCES = ftst_ccr_lz4.F90
 endif
 
-# Build the BitGroom tests?
-if BUILD_BITGROOM
-check_PROGRAMS += ftst_ccr_bitgroom
-ftst_ccr_bitgroom_SOURCES = ftst_ccr_bitgroom.F90
-endif
 
-# Build the Granular BitRound tests?
-if BUILD_GRANULARBR
-check_PROGRAMS += ftst_ccr_granularbr
-ftst_ccr_granularbr_SOURCES = ftst_ccr_granularbr.F90
-endif
 
-# Build the ZSTANDARD tests?
-if BUILD_ZSTD
-check_PROGRAMS += ftst_ccr_zstandard
-ftst_ccr_zstandard_SOURCES = ftst_ccr_zstandard.F90
-endif
 
 # Run our test programs.
 TESTS = run_tests.sh

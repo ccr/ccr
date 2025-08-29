@@ -50,32 +50,8 @@ enable_lz4=no
 dnl AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 
-# Does the user want BitGroom?
-AC_MSG_CHECKING([whether BitGroom filter library should be built and installed])
-AC_ARG_ENABLE([bitgroom],
-              [AS_HELP_STRING([--disable-bitgroom],
-                              [Disable the build and install of BitGroom filter library.])])
-test "x$enable_bitgroom" = xno || enable_bitgroom=yes
-AC_MSG_RESULT($enable_bitgroom)
-AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
 
-# Does the user want Granular BitRound?
-AC_MSG_CHECKING([whether Granular BitRound filter library should be built and installed])
-AC_ARG_ENABLE([granularbr],
-              [AS_HELP_STRING([--disable-granularbr],
-                              [Disable the build and install of Granular BitRound filter library.])])
-test "x$enable_granularbr" = xno || enable_granularbr=yes
-AC_MSG_RESULT($enable_granularbr)
-AM_CONDITIONAL(BUILD_GRANULARBR, [test "x$enable_granularbr" = xyes])
 
-# Does the user want Zstandard?
-AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
-AC_ARG_ENABLE([zstd],
-              [AS_HELP_STRING([--disable-zstd],
-                              [Disable the build and install of Zstandard filter library.])])
-test "x$enable_zstd" = xno || enable_zstd=yes
-AC_MSG_RESULT($enable_zstd)
-AM_CONDITIONAL(BUILD_ZSTANDARD, [test "x$enable_zstd" = xyes])
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
@@ -111,15 +87,6 @@ fi
 dnl if test "x$enable_lz4" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([LZ4])
 dnl fi
-if test "x$enable_bitgroom" = xyes; then
-   AC_CONFIG_SUBDIRS([BITGROOM])
-fi
-if test "x$enable_granularbr" = xyes; then
-   AC_CONFIG_SUBDIRS([GRANULARBR])
-fi
-if test "x$enable_zstd" = xyes; then
-   AC_CONFIG_SUBDIRS([ZSTANDARD])
-fi
 dnl if test "x$enable_blosc" = xyes; then
 dnl    AC_CONFIG_SUBDIRS([BLOSC])
 dnl fi

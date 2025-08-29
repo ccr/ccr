@@ -158,57 +158,9 @@ if test "x$enable_lz4" = xyes; then
 fi
 AC_SUBST([BUILD_LZ4], [$enable_lz4])
 
-# Does the user want BitGroom?
-AC_MSG_CHECKING([whether BitGroom filter library should be built and installed])
-AC_ARG_ENABLE([bitgroom],
-              [AS_HELP_STRING([--disable-bitgroom],
-                              [Disable the build and install of BitGroom filter library.])])
-test "x$enable_bitgroom" = xno || enable_bitgroom=yes
-AC_MSG_RESULT($enable_bitgroom)
-AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
-if test "x$enable_bitgroom" = xyes; then
-   AC_DEFINE([BUILD_BITGROOM], 1, [If true, build with BitGroom filter.])
-fi
-AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
 
-# Does the user want Granular BitRound?
-AC_MSG_CHECKING([whether Granular BitRound filter library should be built and installed])
-AC_ARG_ENABLE([granularbr],
-              [AS_HELP_STRING([--disable-granularbr],
-                              [Disable the build and install of Granular BitRound filter library.])])
-test "x$enable_granularbr" = xno || enable_granularbr=yes
-AC_MSG_RESULT($enable_granularbr)
-AM_CONDITIONAL(BUILD_GRANULARBR, [test "x$enable_granularbr" = xyes])
-if test "x$enable_granularbr" = xyes; then
-   AC_DEFINE([BUILD_GRANULARBR], 1, [If true, build with Granular BitRound filter.])
-fi
-AC_SUBST([BUILD_GRANULARBR], [$enable_granularbr])
 
-# Does the user want BitRound?
-AC_MSG_CHECKING([whether BitRound filter library should be built and installed])
-AC_ARG_ENABLE([bitround],
-              [AS_HELP_STRING([--disable-bitround],
-                              [Disable the build and install of Granular BitRound filter library.])])
-test "x$enable_bitround" = xno || enable_bitround=yes
-AC_MSG_RESULT($enable_bitround)
-AM_CONDITIONAL(BUILD_BITROUND, [test "x$enable_bitround" = xyes])
-if test "x$enable_bitround" = xyes; then
-   AC_DEFINE([BUILD_BITROUND], 1, [If true, build with BitRound filter.])
-fi
-AC_SUBST([BUILD_BITROUND], [$enable_bitround])
 
-# Does the user want Zstandard?
-AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
-AC_ARG_ENABLE([zstd],
-              [AS_HELP_STRING([--disable-zstd],
-                              [Disable the build and install of Zstandard filter library.])])
-test "x$enable_zstd" = xno || enable_zstd=yes
-AC_MSG_RESULT($enable_zstd)
-AM_CONDITIONAL(BUILD_ZSTD, [test "x$enable_zstd" = xyes])
-if test "x$enable_zstd" = xyes; then
-   AC_DEFINE([BUILD_ZSTD], 1, [If true, build with zstd filter.])
-fi
-AC_SUBST([BUILD_ZSTD], [$enable_zstd])
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
@@ -420,14 +372,6 @@ AC_DEFUN([AX_SET_META],[
 # Settings for libccr.settings and ccr_meta.h.
 AC_SUBST(HAS_LZ4,[$enable_lz4])
 AX_SET_META([CCR_HAS_LZ4],[$enable_lz4],[yes])
-AC_SUBST(HAS_ZSTD,[$enable_zstd])
-AX_SET_META([CCR_HAS_ZSTD],[$enable_zstd],[yes])
-AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
-AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
-AC_SUBST(HAS_GRANULARBR,[$enable_granularbr])
-AX_SET_META([CCR_HAS_GRANULARBR],[$enable_granularbr],[yes])
-AC_SUBST(HAS_BITROUND,[$enable_bitround])
-AX_SET_META([CCR_HAS_BITROUND],[$enable_bitround],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
