@@ -17,13 +17,13 @@ jobs:
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Installs
       run: |
         sudo apt-get install doxygen graphviz liblz4-dev mpich libmpich-dev
     - name: cache-mpich
       id: cache-mpich
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/mpich
         key: mpich-${{ runner.os }}-3.3.2
@@ -39,7 +39,7 @@ jobs:
         popd
     - name: cache-hdf5
       id: cache-hdf5
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/hdf5
         key: hdf5-${{ runner.os }}-1.10.6-mpich-3.3.2
@@ -59,7 +59,7 @@ jobs:
         popd
     - name: cache-netcdf-c
       id: cache-netcdf-c
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/netcdf-c
         key: netcdf-c-${{ runner.os }}-4.7.4-mpich-3.3.2
@@ -79,7 +79,7 @@ jobs:
         popd
     - name: cache-netcdf-fortran
       id: cache-netcdf-fortran
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/netcdf-fortran
         key: netcdf-fortran-${{ runner.os }}-4.5.3-mpich-3.3.2
