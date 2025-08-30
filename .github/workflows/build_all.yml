@@ -34,7 +34,6 @@ jobs:
         set -x
         wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1.14.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.14.6.tar.gz
-        ls -l
         pushd hdf5-hdf5-1.14.6
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
@@ -45,16 +44,16 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/netcdf-c
-        key: netcdf-c-${{ runner.os }}-4.8.1
+        key: netcdf-c-${{ runner.os }}-4.9.3
 
     - name: build-netcdf-c
       if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz  &> /dev/null
-        tar -xzf v4.8.1.tar.gz
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.3.tar.gz  &> /dev/null
+        tar -xzf v4.9.3.tar.gz
         ls -l
-        pushd netcdf-c-4.8.1
+        pushd netcdf-c-4.9.3
         ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
         make -j
         sudo make install

@@ -133,9 +133,9 @@ AC_MSG_RESULT($HDF5_PLUGIN_PATH)
 # Does the user want BZIP2?
 AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])
 AC_ARG_ENABLE([bzip2],
-              [AS_HELP_STRING([--disable-bzip2],
-                              [Disable the build and install of bzip2 filter library.])])
-test "x$enable_bzip2" = xno || enable_bzip2=yes
+              [AS_HELP_STRING([--enable-bzip2],
+                              [Enable the build and install of bzip2 filter library.])])
+test "x$enable_bzip2" = xyes || enable_bzip2=no
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
 if test "x$enable_bzip2" = xyes; then
@@ -219,7 +219,7 @@ AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Do we have netCDF-4? If not, we're done.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_NC4
+[[#if !NC_HAS_HDF5
 # error
 #endif]
 ])], [have_netcdf4=yes], [have_netcdf4=no])

@@ -187,6 +187,5 @@ main()
         free(data_out);
     }
     SUMMARIZE_ERR;
-#endif /* BUILD_ZSTD */
     FINAL_RESULTS;
 }
