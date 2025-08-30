@@ -35,7 +35,7 @@ jobs:
         wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1.14.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.14.6.tar.gz
         ls -l
-        pushd hdf5-1.14.6
+        pushd hdf5-hdf5-1.14.6
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         sudo make install
