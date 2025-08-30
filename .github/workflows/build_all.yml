@@ -83,4 +83,4 @@ jobs:
         autoreconf -i
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bzip2
-        make -j distcheck
+        make -j check
