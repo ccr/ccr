@@ -90,6 +90,7 @@ main()
 	    struct timeval start_time, end_time, diff_time;
 	    int meta_write_us;
 	    int increment = 1;
+	    int ret;
 	    
 	    if (!(data_in = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(float)))) ERR;
 
@@ -115,7 +116,11 @@ main()
 		    level = MIN_ZLIB;
 		if (f < NFILE / 2 + 1)
 		{
-		    if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
+		    if ((ret = nc_def_var_zstandard(ncid, varid, level)))
+		    {
+			printf("ret %d\n", ret);
+			ERR;
+		    }
 		    increment = 2;
 		}
 		else

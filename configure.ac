@@ -3,7 +3,7 @@
 
 # Ed Hartnett 12/24/2019, Charlie Zender 9/20/20
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.71])
 
 # Initialize with name, version, and support email address.
 AC_INIT([ccr],[1.3.0],[])
