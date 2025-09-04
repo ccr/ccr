@@ -43,7 +43,7 @@ jobs:
       id: cache-netcdf-c
       uses: actions/cache@v4
       with:
-        path:|
+        path: |
           ~/netcdf-c
           /home/runner/plugins
         key: netcdf-c-${{ runner.os }}-4.9.3-1
