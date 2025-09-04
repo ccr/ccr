@@ -46,7 +46,7 @@ jobs:
         path: |
           ~/netcdf-c
           /home/runner/plugins
-        key: netcdf-c-${{ runner.os }}-4.9.3-1
+        key: netcdf-c-${{ runner.os }}-4.9.3-2
 
     - name: build-netcdf-c
       if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
@@ -56,9 +56,10 @@ jobs:
         tar -xzf v4.9.3.tar.gz
         ls -l
         pushd netcdf-c-4.9.3
-        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
+        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities --with-plugin-dir=/home/runner/plugin
         make -j
         sudo make install
+        ls -l /home/runner/plugin
         popd
     - name: cache-netcdf-fortran
       id: cache-netcdf-fortran
