@@ -82,6 +82,6 @@ jobs:
         echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
-        export HDF5_PLUGIN_PATH=/usr/local/hdf5/lib/plugin
+        export HDF5_PLUGIN_PATH=/home/runner/plugin
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bzip2
         make VERBOSE=1 check
