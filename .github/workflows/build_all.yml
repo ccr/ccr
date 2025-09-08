@@ -15,7 +15,7 @@ jobs:
       CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
       LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
-      DEPENDENCIES_CACHE_KEY: "deps-${{ runner.os }}-hdf5-1.14.6-netcdf-4.9.3-fortran-4.5.4-1"
+      DEPENDENCIES_CACHE_KEY: "deps-${{ github.runner.os }}-hdf5-1.14.6-netcdf-4.9.3-fortran-4.5.4-1"
 
     steps:
     - uses: actions/checkout@v4
