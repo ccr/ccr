@@ -33,7 +33,7 @@
 
 /* This must be an even number. Set to 18 to test all 9 zlib
  * levels. Set to 2 to speed CI testing. */
-#define NFILE 2
+#define NCOMPRESSION 3
 #define MAX_COMPRESSION_STR 4
 
 #define NX_BIG 1000
@@ -48,6 +48,11 @@
 #define MIN_ZSTD 0
 #define MAX_ZSTD 9
 #define MIN_ZLIB 1
+#define MIN_LZ4 1
+
+#define COMPRESS_ZSTD 1
+#define COMPRESS_ZLIB 2
+#define COMPRESS_LZ4 3
 
 /* Err is used to keep track of errors within each set of tests,
  * total_err is the number of errors in the entire test program, which
@@ -64,8 +69,7 @@ main()
     struct stat st;
     
     printf("\n*** Checking Performance of filters.\n");
-#ifdef BUILD_ZSTD    
-    printf("*** Checking Zstandard vs. zlib performance on large float data set...");
+    printf("*** Checking zlib performance on large float data set...");
     printf("\ncompression, level, write time (s), file size (MB)\n");
     {
         float *data_out;
@@ -77,9 +81,9 @@ main()
     
         if (!(data_out = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(int)))) ERR;
 
-	/* We will write NFILE compressed file, and 1 uncompressed
-	 * file. Half the compressed files will be zstd, half zlib. */
-	for (f = 0; f < NFILE + 1; f++)
+	/* We will write NCOMPRESSION compressed file, and 1 uncompressed
+	 * file. */
+	for (f = 0; f < NCOMPRESSION + 1; f++)
 	{
 	    char file_name[STR_LEN + 1];
 	    float *data_in;
@@ -90,12 +94,16 @@ main()
 	    size_t count[NDIM3] = {1, NX_REALLY_BIG, NY_REALLY_BIG};
 	    struct timeval start_time, end_time, diff_time;
 	    int meta_write_us;
-	    int increment = 1;
+	    int ret;
 	    
 	    if (!(data_in = malloc(NX_REALLY_BIG * NY_REALLY_BIG * sizeof(float)))) ERR;
 
-	    if (f)
-		strcpy(compression, (f < NFILE / 2 + 1) ? "zstd" : "zlib");
+	    if (f == COMPRESS_ZSTD)
+		strcpy(compression, "zstd");
+	    if (f == COMPRESS_ZLIB)
+		strcpy(compression, "zlib");
+	    if (f == COMPRESS_LZ4)
+		strcpy(compression, "lz4");
 
 	    if (f)
 		sprintf(file_name, "%s_%s_really_big_%d.nc", TEST, compression, level);
@@ -112,17 +120,23 @@ main()
 	    if (nc_def_var(ncid, VAR_NAME_2, NC_FLOAT, NDIM3, dimid, &varid)) ERR;
 	    if (f)
 	    {
-		if (f == NFILE / 2 + 1)
-		    level = MIN_ZLIB;
-		if (f < NFILE / 2 + 1)
+		if (f == COMPRESS_ZSTD)
 		{
-		    if (nc_def_var_zstandard(ncid, varid, level)) ERR;
-		    increment = 2;
+		    if ((ret = nc_def_var_zstandard(ncid, varid, level)))
+		    {
+			printf("ret %d\n", ret);
+			ERR;
+		    }
 		}
-		else
+		else if (f == COMPRESS_ZLIB)
 		{
+		    level = MIN_ZLIB;
 		    if (nc_def_var_deflate(ncid, varid, 0, 1, level)) ERR;
-		    increment = 1;
+		}
+		else if (f == COMPRESS_LZ4)
+		{
+		    level = MIN_LZ4;
+		    if (nc_def_var_lz4(ncid, varid, level)) ERR;
 		}
 	    }
 
@@ -151,15 +165,15 @@ main()
 	    /* { */
 	    /* 	int ncid; */
 	    /* 	int varid = 0; */
-	    /* 	int level_in, zstandard; */
+	    /* 	int level_in, deflate; */
 		
 	    /* 	if (nc_open(file_name, NC_NOWRITE, &ncid)) ERR; */
-	    /* 	if (nc_inq_var_zstandard(ncid, varid, &zstandard, &level_in)) ERR; */
+	    /* 	if (nc_inq_var_deflate(ncid, varid, &deflate, &level_in)) ERR; */
 	    /* 	if (f) */
 	    /* 	{ */
-	    /* 	    if (f < NFILE / 2 + 1) */
+	    /* 	    if (f < NCOMPRESSION / 2 + 1) */
 	    /* 	    { */
-	    /* 		if (!zstandard) ERR; */
+	    /* 		if (!deflate) ERR; */
 	    /* 	    } */
 	    /* 	    else */
 	    /* 	    { */
@@ -167,7 +181,7 @@ main()
 	    /* 	} */
 	    /* 	else */
 	    /* 	{ */
-	    /* 	    if (zstandard) ERR; */
+	    /* 	    if (deflate) ERR; */
 	    /* 	} */
 	    /* 	for (start[0] = 0; start[0] < NUM_REC; start[0]++) */
 	    /* 	{ */
@@ -182,12 +196,10 @@ main()
 	    /* 	if (nc_close(ncid)) ERR; */
 	    /* } */
 
-	    level += increment;
 	    free(data_in);
 	} /* next file */
         free(data_out);
     }
     SUMMARIZE_ERR;
-#endif /* BUILD_ZSTD */
     FINAL_RESULTS;
 }

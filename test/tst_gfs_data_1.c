@@ -299,10 +299,6 @@ write_meta(int ncid, int *data_varid, int s, int f, int deflate, int u,
             if (nc_def_var_szip(ncid, data_varid[dv], 32, 32)) ERR;
 #endif /* NC_HAS_SZIP_WRITE */
         
-#ifdef BUILD_ZSTD
-        if (!strcmp(compression_filter_name[f], "zstd"))
-            if (nc_def_var_zstandard(ncid, data_varid[dv], deflate)) ERR;
-#endif /* BUILD_ZSTD */
 
         if (nc_var_par_access(ncid, data_varid[dv], NC_COLLECTIVE)) ERR;
         if (nc_enddef(ncid)) ERR;

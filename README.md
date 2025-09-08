@@ -12,11 +12,9 @@ filters via the recently added nc_def_var_filter() method (in version
 Additional filters are available, and support additional compression
 methods.
 
-Version 1.3.0 of the CCR supports:
+Version 2.0.0 of the CCR supports:
 * BZIP2 compression
-* Zstandard compression
-* BitGroom pre-compression
-* Granular BitRound pre-compression
+* LZ4 compression
 
 For full documentation see https://ccr.github.io/ccr/.
 
@@ -27,10 +25,7 @@ Charlie Zender, Edward Hartnett
 Filter | Author
 -------|-------
 Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
-Zstandard | Yann Collet
-BitGroom | Charlie Zender
-Granular BitRound | Charlie Zender
-BitRound | Charlie Zender
+LZ4    | Yann Collet
 
 # Building CCR
 
@@ -45,17 +40,17 @@ Library   | Source                                    | Notes
 netcdf-c  | https://github.com/Unidata/netcdf-c       | required
 HDF5      | https://www.hdfgroup.org/downloads/hdf5   | required
 bzip2     | https://www.sourceware.org/bzip2/         | optional
-Zstandard | https://facebook.github.io/zstd/          | optional 
+LZ4       | https://github.com/lz4/lz4                | optional 
 
 ### Obtain Optional External Libraries as Pre-built Packages
 
 Codec     |  Environment | Install Command
 --------- |------------- | ---------------
-Zstandard |  CentOS      | sudo yum install libzstd-devel
-Zstandard |  Conda       | conda install zstd
-Zstandard |  Debian      | sudo aptitude install libzstd1-dev
-Zstandard |  Fedora      | sudo dnf install libzstd-devel
-Zstandard |  MacPorts    | sudo port install zstd
+LZ4       |  CentOS      | sudo yum install lz4-devel
+LZ4       |  Conda       | conda install lz4-c
+LZ4       |  Debian      | sudo aptitude install liblz4-dev
+LZ4       |  Fedora      | sudo dnf install lz4-devel
+LZ4       |  MacPorts    | sudo port install lz4
 
 ## Autotools Build
 

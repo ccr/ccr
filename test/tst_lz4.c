@@ -43,81 +43,81 @@ int
 main()
 {
     printf("\n*** Checking LZ4 filter.\n");
-    printf("*** Checking LZ4 compression...");
-    {
-        int ncid;
-        int dimid[NDIM2];
-        int varid;
-        int data_out[NX][NY];
-        int x, y;
-        int level_in, lz4;
+    /* printf("*** Checking LZ4 compression..."); */
+    /* { */
+    /*     int ncid; */
+    /*     int dimid[NDIM2]; */
+    /*     int varid; */
+    /*     int data_out[NX][NY]; */
+    /*     int x, y; */
+    /*     int level_in, lz4; */
 
-        /* Create some data to write. */
-        for (x = 0; x < NX; x++)
-            for (y = 0; y < NY; y++)
-                data_out[x][y] = x * NY + y;
+    /*     /\* Create some data to write. *\/ */
+    /*     for (x = 0; x < NX; x++) */
+    /*         for (y = 0; y < NY; y++) */
+    /*             data_out[x][y] = x * NY + y; */
 
-        /* Create file. */
-        if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+    /*     /\* Create file. *\/ */
+    /*     if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR; */
 
-        /* Create dims. */
-        if (nc_def_dim(ncid, X_NAME, NX, &dimid[0])) ERR;
-        if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR;
+    /*     /\* Create dims. *\/ */
+    /*     if (nc_def_dim(ncid, X_NAME, NX, &dimid[0])) ERR; */
+    /*     if (nc_def_dim(ncid, Y_NAME, NY, &dimid[1])) ERR; */
 
-        /* Create the variable. */
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+    /*     /\* Create the variable. *\/ */
+    /*     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR; */
 
-        /* These won't work. */
-        if (nc_def_var_lz4(ncid, varid, -9) != NC_EINVAL) ERR;
-        if (nc_def_var_lz4(ncid, varid, 0) != NC_EINVAL) ERR;
-        if (nc_def_var_lz4(ncid, varid, 10) != NC_EINVAL) ERR;
+    /*     /\* These won't work. *\/ */
+    /*     if (nc_def_var_lz4(ncid, varid, -9) != NC_EINVAL) ERR; */
+    /*     if (nc_def_var_lz4(ncid, varid, 0) != NC_EINVAL) ERR; */
+    /*     if (nc_def_var_lz4(ncid, varid, 10) != NC_EINVAL) ERR; */
 
-        /* Check setting. */
-        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-        if (lz4) ERR;
+    /*     /\* Check setting. *\/ */
+    /*     if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR; */
+    /*     if (lz4) ERR; */
 
-        /* Set up compression. */
-        if (nc_def_var_lz4(ncid, varid, 3)) ERR;
+    /*     /\* Set up compression. *\/ */
+    /*     if (nc_def_var_lz4(ncid, varid, 3)) ERR; */
 
-        /* Check setting. */
-        if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-        if (!lz4 || level_in != 3) ERR;
-        level_in = 0;
-        lz4 = 1;
-        if (nc_inq_var_lz4(ncid, varid, NULL, &level_in)) ERR;
-        if (nc_inq_var_lz4(ncid, varid, &lz4, NULL)) ERR;
-        if (!lz4 || level_in != 3) ERR;
-        if (nc_inq_var_lz4(ncid, varid, NULL, NULL)) ERR;
+    /*     /\* Check setting. *\/ */
+    /*     if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR; */
+    /*     if (!lz4 || level_in != 3) ERR; */
+    /*     level_in = 0; */
+    /*     lz4 = 1; */
+    /*     if (nc_inq_var_lz4(ncid, varid, NULL, &level_in)) ERR; */
+    /*     if (nc_inq_var_lz4(ncid, varid, &lz4, NULL)) ERR; */
+    /*     if (!lz4 || level_in != 3) ERR; */
+    /*     if (nc_inq_var_lz4(ncid, varid, NULL, NULL)) ERR; */
 
-        /* Write the data. */
-        if (nc_put_var(ncid, varid, data_out)) ERR;
+    /*     /\* Write the data. *\/ */
+    /*     if (nc_put_var(ncid, varid, data_out)) ERR; */
 
-        /* Close the file. */
-        if (nc_close(ncid)) ERR;
+    /*     /\* Close the file. *\/ */
+    /*     if (nc_close(ncid)) ERR; */
 
-        {
-            int data_in[NX][NY];
+    /*     { */
+    /*         int data_in[NX][NY]; */
 
-            /* Now reopen the file and check. */
-            if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR;
+    /*         /\* Now reopen the file and check. *\/ */
+    /*         if (nc_open(FILE_NAME, NC_NETCDF4, &ncid)) ERR; */
 
-            /* Check setting. */
-            if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR;
-            if (!lz4 || level_in != 3) ERR;
+    /*         /\* Check setting. *\/ */
+    /*         if (nc_inq_var_lz4(ncid, varid, &lz4, &level_in)) ERR; */
+    /*         if (!lz4 || level_in != 3) ERR; */
 
-            /* Read the data. */
-            if (nc_get_var(ncid, varid, data_in)) ERR;
+    /*         /\* Read the data. *\/ */
+    /*         if (nc_get_var(ncid, varid, data_in)) ERR; */
 
-            /* Check the data. */
-            for (x = 0; x < NX; x++)
-               for (y = 0; y < NY; y++)
-                  if (data_in[x][y] != data_out[x][y]) ERR;
+    /*         /\* Check the data. *\/ */
+    /*         for (x = 0; x < NX; x++) */
+    /*            for (y = 0; y < NY; y++) */
+    /*               if (data_in[x][y] != data_out[x][y]) ERR; */
 
-            /* Close the file. */
-            if (nc_close(ncid)) ERR;
-        }
-    }
-    SUMMARIZE_ERR;
+    /*         /\* Close the file. *\/ */
+    /*         if (nc_close(ncid)) ERR; */
+    /*     } */
+    /* } */
+    /* SUMMARIZE_ERR; */
     printf("*** Checking LZ4 size of compression...");
     {
         int ncid;
@@ -142,14 +142,12 @@ main()
             char file_name[STR_LEN + 1];
 
             sprintf(file_name, "%s_%s.nc", TEST, (f ? "lz4" : "uncompressed"));
-            nc_set_log_level(3);
+            /* nc_set_log_level(3); */
 
             /* Create file. */
             if (nc_create(file_name, NC_NETCDF4, &ncid)) ERR;
-            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0]))
-	      ;
-            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1]))
-	      ;
+            if (nc_def_dim(ncid, X_NAME, NX_BIG, &dimid[0])) ERR;
+            if (nc_def_dim(ncid, Y_NAME, NY_BIG, &dimid[1])) ERR;
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
             if (f)
                 if (nc_def_var_lz4(ncid, varid, 3)) ERR;

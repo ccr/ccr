@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build_all:
 
     runs-on: ubuntu-latest
 
@@ -15,60 +15,50 @@ jobs:
       CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include"
       LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib"
       HDF5_PLUGIN_PATH: "/home/runner/plugin"
+      DEPENDENCIES_CACHE_KEY: "deps-${{ github.runner.os }}-hdf5-1.14.6-netcdf-4.9.3-fortran-4.5.4-1"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Installs
       run: |
-        sudo apt-get install doxygen graphviz liblz4-dev libzstd-dev wget
-    - name: cache-hdf5
-      id: cache-hdf5
-      uses: actions/cache@v2
+        sudo apt-get install doxygen graphviz liblz4-dev wget
+    - name: cache-dependencies
+      id: cache-dependencies
+      uses: actions/cache@v4
       with:
-        path: ~/hdf5
-        key: hdf5-${{ runner.os }}-1.12.1
+        path: |
+          ~/hdf5
+          ~/netcdf-c
+          ~/netcdf-fortran
+          /home/runner/plugin
+        key: ${{ env.DEPENDENCIES_CACHE_KEY }}
 
-    - name: build-hdf5
-      if: steps.cache-hdf5.outputs.cache-hit != 'true'
+    - name: build-dependencies
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
       run: |
         set -x
-        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.gz  &> /dev/null
-        tar -xzf hdf5-1.12.1.tar.gz
-        pushd hdf5-1.12.1
+        # Create plugin directory
+        mkdir -p /home/runner/plugin
+        
+        # Build HDF5
+        wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1.14.6.tar.gz &> /dev/null
+        tar -xzf hdf5-1.14.6.tar.gz
+        pushd hdf5-hdf5-1.14.6
         ./configure --prefix=/home/runner/hdf5 --disable-tools --disable-fortran --disable-cxx 
         make
         sudo make install
         popd
-    - name: cache-netcdf-c
-      id: cache-netcdf-c
-      uses: actions/cache@v2
-      with:
-        path: ~/netcdf-c
-        key: netcdf-c-${{ runner.os }}-4.8.1
-
-    - name: build-netcdf-c
-      if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
-      run: |
-        set -x
-        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz  &> /dev/null
-        tar -xzf v4.8.1.tar.gz
-        ls -l
-        pushd netcdf-c-4.8.1
-        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
+        
+        # Build NetCDF-C
+        wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.3.tar.gz  &> /dev/null
+        tar -xzf v4.9.3.tar.gz
+        pushd netcdf-c-4.9.3
+        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities --with-plugin-dir=/home/runner/plugin
         make -j
         sudo make install
         popd
-    - name: cache-netcdf-fortran
-      id: cache-netcdf-fortran
-      uses: actions/cache@v2
-      with:
-        path: ~/netcdf-fortran
-        key: netcdf-fortran-${{ runner.os }}-4.5.4
-
-    - name: build-netcdf-fortran
-      if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
-      run: |
-        set -x
+        
+        # Build NetCDF-Fortran
         wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz &> /dev/null
         tar -xzf v4.5.4.tar.gz
         pushd netcdf-fortran-4.5.4
@@ -76,11 +66,18 @@ jobs:
         make -j
         sudo make install
         popd
+        
+        # Verify plugin directory
+        ls -l /home/runner/plugin || echo "Plugin directory is empty or doesn't exist"
     - name: configure and build
       run: |
         set -x
-        echo $HDF5_PLUGIN_PATH
         autoreconf -i
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
-        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran
-        make -j distcheck
+        export HDF5_PLUGIN_PATH=/home/runner/plugin
+        ls -l $HDF5_PLUGIN_PATH || echo "Plugin directory is empty or doesn't exist"
+        pwd
+        echo $$HDF5_PLUGIN_PATH
+        sleep 3
+        ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bzip2
+        make VERBOSE=1 check

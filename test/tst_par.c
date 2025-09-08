@@ -72,7 +72,7 @@ main(int argc, char **argv)
 
 	/* Setting deflate only will work for HDF5-1.10.2 and later
 	 * versions. */
-	if (nc_def_var_zstandard(ncid, 0, 20)) ERR;
+	if (nc_def_var_deflate(ncid, 0, 0, 1, 6)) ERR;
 
 	/* Write metadata to file. */
 	if ((res = nc_enddef(ncid))) ERR;

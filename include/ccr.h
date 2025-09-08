@@ -6,6 +6,7 @@
 #ifndef _CCR_H
 #define _CCR_H
 
+#include <stdio.h>
 #include <netcdf.h>
 #include <netcdf_filter.h>
 
@@ -15,20 +16,8 @@
 /** The filter ID for LZ4 compression. */
 #define LZ4_ID 32004
 
-/** The filter ID for BitGroom quantization. */
-#define BITGROOM_ID 32022
 
-/** Number of parameters used internally by filter and returned by nc_inq_var_bitgroom() */
-#define BITGROOM_FLT_PRM_NBR 5 /* H5Zbitgroom.c: CCR_FLT_PRM_NBR */
 
-/** The filter ID for Granular BitRound quantization. */
-#define GRANULARBR_ID 32023
-
-/** Number of parameters used internally by filter and returned by nc_inq_var_granularbr() */
-#define GRANULARBR_FLT_PRM_NBR 5 /* H5Zgranularbr.c: CCR_FLT_PRM_NBR */
-
-/** The filter ID for Zstandard compression. */
-#define ZSTANDARD_ID 32015
 
 /* This macro prints an error message with line number and name of
  * test program, and the netCDF error string. */
@@ -47,13 +36,8 @@ extern "C" {
     /* Library prototypes... */
     int nc_def_var_bzip2(int ncid, int varid, int level);
     int nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp);
-    int nc_def_var_bitgroom(int ncid, int varid, int nsd);
-    int nc_inq_var_bitgroom(int ncid, int varid, int *bitgroomp, int *nsdp);
-    int nc_def_var_zstandard(int ncid, int varid, int level);
-    int nc_inq_var_zstandard(int ncid, int varid, int *zstandardp, int *levelp);
-    int nc_def_var_granularbr(int ncid, int varid, int nsd);
-    int nc_inq_var_granularbr(int ncid, int varid, int *granularbrp, int *nsdp);
-
+    int nc_def_var_lz4(int ncid, int varid, int level);
+    int nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp);
 #if defined(__cplusplus)
 }
 #endif

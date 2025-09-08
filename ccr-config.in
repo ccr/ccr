@@ -16,12 +16,8 @@ cflags="-I${includedir} @CPPFLAGS@"
 libs="-L${libdir} @CCR_LIBS@"
 libsprivate="@LIBS@"
 
-has_bitgroom="@BUILD_BITGROOM@"
-has_bitround="@BUILD_BITROUND@"
-has_granularbr="@BUILD_GRANULARBR@"
 has_bzip2="@BUILD_BZIP2@"
 has_lz4="@BUILD_LZ4@"
-has_zstd="@BUILD_ZSTD@"
 version="@PACKAGE_NAME@ @PACKAGE_VERSION@"
 has_par="@HAS_NETCDF_PAR@"
 has_multifilters="@HAS_MULTIFILTERS@"
@@ -46,13 +42,9 @@ Available values for OPTION include:
   --all           display all options
   --cc            C compiler
   --cflags        pre-processor and compiler flags
-  --has-bitgroom  whether BitGroom filter is installed
-  --has-bitround  whether BitRound filter is installed
   --has-bzip2     whether Bzip2 filter is installed
   --has-fortran   whether Fortran API is installed
-  --has-granularbr  whether Granular BitRound filter is installed
   --has-lz4       whether LZ4 filter is installed
-  --has-zstd      whether Zstandard filter is installed
   --has-par       whether Parallel I/O is enabled
   --has-multifilters  whether Multifilters are enabled
   --help          display this help message and exit
@@ -94,12 +86,8 @@ if test "x$has_fortran" = xyes; then
         echo "  --has-f03       -> $has_f03"
         echo
 fi
-        echo "  --has-bitgroom  -> $has_bitgroom"
-        echo "  --has-bitround  -> $has_bitround"
         echo "  --has-bzip2     -> $has_bzip2"
-        echo "  --has-granularbr  -> $has_granularbr"
         echo "  --has-lz4       -> $has_lz4"
-        echo "  --has-zstd      -> $has_zstd"
         echo "  --has-par       -> $has_par"
         echo "  --has-multifilters      -> $has_multifilters"
         echo
@@ -141,28 +129,12 @@ while test $# -gt 0; do
         echo $cflags
         ;;
 
-    --has-bitgroom)
-        echo $has_bitgroom
-        ;;
-
-    --has-bitround)
-        echo $has_bitround
-        ;;
-
-    --has-granularbr)
-        echo $has_granularbr
-        ;;
-
     --has-bzip2)
         echo $has_bzip2
         ;;
 
     --has-lz4)
         echo $has_lz4
-        ;;
-
-    --has-zstd)
-        echo $has_zstd
         ;;
 
     --has-par)

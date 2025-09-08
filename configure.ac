@@ -3,10 +3,10 @@
 
 # Ed Hartnett 12/24/2019, Charlie Zender 9/20/20
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.71])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr],[1.3.0],[])
+AC_INIT([ccr],[2.0.0],[])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -18,8 +18,8 @@ LT_PREREQ([2.4])
 LT_INIT()
 
 # Components of the version.
-AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=1
-AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=3
+AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=2
+AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=0
 AC_SUBST([CCR_VERSION_PATCH]) CCR_VERSION_PATCH=0
 AC_SUBST([CCR_VERSION_NOTE]) CCR_VERSION_NOTE=""
 AC_SUBST([CCR_VERSION]) CCR_VERSION=$VERSION
@@ -133,9 +133,9 @@ AC_MSG_RESULT($HDF5_PLUGIN_PATH)
 # Does the user want BZIP2?
 AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])
 AC_ARG_ENABLE([bzip2],
-              [AS_HELP_STRING([--disable-bzip2],
-                              [Disable the build and install of bzip2 filter library.])])
-test "x$enable_bzip2" = xno || enable_bzip2=yes
+              [AS_HELP_STRING([--enable-bzip2],
+                              [Enable the build and install of bzip2 filter library.])])
+test "x$enable_bzip2" = xyes || enable_bzip2=no
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
 if test "x$enable_bzip2" = xyes; then
@@ -143,72 +143,17 @@ if test "x$enable_bzip2" = xyes; then
 fi
 AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
-# Does the user want LZ4? Too bad, they can't have it yet! See
-# https://github.com/ccr/ccr/issues/20.
-dnl AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
-dnl AC_ARG_ENABLE([lz4],
-dnl               [AS_HELP_STRING([--disable-lz4],
-dnl                               [Disable the build and install of lz4 filter library.])])
-dnl test "x$enable_lz4" = xno || enable_lz4=yes
-dnl AC_MSG_RESULT($enable_lz4)
-enable_lz4=no
+AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+AC_ARG_ENABLE([lz4],
+              [AS_HELP_STRING([--disable-lz4],
+                              [Disable the build and install of lz4 filter library.])])
+test "x$enable_lz4" = xno || enable_lz4=yes
+AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 if test "x$enable_lz4" = xyes; then
    AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
 fi
 AC_SUBST([BUILD_LZ4], [$enable_lz4])
-
-# Does the user want BitGroom?
-AC_MSG_CHECKING([whether BitGroom filter library should be built and installed])
-AC_ARG_ENABLE([bitgroom],
-              [AS_HELP_STRING([--disable-bitgroom],
-                              [Disable the build and install of BitGroom filter library.])])
-test "x$enable_bitgroom" = xno || enable_bitgroom=yes
-AC_MSG_RESULT($enable_bitgroom)
-AM_CONDITIONAL(BUILD_BITGROOM, [test "x$enable_bitgroom" = xyes])
-if test "x$enable_bitgroom" = xyes; then
-   AC_DEFINE([BUILD_BITGROOM], 1, [If true, build with BitGroom filter.])
-fi
-AC_SUBST([BUILD_BITGROOM], [$enable_bitgroom])
-
-# Does the user want Granular BitRound?
-AC_MSG_CHECKING([whether Granular BitRound filter library should be built and installed])
-AC_ARG_ENABLE([granularbr],
-              [AS_HELP_STRING([--disable-granularbr],
-                              [Disable the build and install of Granular BitRound filter library.])])
-test "x$enable_granularbr" = xno || enable_granularbr=yes
-AC_MSG_RESULT($enable_granularbr)
-AM_CONDITIONAL(BUILD_GRANULARBR, [test "x$enable_granularbr" = xyes])
-if test "x$enable_granularbr" = xyes; then
-   AC_DEFINE([BUILD_GRANULARBR], 1, [If true, build with Granular BitRound filter.])
-fi
-AC_SUBST([BUILD_GRANULARBR], [$enable_granularbr])
-
-# Does the user want BitRound?
-AC_MSG_CHECKING([whether BitRound filter library should be built and installed])
-AC_ARG_ENABLE([bitround],
-              [AS_HELP_STRING([--disable-bitround],
-                              [Disable the build and install of Granular BitRound filter library.])])
-test "x$enable_bitround" = xno || enable_bitround=yes
-AC_MSG_RESULT($enable_bitround)
-AM_CONDITIONAL(BUILD_BITROUND, [test "x$enable_bitround" = xyes])
-if test "x$enable_bitround" = xyes; then
-   AC_DEFINE([BUILD_BITROUND], 1, [If true, build with BitRound filter.])
-fi
-AC_SUBST([BUILD_BITROUND], [$enable_bitround])
-
-# Does the user want Zstandard?
-AC_MSG_CHECKING([whether Zstandard filter library should be built and installed])
-AC_ARG_ENABLE([zstd],
-              [AS_HELP_STRING([--disable-zstd],
-                              [Disable the build and install of Zstandard filter library.])])
-test "x$enable_zstd" = xno || enable_zstd=yes
-AC_MSG_RESULT($enable_zstd)
-AM_CONDITIONAL(BUILD_ZSTD, [test "x$enable_zstd" = xyes])
-if test "x$enable_zstd" = xyes; then
-   AC_DEFINE([BUILD_ZSTD], 1, [If true, build with zstd filter.])
-fi
-AC_SUBST([BUILD_ZSTD], [$enable_zstd])
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
@@ -267,7 +212,7 @@ AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Do we have netCDF-4? If not, we're done.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_NC4
+[[#if !NC_HAS_HDF5
 # error
 #endif]
 ])], [have_netcdf4=yes], [have_netcdf4=no])
@@ -420,14 +365,6 @@ AC_DEFUN([AX_SET_META],[
 # Settings for libccr.settings and ccr_meta.h.
 AC_SUBST(HAS_LZ4,[$enable_lz4])
 AX_SET_META([CCR_HAS_LZ4],[$enable_lz4],[yes])
-AC_SUBST(HAS_ZSTD,[$enable_zstd])
-AX_SET_META([CCR_HAS_ZSTD],[$enable_zstd],[yes])
-AC_SUBST(HAS_BITGROOM,[$enable_bitgroom])
-AX_SET_META([CCR_HAS_BITGROOM],[$enable_bitgroom],[yes])
-AC_SUBST(HAS_GRANULARBR,[$enable_granularbr])
-AX_SET_META([CCR_HAS_GRANULARBR],[$enable_granularbr],[yes])
-AC_SUBST(HAS_BITROUND,[$enable_bitround])
-AX_SET_META([CCR_HAS_BITROUND],[$enable_bitround],[yes])
 AC_SUBST(HAS_BZIP2,[$enable_bzip2])
 AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])

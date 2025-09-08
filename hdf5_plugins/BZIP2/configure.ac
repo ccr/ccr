@@ -7,9 +7,9 @@
 # Allen Byrne, Ed Hartnett 1/14/19
 
 # Initialize autoconf.
-AC_PREREQ(2.59)
-AC_INIT(H5BZ2, 1.0, help@hdfgroup.org)
-AC_CONFIG_HEADER([config.h])
+AC_PREREQ([2.71])
+AC_INIT([H5BZ2],[1.0],[help@hdfgroup.org])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Initialize automake.
@@ -46,8 +46,6 @@ AC_CHECK_LIB([m], [floor], [], [AC_MSG_ERROR([Math library is required.])])
 AC_CHECK_HEADERS([hdf5.h], [], [AC_MSG_ERROR([hdf5.h is required, set CPPFLAGS.])])
 AC_SEARCH_LIBS([H5Fflush], [hdf5dll hdf5], [], [AC_MSG_ERROR([libhdf5 is required, set LDFLAGS.])])
 
-# Check for other header files we need.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
