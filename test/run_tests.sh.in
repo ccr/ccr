@@ -17,6 +17,7 @@ if test "@BUILD_LZ4@" = "yes"; then
 fi
 
 # Always run the performance test.
+echo "$HDF5_PLUGIN_PATH"
 ./tst_perf
 
 
