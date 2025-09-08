@@ -76,6 +76,9 @@ jobs:
         export DISTCHECK_CONFIGURE_FLAGS="--with-hdf5-plugin-path=/home/runner/plugin --enable-fortran"
         export HDF5_PLUGIN_PATH=/home/runner/plugin
         ls -l $HDF5_PLUGIN_PATH || echo "Plugin directory is empty or doesn't exist"
+        pwd
+        echo $$HDF5_PLUGIN_PATH
+        sleep 3
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bzip2
         make VERBOSE=1 check
         cd test
