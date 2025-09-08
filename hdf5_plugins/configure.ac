@@ -39,64 +39,22 @@ test "x$enable_bzip2" = xno || enable_bzip2=yes
 AC_MSG_RESULT($enable_bzip2)
 AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
 
-# Does the user want LZ4? Too bad, they can't have it yet! See
-# https://github.com/ccr/ccr/issues/20.
-dnl AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
-dnl AC_ARG_ENABLE([lz4],
-dnl               [AS_HELP_STRING([--disable-lz4],
-dnl                               [Disable the build and install of lz4 filter library.])])
-dnl test "x$enable_lz4" = xno || enable_lz4=yes
-enable_lz4=no
-dnl AC_MSG_RESULT($enable_lz4)
+# Does the user want LZ4?
+AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+AC_ARG_ENABLE([lz4],
+              [AS_HELP_STRING([--disable-lz4],
+                              [Disable the build and install of lz4 filter library.])])
+test "x$enable_lz4" = xno || enable_lz4=yes
+AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
-
-
-
-
-dnl # Does the user want BLOSC?
-dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])
-dnl AC_ARG_ENABLE([blosc],
-dnl               [AS_HELP_STRING([--disable-blosc],
-dnl                               [Disable the build and install of blosc filter library.])])
-dnl test "x$enable_blosc" = xno || enable_blosc=yes
-dnl AC_MSG_RESULT($enable_blosc)
-AM_CONDITIONAL(BUILD_BLOSC, [test "x$enable_blosc" = xyes])
-
-dnl # Does the user want JPEG?
-dnl AC_MSG_CHECKING([whether JPEG filter library should be built and installed])
-dnl AC_ARG_ENABLE([jpeg],
-dnl               [AS_HELP_STRING([--disable-jpeg],
-dnl                               [Disable the build and install of jpeg filter library.])])
-dnl test "x$enable_jpeg" = xno || enable_jpeg=yes
-dnl AC_MSG_RESULT($enable_jpeg)
-AM_CONDITIONAL(BUILD_JPEG, [test "x$enable_jpeg" = xyes])
-
-dnl # Does the user want LZF?
-dnl AC_MSG_CHECKING([whether LZF filter library should be built and installed])
-dnl AC_ARG_ENABLE([lzf],
-dnl               [AS_HELP_STRING([--disable-lzf],
-dnl                               [Disable the build and install of lzf filter library.])])
-dnl test "x$enable_lzf" = xno || enable_lzf=yes
-dnl AC_MSG_RESULT($enable_lzf)
-AM_CONDITIONAL(BUILD_LZF, [test "x$enable_lzf" = xyes])
 
 # Build the filter libraries as desired.
 if test "x$enable_bzip2" = xyes; then
    AC_CONFIG_SUBDIRS([BZIP2])
 fi
-dnl if test "x$enable_lz4" = xyes; then
-dnl    AC_CONFIG_SUBDIRS([LZ4])
-dnl fi
-dnl if test "x$enable_blosc" = xyes; then
-dnl    AC_CONFIG_SUBDIRS([BLOSC])
-dnl fi
-dnl if test "x$enable_jpeg" = xyes; then
-dnl    AC_CONFIG_SUBDIRS([JPEG])
-dnl fi
-dnl if test "x$enable_lzf" = xyes; then
-dnl    AC_CONFIG_SUBDIRS([LZF])
-dnl fi
-#AC_CONFIG_SUBDIRS([BSHUF])
+if test "x$enable_lz4" = xyes; then
+   AC_CONFIG_SUBDIRS([LZ4])
+fi
 
 # These files will be created when the configure script is run.
 AC_CONFIG_FILES([Makefile

@@ -10,7 +10,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 check_PROGRAMS =
 
 if BUILD_BZIP2
-check_PROGRAMS = tst_h_bzip2
+check_PROGRAMS += tst_h_bzip2
 tst_h_bzip2_LDADD = ${top_builddir}/hdf5_plugins/BZIP2/src/libh5bz2.la
 endif
 

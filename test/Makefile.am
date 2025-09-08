@@ -20,9 +20,6 @@ if BUILD_LZ4
 check_PROGRAMS += tst_lz4
 endif
 
-
-
-
 # Build the performance tests.
 check_PROGRAMS += tst_perf tst_compress
 tst_perf_SOURCES = tst_perf.c tst_utils.c

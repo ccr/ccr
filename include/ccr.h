@@ -6,6 +6,7 @@
 #ifndef _CCR_H
 #define _CCR_H
 
+#include <stdio.h>
 #include <netcdf.h>
 #include <netcdf_filter.h>
 
@@ -35,7 +36,8 @@ extern "C" {
     /* Library prototypes... */
     int nc_def_var_bzip2(int ncid, int varid, int level);
     int nc_inq_var_bzip2(int ncid, int varid, int *bzip2p, int *levelp);
-
+    int nc_def_var_lz4(int ncid, int varid, int level);
+    int nc_inq_var_lz4(int ncid, int varid, int *lz4p, int *levelp);
 #if defined(__cplusplus)
 }
 #endif

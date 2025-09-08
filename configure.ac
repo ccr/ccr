@@ -6,7 +6,7 @@
 AC_PREREQ([2.71])
 
 # Initialize with name, version, and support email address.
-AC_INIT([ccr],[1.3.0],[])
+AC_INIT([ccr],[2.0.0],[])
 
 AM_INIT_AUTOMAKE([foreign dist-zip subdir-objects])
 
@@ -18,8 +18,8 @@ LT_PREREQ([2.4])
 LT_INIT()
 
 # Components of the version.
-AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=1
-AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=3
+AC_SUBST([CCR_VERSION_MAJOR]) CCR_VERSION_MAJOR=2
+AC_SUBST([CCR_VERSION_MINOR]) CCR_VERSION_MINOR=0
 AC_SUBST([CCR_VERSION_PATCH]) CCR_VERSION_PATCH=0
 AC_SUBST([CCR_VERSION_NOTE]) CCR_VERSION_NOTE=""
 AC_SUBST([CCR_VERSION]) CCR_VERSION=$VERSION
@@ -143,24 +143,17 @@ if test "x$enable_bzip2" = xyes; then
 fi
 AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
 
-# Does the user want LZ4? Too bad, they can't have it yet! See
-# https://github.com/ccr/ccr/issues/20.
-dnl AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
-dnl AC_ARG_ENABLE([lz4],
-dnl               [AS_HELP_STRING([--disable-lz4],
-dnl                               [Disable the build and install of lz4 filter library.])])
-dnl test "x$enable_lz4" = xno || enable_lz4=yes
-dnl AC_MSG_RESULT($enable_lz4)
-enable_lz4=no
+AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
+AC_ARG_ENABLE([lz4],
+              [AS_HELP_STRING([--disable-lz4],
+                              [Disable the build and install of lz4 filter library.])])
+test "x$enable_lz4" = xno || enable_lz4=yes
+AC_MSG_RESULT($enable_lz4)
 AM_CONDITIONAL(BUILD_LZ4, [test "x$enable_lz4" = xyes])
 if test "x$enable_lz4" = xyes; then
    AC_DEFINE([BUILD_LZ4], 1, [If true, build with lz4 filter.])
 fi
 AC_SUBST([BUILD_LZ4], [$enable_lz4])
-
-
-
-
 
 dnl # Does the user want BLOSC?
 dnl AC_MSG_CHECKING([whether BLOSC filter library should be built and installed])

@@ -6,7 +6,7 @@
 #
 # Allen Byrne, Ed Hartnett, 1/12/19
 
-AM_CPPFLAGS = -I$(HDF5_ROOT)/include -I$(BZ2_ROOT)/include
+#AM_CPPFLAGS = -I$(HDF5_ROOT)/include -I$(BZ2_ROOT)/include
 
 # This is where HDF5 wants us to install plugins.
 plugindir = @HDF5_PLUGIN_PATH@
