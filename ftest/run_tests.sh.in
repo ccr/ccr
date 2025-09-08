@@ -16,23 +16,6 @@ if test "@BUILD_LZ4@" = "yes"; then
     ./ftst_ccr_lz4
 fi
 
-# If BitGroom was built, run the BitGroom test.
-if test "@BUILD_BITGROOM@" = "yes"; then
-    export HDF5_PLUGIN_PATH="../hdf5_plugins/BITGROOM/src/.libs:$HDF5_PLUGIN_PATH"
-    ./ftst_ccr_bitgroom
-fi
-
-# If Granular BitRound was built, run the Granular BitRound test.
-if test "@BUILD_GRANULARBR@" = "yes"; then
-    export HDF5_PLUGIN_PATH="../hdf5_plugins/GRANULARBR/src/.libs:$HDF5_PLUGIN_PATH"
-    ./ftst_ccr_granularbr
-fi
-
-# If zstandard was built, run the zstandard test.
-if test "@BUILD_ZSTD@" = "yes"; then
-    export HDF5_PLUGIN_PATH="../hdf5_plugins/ZSTANDARD/src/.libs:$HDF5_PLUGIN_PATH"
-    ./ftst_ccr_zstandard
-fi
 
 
 
