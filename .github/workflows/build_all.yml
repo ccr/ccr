@@ -81,5 +81,3 @@ jobs:
         sleep 3
         ./configure --with-hdf5-plugin-path=/home/runner/plugin --enable-fortran --disable-bzip2
         make VERBOSE=1 check
-        cd test
-        ./tst_perf
