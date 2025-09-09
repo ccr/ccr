@@ -1,8 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* If true, build with bzip2 filter. */
-#undef BUILD_BZIP2
-
 /* If true, build with lz4 filter. */
 #undef BUILD_LZ4
 
@@ -50,6 +47,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* HDF5 plugin path */
+#undef HDF5_PLUGIN_PATH
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR

@@ -146,7 +146,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
             {
                 int compressedBytes = LZ4_decompress_safe(rpos, roBuf, compressedBlockSize, blockSize);
                 if (compressedBytes != blockSize) {
-                    printf("decompressed size not the same: %d, != %d\n", compressedBytes, blockSize);
+                    /* printf("decompressed size not the same: %d, != %d\n", compressedBytes, blockSize); */
                     goto error;
                 }
             }
@@ -163,7 +163,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
     }
     else /* forward filter */
     {
-        size_t    blockSize;
+        size_t    blockSize = DEFAULT_BLOCK_SIZE;
         size_t    nBlocks;
         size_t    outSize; /* size of the output buffer. Header size (12 bytes) is included */
         size_t    block;
@@ -172,6 +172,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
         size_t    maxDestSize;
         char     *rpos;  /* pointer to current read position */
         char     *roBuf; /* pointer to current write position */
+	int      acceleration = 1;
 
         if (nbytes > INT32_MAX) {
             /* can only compress chunks up to 2GB */
@@ -179,10 +180,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
         }
 
         if (cd_nelmts > 0 && cd_values[0] > 0) {
-            blockSize = cd_values[0];
-        }
-        else {
-            blockSize = DEFAULT_BLOCK_SIZE;
+            acceleration = cd_values[0];
         }
         if (blockSize > nbytes) {
             blockSize = nbytes;
@@ -206,14 +204,18 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
 
         outSize = 12; /* size of the output buffer. Header size (12 bytes) is included */
 
+        /* printf("nbytes %ld nBlocks %ld\n", nbytes, nBlocks); */
         for (block = 0; block < nBlocks; ++block) {
             uint32_t compBlockSize; /// reserve space for compBlockSize
             size_t   origWritten = block * blockSize;
             if (nbytes - origWritten < blockSize) /* the last block may be < blockSize */
                 blockSize = nbytes - origWritten;
 
-            compBlockSize = LZ4_compress_default(
-                rpos, roBuf + 4, blockSize, LZ4_compressBound(blockSize)); /// reserve space for compBlockSize
+            compBlockSize = LZ4_compress_fast(
+                rpos, roBuf + 4, blockSize, LZ4_compressBound(blockSize), 1); /// reserve space for compBlockSize
+	    /* printf("blockSize %ld compBlockSize %d\n", blockSize, compBlockSize); */
+            /* compBlockSize = LZ4_compress_default( */
+            /*     rpos, roBuf + 4, blockSize, LZ4_compressBound(blockSize)); /// reserve space for compBlockSize */
             if (!compBlockSize)
                 goto error;
             if (compBlockSize >= blockSize) /* compression did not save any space, do a memcpy instead */

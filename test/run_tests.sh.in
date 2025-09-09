@@ -4,11 +4,8 @@
 set -x
 set -e
 
-# If bzip2 was built, run the bzip2 test.
-if test "@BUILD_BZIP2@" = "yes"; then
-    export HDF5_PLUGIN_PATH="../hdf5_plugins/BZIP2/src/.libs:$HDF5_PLUGIN_PATH"
-    ./tst_bzip2
-fi
+# This will find the zstd filter with the netcdf-c install.
+HDF5_PLUGIN_PATH=@HDF5_PLUGIN_PATH@
 
 # If lz4 was built, run the lz4 test.
 if test "@BUILD_LZ4@" = "yes"; then

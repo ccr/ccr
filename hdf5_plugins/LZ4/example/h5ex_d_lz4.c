@@ -27,10 +27,10 @@
 
 #define FILE            "h5ex_d_lz4.h5"
 #define DATASET         "DS1"
-#define DIM0            32
-#define DIM1            64
-#define CHUNK0          4
-#define CHUNK1          8
+#define DIM0            320
+#define DIM1            640
+#define CHUNK0          32
+#define CHUNK1          64
 #define H5Z_FILTER_LZ4        32004
 
 int
@@ -62,7 +62,7 @@ main (void)
      */
     for (i=0; i<DIM0; i++)
         for (j=0; j<DIM1; j++)
-            wdata[i][j] = i * j - j;
+            wdata[i][j] = i + j;
 
     /*
      * Create a new file using the default properties.
@@ -84,7 +84,9 @@ main (void)
     dcpl_id = H5Pcreate (H5P_DATASET_CREATE);
     if (dcpl_id < 0) goto done;
 
-    status = H5Pset_filter (dcpl_id, H5Z_FILTER_LZ4, H5Z_FLAG_MANDATORY, nelmts, cd_values);
+    /* status = H5Pset_filter (dcpl_id, H5Z_FILTER_LZ4, H5Z_FLAG_MANDATORY, nelmts, cd_values); */
+    /* if (status < 0) goto done; */
+    status = H5Pset_filter (dcpl_id, H5Z_FILTER_LZ4, H5Z_FLAG_MANDATORY, 0, NULL);
     if (status < 0) goto done;
 
     /*

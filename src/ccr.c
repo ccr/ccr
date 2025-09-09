@@ -236,8 +236,8 @@ nc_def_var_lz4(int ncid, int varid, int level)
  * @param varid Variable ID.
  * @param lz4p Pointer that gets a 0 if lz4 is not in use for this
  * var, and a 1 if it is. Ignored if NULL.
- * @param levelp Pointer that gets the level setting (from 1 to 9), if
- * bzlip2 is in use. Ignored if NULL.
+ * @param levelp Pointer that gets the acceleration setting (from 1 to 9).
+ * Ignored if NULL.
  *
  * @return 0 for success, error code otherwise.
  * @author Ed Hartnett

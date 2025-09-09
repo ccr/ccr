@@ -146,8 +146,7 @@ main()
 		/* Create a new record to write. */
 		for (x = 0; x < NX_REALLY_BIG * NY_REALLY_BIG; x++)
 		{
-		    data_out[x] = ((float)rand()/(float)(RAND_MAX)) * a;
-		    /* data_out[x] = x + 1.; */
+		    data_out[x] = 1014 + 1/(x%10000);
 		}
 		
 		if (nc_put_vara_float(ncid, varid, start, count, data_out)) ERR;
