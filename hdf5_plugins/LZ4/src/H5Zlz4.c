@@ -163,7 +163,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
     }
     else /* forward filter */
     {
-        size_t    blockSize;
+        size_t    blockSize = DEFAULT_BLOCK_SIZE;
         size_t    nBlocks;
         size_t    outSize; /* size of the output buffer. Header size (12 bytes) is included */
         size_t    block;
@@ -172,6 +172,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
         size_t    maxDestSize;
         char     *rpos;  /* pointer to current read position */
         char     *roBuf; /* pointer to current write position */
+	int      acceleration = 1;
 
         if (nbytes > INT32_MAX) {
             /* can only compress chunks up to 2GB */
@@ -179,11 +180,7 @@ H5Z_filter_lz4(unsigned int flags, size_t cd_nelmts, const unsigned int cd_value
         }
 
         if (cd_nelmts > 0 && cd_values[0] > 0) {
-            /* blockSize = cd_values[0]; */
-            blockSize = DEFAULT_BLOCK_SIZE;
-        }
-        else {
-            blockSize = DEFAULT_BLOCK_SIZE;
+            acceleration = cd_values[0];
         }
         if (blockSize > nbytes) {
             blockSize = nbytes;
