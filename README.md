@@ -19,7 +19,7 @@ For full documentation see https://ccr.github.io/ccr/.
 
 # Authors
 
-Charlie Zender, Edward Hartnett
+### CCR Authors: Charlie Zender, Edward Hartnett
 
 Filter | Author
 -------|-------
