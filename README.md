@@ -3,18 +3,17 @@
 This project supports compression (and other) filters for netCDF/HDF5
 files which are not natively supported by the netCDF C library.
 
-The [netCDF C library](https://github.com/Unidata/netcdf-c) supports
-zlib and (optionally) szlib as compression filters. The C library also
-supports the shuffle and checksum filters natively, and supports other
-filters via the recently added nc_def_var_filter() method (in version
-4.7.3 and later).
+# Transition to CCR Version 2.0.0
 
-Additional filters are available, and support additional compression
-methods.
+The ccr version 1 releases were very successful. Intending to
+demonstrate the value of quantization and new compression methods, CCR
+succeeded so well that all of its features were adopted into the
+[netCDF C library](https://github.com/Unidata/netcdf-c), starting with
+netcdf-c-4.9.0.
 
-Version 2.0.0 of the CCR supports:
-* BZIP2 compression
-* LZ4 compression
+All of this code has been removed from CCR, since it is now part of
+netcdf-c. In version 2.0.0 of CCR, only one compression filter is
+included: LZ4.
 
 For full documentation see https://ccr.github.io/ccr/.
 
@@ -24,7 +23,6 @@ Charlie Zender, Edward Hartnett
 
 Filter | Author
 -------|-------
-Bzip2  | Francesc Alted, Carabos Coop. V., HDF Team
 LZ4    | Yann Collet
 
 # Building CCR
@@ -39,8 +37,7 @@ Library   | Source                                    | Notes
 --------- |-------                                    | -----
 netcdf-c  | https://github.com/Unidata/netcdf-c       | required
 HDF5      | https://www.hdfgroup.org/downloads/hdf5   | required
-bzip2     | https://www.sourceware.org/bzip2/         | optional
-LZ4       | https://github.com/lz4/lz4                | optional 
+LZ4       | https://github.com/lz4/lz4                | required 
 
 ### Obtain Optional External Libraries as Pre-built Packages
 
@@ -62,9 +59,9 @@ Example:
 autoreconf -i
 # Set your environment as necessary and (re-)configure as necessary:
 export CFLAGS='-g -Wall'
-export CPPFLAGS='-I/usr/local/hdf5-1.10.6_mpich/include -I/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/include'
-export LDFLAGS='-L/usr/local/hdf5-1.10.6_mpich/lib -L/usr/local/netcdf-c-4.7.4_hdf5-1.10.6_szip_mpich/lib'
-./configure  
+export CPPFLAGS='-I/usr/local/hdf5-1.14.6/include -I/usr/local/netcdf-c-4.9.3/include'
+export LDFLAGS='-L/usr/local/hdf5-1.14.6/lib -L/usr/local/netcdf-c-4.9.3/lib'
+./configure --with-hdf5-plugin-path=/usr/local/netcdf-c-4.9.3/hdf5/lib/plugins
 </pre>
 
 Build the CCR code with `make`, install the CCR library with
