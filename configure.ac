@@ -129,19 +129,7 @@ AC_ARG_WITH([hdf5-plugin-path],
             [HDF5_PLUGIN_PATH=$with_hdf5_plugin_path])
 HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
 AC_MSG_RESULT($HDF5_PLUGIN_PATH)
-
-# Does the user want BZIP2?
-AC_MSG_CHECKING([whether BZIP2 filter library should be built and installed])
-AC_ARG_ENABLE([bzip2],
-              [AS_HELP_STRING([--enable-bzip2],
-                              [Enable the build and install of bzip2 filter library.])])
-test "x$enable_bzip2" = xyes || enable_bzip2=no
-AC_MSG_RESULT($enable_bzip2)
-AM_CONDITIONAL(BUILD_BZIP2, [test "x$enable_bzip2" = xyes])
-if test "x$enable_bzip2" = xyes; then
-   AC_DEFINE([BUILD_BZIP2], 1, [If true, build with bzip2 filter.])
-fi
-AC_SUBST([BUILD_BZIP2], [$enable_bzip2])
+AC_DEFINE([HDF5_PLUGIN_PATH], [$HDF5_PLUGIN_PATH], [HDF5 plugin path])
 
 AC_MSG_CHECKING([whether LZ4 filter library should be built and installed])
 AC_ARG_ENABLE([lz4],
@@ -365,8 +353,6 @@ AC_DEFUN([AX_SET_META],[
 # Settings for libccr.settings and ccr_meta.h.
 AC_SUBST(HAS_LZ4,[$enable_lz4])
 AX_SET_META([CCR_HAS_LZ4],[$enable_lz4],[yes])
-AC_SUBST(HAS_BZIP2,[$enable_bzip2])
-AX_SET_META([CCR_HAS_BZIP2],[$enable_bzip2],[yes])
 AC_SUBST(HAS_BENCHMARKS,[$enable_benchmarks])
 AX_SET_META([CCR_HAS_BENCHMARKS],[$enable_benchmarks],[yes])
 

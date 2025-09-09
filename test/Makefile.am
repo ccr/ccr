@@ -10,11 +10,6 @@ AM_LDFLAGS = ${top_builddir}/src/libccr.la
 LDADD = ${top_builddir}/src/libccr.la
 check_PROGRAMS =
 
-# Build the bzip2 test, if needed.
-if BUILD_BZIP2
-check_PROGRAMS += tst_bzip2
-endif
-
 # Build LZ4 tests, if needed.
 if BUILD_LZ4
 check_PROGRAMS += tst_lz4
